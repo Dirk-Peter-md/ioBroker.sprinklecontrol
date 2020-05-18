@@ -1,0 +1,284 @@
+{
+    "common": {
+        "name": "sprinklecontrol",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "Sprinkle Control",
+        "titleLang": {
+            "en": "Sprinkle Control",
+            "de": "Sprinkle Control",
+            "ru": "Управление дождеванием",
+            "pt": "Controle de aspersão",
+            "nl": "Strooi controle",
+            "fr": "Contrôle de l'arrosage",
+            "it": "Spruzzare il controllo",
+            "es": "Control de aspersión",
+            "pl": "Kontrola zraszania",
+            "zh-cn": "洒水控制"
+        },
+        "desc": {
+            "en": "Control of several sprinklers depending on weather conditions and pump performance.",
+            "de": "Steuerung mehrerer Sprinkler je nach Witterung und Pumpenleistung.",
+            "ru": "Управление несколькими спринклерами в зависимости от погодных условий и производительности насоса.",
+            "pt": "Controle de vários aspersores, dependendo das condições climáticas e do desempenho da bomba.",
+            "nl": "Besturing van meerdere sprinklers afhankelijk van de weersomstandigheden en de pompprestaties.",
+            "fr": "Contrôle de plusieurs sprinkleurs en fonction des conditions météorologiques et des performances de la pompe.",
+            "it": "Controllo di più irrigatori a seconda delle condizioni meteorologiche e delle prestazioni della pompa.",
+            "es": "Control de varios rociadores según las condiciones climáticas y el rendimiento de la bomba.",
+            "pl": "Kontrola kilku tryskaczy w zależności od warunków pogodowych i wydajności pompy.",
+            "zh-cn": "根据天气条件和泵的性能控制多个喷头。"
+        },
+        "authors": [
+            "Dirk Peter <dirk.peter@freenet.de>"
+        ],
+        "keywords": [
+            "Sprinkle",
+            "Irrigation",
+            "Bewässerung",
+            "Steuerung",
+            "ioBroker"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "main.js",
+        "icon": "sprinklecontrol.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/Dirk-Peter-md/ioBroker.sprinklecontrol/master/admin/sprinklecontrol.png",
+        "readme": "https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "garden",
+        "compact": true,
+        "materialize": true,
+        "dependencies": [
+            {
+                "js-controller": ">=1.4.2"
+            }
+        ]
+    },
+    "native": {
+        "triggerControlVoltage": "",
+        "maximumParallelValves": "5",
+        "triggerMainPump": "hm-rpc.0.MEQ1234567.1.STATE",
+        "triggerMainPumpPower": "2000",
+        "cisternSettings": false,
+        "triggerCisternPump": "",
+        "triggerCisternPumpPower": "1800",
+        "actualValueLevel": "",
+        "triggerMinCisternLevel": "25",
+        "wateringStartTime": "livingGoldenHourEnd",
+        "weekLiving": "06:30",
+        "publicWeekend": true,
+        "weekEndLiving": "07:30",
+        "publicHolidays": false,
+        "publicHolInstance": "",
+        "latitude": "52.123456789",
+        "longitude": "12.123456789",
+        "sensorOutsideTemperature": "",
+        "sensorOutsideHumidity": "",
+        "sensorWindSpeed": "",
+        "sensorBrightness": "",
+        "sensorRainfall": "",
+        "events": [
+            {
+                "enabled": true,
+                "sprinkleName": "sprinkle example",
+                "name": "hm-rpc.0.MEQ1234567.3.STATE",
+                "triggerID": "",
+                "waterContent": "",
+                "wateringTime": "10",
+                "maxSoilMoistureIrrigation": "8",
+                "maxSoilMoistureRain": "10",
+                "triggersIrrigation": "50",
+                "pipeFlow": "1100"
+            }
+        ]
+    },
+    "objects": [],
+    "instanceObjects": [
+        {
+            "_id": "evaporation",
+            "type": "channel",
+            "common": {
+                "name": "Info Evaporation data"
+            },
+            "native": {}
+        },
+        {
+            "_id": "evaporation.ETpCurrent",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "Calculation of the current pot. Evapotranspiration",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": false,
+                "unit": "mm"
+            },
+            "native": {}
+        },
+        {
+            "_id": "evaporation.ETpToday",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "today's pot. Evapotranspiration",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": false,
+                "unit": "mm"
+            },
+            "native": {}
+        },
+        {
+            "_id": "evaporation.ETpYesterday",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "yesterday's pot. Evapotranspiration",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": false,
+                "unit": "mm"
+            },
+            "native": {}
+        },
+        {
+            "_id": "control",
+            "type": "channel",
+            "common": {
+                "name": "Control Buttons"
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.Holiday",
+            "type": "state",
+            "common": {
+                "role": "switch",
+                "name": "Holiday",
+                "type": "boolean",
+                "read": true,
+                "write": true,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.autoOnOff",
+            "type": "state",
+            "common": {
+                "role": "switch",
+                "name": "Auto / Manu On - Off",
+                "type": "boolean",
+                "states": "0:off;1:Auto",
+                "read": true,
+                "write": true,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.parallelOfMax",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "parallel of max Sprinklers",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "control.restFlow",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "rest Flow of Pump",
+                "type": "number",
+                "read": true,
+                "write": true,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Info Logs"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.GoldenHourEnd",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "Goldenhour end Time",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.Sunrise",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "Sunrise Time",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.TimeLiving",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "living sprinkler",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.TimeLivingWE",
+            "type": "state",
+            "common": {
+                "role": "indicator",
+                "name": "living sprinkler on the weekend",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        }
+    ]
+}

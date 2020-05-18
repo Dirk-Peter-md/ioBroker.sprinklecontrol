@@ -1,0 +1,861 @@
+<html>
+
+<head>
+
+    <!-- Load ioBroker scripts and styles-->
+    <link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+
+    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
+
+    <script type="text/javascript" src="../../js/translate.js"></script>
+    <script type="text/javascript" src="../../lib/js/selectID.js"></script>
+    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <script type="text/javascript" src="actions.js"></script>
+
+    <!-- Load our own files -->
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script type="text/javascript" src="words.js"></script>
+
+    <style>
+        .m .col .select-wrapper + label {
+            top: -26px;
+        }
+        .m span {
+            font-size: 0.9em;
+        }
+        .m .tabs {
+            height: 48px;
+        }
+        .m .page {
+            height: calc(100% - 118px);
+        }
+        #dialog-command {
+            width: calc(100% - 100px);
+        }
+        #dialog-command .title {
+            background: #64b5f6;
+            color: #FFF;
+            padding: 0.5rem;
+        }
+        #dialog-command .textarea {
+            margin-bottom: 0;
+        }
+        #dialog-command textarea {
+            background: #e9e9e9;
+            font-family: courier, monospace;
+            font-size: 11px;
+            resize: none;
+            width: 100%;
+            height: calc(100% - 125px);
+            margin-bottom: 0;
+        }
+        #dialog-command .progress-dont-close {
+            float: left;
+            padding-left: 1rem;
+            padding-top: 1rem;
+        }
+        #dialog-command .command {
+            font-style: italic;
+        }
+        #dialog-command .btn {
+            margin-right: 1.5rem;
+        }
+        .do-restore {
+            cursor: pointer;
+        }
+        .collapsible-body {
+            margin-left: 2rem !important;
+            padding-top: 0 !important;
+        }
+        #dialog-shutter-edit .title {
+            width: 100% !important;
+            background: #64b5f6;
+            color: #FFF;
+            padding: 0.3rem;
+        }
+        .modal .page {
+            width: calc(100% - 20px)!important;
+        }
+        #dialog-shutter-edit .modal-content {
+            width: 100% !important;
+            height: calc(100% - 10px) !important;
+            
+        }
+        #dialog-shutter-edit .tabs {
+            width: calc(100% - 20px) !important;
+        }
+        #dialog-shutter-edit .page {
+            width: calc(100% - 10px) !important;
+            
+        }
+        #dialog-shutter-edit .btn {
+            margin-right: 1.5rem;
+        }
+        #dialog-select-member {
+            z-index: 9999 !important;
+        }
+        #dialog-shutter-edit {
+            z-index: 9900 !important;
+        }
+        
+        #events td:nth-of-type(6) {visibility: hidden; display: none;}
+        #events th:nth-of-type(6) {visibility: hidden; display: none;}
+        #events td:nth-of-type(7) {visibility: hidden; display: none;}
+        #events th:nth-of-type(7) {visibility: hidden; display: none;}
+        #events td:nth-of-type(8) {visibility: hidden; display: none;}
+        #events th:nth-of-type(8) {visibility: hidden; display: none;}
+        #events td:nth-of-type(9) {visibility: hidden; display: none;}
+        #events th:nth-of-type(9) {visibility: hidden; display: none;}
+        #events td:nth-of-type(10) {visibility: hidden; display: none;}
+        #events th:nth-of-type(10) {visibility: hidden; display: none;}
+        #events td:nth-of-type(11) {visibility: hidden; display: none;}
+        #events th:nth-of-type(11) {visibility: hidden; display: none;}
+		#events td:nth-of-type(12) {visibility: hidden; display: none;}
+		#events th:nth-of-type(12) {visibility: hidden; display: none;}
+		#events td:nth-of-type(13) {visibility: hidden; display: none;}
+		#events th:nth-of-type(13) {visibility: hidden; display: none;}
+
+
+        #dialog-shutter-edit {
+            max-height:95% !important;
+            max-width:85% !important;
+            width:80% !important; 
+            height:90% !important;
+            overflow: visible !important;
+            top: 10px !important;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+    
+
+        // This will be called by the admin adapter when the settings page loads
+        function load(settings, onChange) {
+            // example: select elements with id=key and class=value and insert value
+            if (!settings) return;
+            $('.value').each(function () {
+                var $key = $(this);
+                var id = $key.attr('id');
+                if ($key.attr('type') === 'checkbox') {
+                    // do not call onChange direct, because onChange could expect some arguments
+                    $key.prop('checked', settings[id]).on('change', function () {
+                        showHideSettings();
+                        onChange();
+                    });
+                } else {
+                    // do not call onChange direct, because onChange could expect some arguments
+                    $key.val(settings[id])
+                        .on('change', () => onChange())
+                        .on('keyup', () => onChange())
+                        ;
+                }
+            });
+
+            //var events = [];
+            
+            events = settings.events    || [];
+            
+            showHideSettings();
+            
+            values2table('events', events, onChange, tableOnReady);
+
+            $('#responseOIDDialog').on('click', function () {
+                var devices = table2values('events');
+                var id = 0;
+                for (var i = 0; i < devices.length; i++) {
+                id = id +1;
+                }
+                setTimeout(function () {
+                    $('#events .values-input[data-name="enabled"][data-index="' + id + '"]').prop('checked', true);
+                    $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val('20').trigger('change');
+					$('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val('200').trigger('change');
+					$('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val('0').trigger('change');
+                    $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val('8').trigger('change');
+                    $('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val('10').trigger('change');
+                    $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
+                    $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val('700').trigger('change');
+                }, 1000);
+                
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(), function (newId) {
+                        if (newId) {
+                            $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(newId).trigger('change');
+                            socket.emit('getObject', newId, function (err, obj) {
+                                var name = getName(obj);
+                                $('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val(name).trigger('change');
+                            });
+                        }
+                    });
+                });
+            });
+
+            // Registerkarte Pump Settings
+			
+            $('#triggerControlVoltageDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#triggerControlVoltage').val(), function (newId) {
+                        if (newId) {
+                            $('#triggerControlVoltage').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+            
+            $('#triggerMainPumpDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#triggerMainPump').val(), function (newId) {
+                        if (newId) {
+                            $('#triggerMainPump').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+			
+            $('#triggerCisternPumpDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#triggerCisternPump').val(), function (newId) {
+                        if (newId) {
+                            $('#triggerCisternPump').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+            
+            $('#actualValueLevelDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#actualValueLevel').val(), function (newId) {
+                        if (newId) {
+                            $('#actualValueLevel').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+
+			// Registerkarte Extra Settings
+
+            $('#sensorOutsideTemperatureDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#sensorOutsideTemperature').val(), function (newId) {
+                        if (newId) {
+                            $('#sensorOutsideTemperature').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+			
+            $('#sensorOutsideHumidityDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#sensorOutsideHumidity').val(), function (newId) {
+                        if (newId) {
+                            $('#sensorOutsideHumidity').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+			
+            $('#sensorWindSpeedDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#sensorWindSpeed').val(), function (newId) {
+                        if (newId) {
+                            $('#sensorWindSpeed').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+			
+            $('#sensorBrightnessDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#sensorBrightness').val(), function (newId) {
+                        if (newId) {
+                            $('#sensorBrightness').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+			
+            $('#sensorRainfallDialogPopUp').on('click', function () {
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#sensorRainfall').val(), function (newId) {
+                        if (newId) {
+                            $('#sensorRainfall').val(newId).trigger('change');
+                        }
+                    });
+                });
+            });
+            
+            onChange(false);
+            // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+            
+            if (M) M.updateTextFields();
+            
+            getAdapterInstances('feiertage', function (instances) {
+                fillInstances('publicHolInstance', instances, settings['publicHolInstance']);
+            });
+        }
+        function fillInstances(id, arr, val) {
+            var $sel = $('#' + id);
+            $sel.html('<option value="">' + _('none') + '</option>');
+            for (var i = 0; i < arr.length; i++) {
+                var _id = arr[i]._id.replace('system.adapter.', '');
+                $sel.append('<option value="' + _id + '"' + (_id === val ? ' selected' : '') + '>' + _id + '</option>');
+            }
+            $sel.select();
+        }
+        function tableOnReady() {
+            $('#events .table-values-div .table-values .values-buttons[data-command="edit2"]').on('click', function () {
+                let id = $(this).data('index');
+                initSelectId(function (sid) {
+                    sid.selectId('show', $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(), function (newId) {
+                        if (newId) {
+                            $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(newId).trigger('change');
+                            socket.emit('getObject', newId, function (err, obj) {
+                                var name = getName(obj);
+                                $('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val(name).trigger('change');
+                            });
+                        }
+                    });
+                });
+            });
+
+            $('#events .table-values-div .table-values .values-buttons[data-command="edit"]').on('click', function () {
+                let id = $(this).data('index');
+                $('#triggerID').val($('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val());
+                $('#wateringTime').val($('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val());
+				$('#wateringAdd').val($('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val());
+				$('#wateringInterval').val($('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val());
+                $('#maxSoilMoistureIrrigation').val($('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val());
+                $('#maxSoilMoistureRain').val($('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val());
+                $('#triggersIrrigation').val($('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val());
+                $('#pipeFlow').val($('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val());
+								
+                $('#dialogDeviceEditSprinkle').html($('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val());
+
+                setTimeout(function () {
+                    initDialogShutter(function (sid) {
+                        var newTriggerID = $('#triggerID').val();
+                        var newWateringTime = $('#wateringTime').val();
+						var newWateringAdd = $('#wateringAdd').val();
+						var newWateringInterval = $('#wateringInterval').val();
+                        var newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
+                        var newMaxSoilMoistureRain = $('#maxSoilMoistureRain').val();
+                        var newTriggersIrrigation = $('#triggersIrrigation').val();
+                        var newPpipeFlow = $('#pipeFlow').val();
+						
+                        $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
+                        $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
+						$('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val(newWateringAdd).trigger('change');
+						$('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val(newWateringInterval).trigger('change');
+                        $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val(newMaxSoilMoistureIrrigation).trigger('change');
+                        $('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val(newMaxSoilMoistureRain).trigger('change');
+                        $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val(newTriggersIrrigation).trigger('change');
+                        $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val(newPpipeFlow).trigger('change');
+                    });
+                }, 20)
+            });
+        }
+        
+        // This will be called by the admin adapter when the user presses the save button
+        function save(callback) {
+            // example: select elements with class=value and build settings object
+            var obj = {};
+            $('.value').each(function () {
+                var $this = $(this);
+                if ($this.attr('type') === 'checkbox') {
+                    obj[$this.attr('id')] = $this.prop('checked');
+                } else {
+                    obj[$this.attr('id')] = $this.val();
+                }
+            });
+            
+            // Get edited table
+            obj.events    = table2values('events');
+
+
+            callback(obj);
+        }
+        function showHideSettings() {
+		
+            // Pumpeneinstellungen => Zysterne sichtbar bei checkbox
+			
+			if ($('#cisternSettings').prop('checked')) {
+				$('.cisternObjekt').show();
+			} else {
+				$('.cisternObjekt').hide();
+			}
+			
+			// Zeiteinstellungen => Feiertagseinstellung sichtbar bei checkbox
+			
+//			switch ($('#wateringStartTime').prop('checked')) {
+//				case 'livingTime' :				/*Start zur festen Zeit*/
+//					$('.timeShi').hide();
+//					$('.weekLiv').show();
+//					break;
+//				case 'livingSunrise' :			/*Start mit Sonnenaufgang*/
+//					$('.timeShi').show();
+//					$('.weekLiv').hide();					
+//					break;
+//				case 'livingGoldenHourEnd' :	/*Start mit dem Ende der Golden Houer*/
+// 					$('.timeShi').hide();
+//					$('.weekLiv').hide();
+//					break;
+//			}
+			
+            if ($('#publicWeekend').prop('checked')) {
+                $('.publicWeek').show();
+				$('.publicWeekHol').show();
+            } else {
+                $('.publicWeek').hide();
+				$('.publicWeekHol').hide();
+            }			
+			
+            if ($('#publicHolidays').prop('checked') && $('#publicWeekend').prop('checked')) {
+                $('.publicHol').show();
+            } else {
+                $('.publicHol').hide();
+            }
+        }
+
+        var selectId;
+        function initSelectId(callback) {
+            if (selectId) {
+                return callback(selectId);
+            }
+            socket.emit('getObjects', function (err, objs) {
+                selectId = $('#dialog-select-member').selectId('init',  {
+                    noMultiselect: true,
+                    objects: objs,
+                    imgPath:       '../../lib/css/fancytree/',
+                    filter:        {type: 'state'},
+                    name:          'scenes-select-state',
+                    texts: {
+                        select:          _('Select'),
+                        cancel:          _('Cancel'),
+                        all:             _('All'),
+                        id:              _('ID'),
+                        name:            _('Name'),
+                        role:            _('Role'),
+                        room:            _('Room'),
+                        value:           _('Value'),
+                        selectid:        _('Select ID'),
+                        from:            _('From'),
+                        lc:              _('Last changed'),
+                        ts:              _('Time stamp'),
+                        wait:            _('Processing...'),
+                        ack:             _('Acknowledged'),
+                        selectAll:       _('Select all'),
+                        unselectAll:     _('Deselect all'),
+                        invertSelection: _('Invert selection')
+                    },
+                    columns: ['image', 'name', 'role', 'room']
+                });
+                callback(selectId);
+            });
+        }
+        
+        function getName(obj) {
+            if (obj && obj.common && obj.common.name) {
+                var name = obj.common.name;
+                if (typeof name === 'object') {
+                    name = name[systemLang] || name.en;
+                }
+                return name;
+            } else if (obj && obj.name) {
+                var name = obj.name;
+                if (typeof name === 'object') {
+                    name = name[systemLang] || name.en;
+                }
+                return name;
+            } else {
+                var parts = obj.id.split('.');
+                var last = parts.pop();
+                return last[0].toUpperCase() + last.substring(1).toLowerCase();
+            }
+        }
+
+        function initDialogShutter(callback) {
+            var $editDialog = $('#dialog-shutter-edit');
+            if (!$editDialog.data('inited')) {
+                $editDialog.data('inited', true);
+                $editDialog.modal({
+                    dismissible: false
+                });
+                
+                $editDialog.find('.btn-set').on('click', function () {
+                    var $editDialog = $('#dialog-shutter-edit');
+                    var callback = $editDialog.data('callback');
+                    if (typeof callback === 'function') callback();
+                    $editDialog.data('callback', null);
+                });
+            }
+            $editDialog.data('callback', callback);
+            $editDialog.modal('open');
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="m adapter-container">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s6 l3"><a href="#tab-settings" class="translate active">main settings</a></li>
+                    <li class="tab col s6 l3 tab-pump"><a href="#tab-pump" class="translate">Pump Settings</a></li>
+                    <li class="tab col s6 l3 tab-time"><a href="#tab-time" class="translate">Time Settings</a></li>
+                    <li class="tab col s6 l3 tab-extra"><a href="#tab-extra" class="translate">Extra Settings</a></li>
+                </ul>
+            </div>
+            <div class="row">
+                <!-- main settings -->
+                <div id="tab-settings" class="col s12 page">
+                    <div class="row">
+                        <div class="col s12 m4 l2">
+                            <img src="sprinklecontrol.png" class="logo">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Shutter config</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12" id="events">
+                            <div class="row">
+                                <div class="col s2 m1 l1 left">
+                                    <a  id="responseOIDDialog" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                </div>
+                            </div>
+                            <div class="table-values-div">
+                                <table class="table-values">
+                                    <thead>
+                                    <tr>
+                                        <th data-name="_index" style="width: 80px; background: #64b5f6; text-align: center" data-style="text-align: center">Nr</th>
+                                        <th data-name="enabled"  style="width: 70px; background: #64b5f6" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
+                                        <th data-name="sprinkleName" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Name</th>
+                                        <th data-name="name" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Object-ID shutter</th>
+                                        <th data-buttons="edit2" style="width: 150px; background: #64b5f6; height: 40px" data-style="width: 150px; text-align: left" ></th>
+                                        <!-- ********************** only for temp states ********************** -->
+                                        <th data-name="triggerID" data-type="text" style="width: 30%; background: #64b5f6" class="translate"></th>
+                                        <th data-name="wateringTime" data-type="number" style="width: 0px" class="translate"></th>
+										<th data-name="wateringAdd" data-type="number" style="width: 0px" class="translate"></th>
+										<th data-name="wateringInterval" data-type="number" style="width: 0px" class="translate"></th>
+                                        <th data-name="maxSoilMoistureIrrigation" data-type="number" style="width: 0px" class="translate"></th>
+                                        <th data-name="maxSoilMoistureRain" data-type="number" style="width: 0px" class="translate"></th>
+                                        <th data-name="triggersIrrigation" data-type="number" style="width: 0px" class="translate"></th>
+                                        <th data-name="pipeFlow" data-type="number" style="width: 0px" class="translate"></th>
+                                        <!-- ****************************************************************** -->
+                                        <th data-buttons="edit up down delete" style="width: 100px; background: #64b5f6"></th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				<!-- Pump Settings -->
+				<div id="tab-pump" class="col s12 page">
+                    <div class="row">
+						<div class="col s12">
+							<h6 class="translate sub-title">Settings for Valve</h6>
+						</div>
+					</div>
+                    <div class="row">					
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="triggerControlVoltage" />
+                            <label for="triggerControlVoltage" class="translate"></label>
+                            <span class="translate">Steuerspannung der Ventile</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="triggerControlVoltageDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>
+						<div class="col s6 l2 input-field">
+							<input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
+							<label for="maximumParallelValves" class="translate"></label>
+							<span class="translate">maximaler Parallelbetrieb der Ventile</span>
+						</div>						
+					</div>
+					<div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for Pump</h6>
+                        </div>
+                    </div>
+                    <div class="row">					
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="triggerMainPump" />
+                            <label for="triggerMainPump" class="translate"></label>
+                            <span class="translate">Hauptpumpe</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="triggerMainPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>
+						<div class="col s6 l2 input-field">
+							<input type="number" class="value" id="triggerMainPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
+							<label for="triggerMainPumpPower" class="translate"></label>
+							<span class="translate">max Pumpenleistung der Hauptpumpe in l/h</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col s6 l2 input-field">
+                            <input type="checkbox" class="value" id="cisternSettings" />
+                            <span for="cisternSettings" class="translate">Zysterne benutzen</span>
+                        </div>
+					</div>
+					<div class="row col s12 cisternObjekt">
+						<div class="row">
+							<div class="input-field col s5 l4">
+								<input type="text" class="value" id="triggerCisternPump" />
+								<label for="triggerCisternPump" class="translate"></label>
+								<span class="translate">Pumpe der Zysterne</span>
+							</div>
+							<div class="col s1 l2">
+								<a id="triggerCisternPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+							</div>
+							<div class="col s6 l2 input-field">
+								<input type="number" class="value" id="triggerCisternPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
+								<label for="triggerCisternPumpPower" class="translate"></label>
+								<span class="translate">max Pumpenleistung der Zysterne in l/h</span>
+							</div>
+						</div>
+						<div class="row">
+							<div class="input-field col s5 l4">
+								<input type="text" class="value" id="actualValueLevel" />
+								<label for="actualValueLevel" class="translate"></label>
+								<span class="translate">Fuellstand der Zysterne</span>
+							</div>
+							<div class="col s1 l2">
+								<a id="actualValueLevelDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+							</div>
+							<div class="col s6 l2 input-field">
+								<input type="number" class="value" id="triggerMinCisternLevel" min=0 max=100 placeholder="0-100" step="25" />
+								<label for="triggerMinCisternLevel" class="translate"></label>
+								<span class="translate">Minimaler Füllstand der Zysterne in %</span>
+							</div>
+						</div>
+					</div>
+				</div>
+                <!-- time settings -->
+                <div id="tab-time" class="col s12 page">
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for Livingarea</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12 m4">
+                            <select class="value" id="wateringStartTime">
+                                <option value="livingTime" class="translate">Start nach fester Zeitangabe</option>
+                                <option value="livingSunrise" class="translate">Start mit Sonnenaufgang</option>
+                                <option value="livingGoldenHourEnd" class="translate">Start mit Ende der Golden Hour</option>
+                            </select>
+                            <label for="wateringStartTime" class="translate"></label>
+                            <span class="translate">Startzeit der Bewässerung</span>
+                        </div>
+                        <div class="input-field col s6 l2 TimeShi">
+                            <input type="number" id="timeShift" class="form-control" min="-50.0" max="100.0" placeholder="-50.0-100.0" step="0.1" />
+							<label for="timeShift" class="translate"></label>
+                            <span class="translate">Zeitverschiebung</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6 l2 weekLiv">
+                            <input type="time" class="value" id="weekLiving" />
+                            <label for="weekLiving" class="translate"></label>
+                            <span class="translate">Bewässerung in der Woche</span>
+                        </div>
+                    </div>
+					<div class="row">
+						<div class="input-field col s6 l2">
+                            <input type="checkbox" class="value" id="publicWeekend" />
+                            <span for="publicWeekend" class="translate">Andere Startzeit am Wochenende</span>
+						</div>
+                        <div class="input-field col s12 m6 l2 publicWeek">
+                            <input type="time" class="value" id="weekEndLiving" />
+                            <label for="weekEndLiving" class="translate"></label>
+                            <span class="translate">Bewässerung am Wochenende</span>
+                        </div>						
+					</div>
+					<div class="row">
+						<div class="input-field col s6 l2 publicWeekHol">
+                            <input type="checkbox" class="value" id="publicHolidays" />
+                            <span for="publicHolidays" class="translate">An Feiertagen Startzeit wie am Wochenende</span>
+                        </div>
+                        <div class="input-field col s12 m6 l2 publicHol">
+                            <select id="publicHolInstance" class="value"></select>
+                            <label for="publicHolInstance" class="translate"></label>
+                            <span class="translate">public holidays Instance</span>
+                        </div>
+					</div>
+                </div>
+                <!-- Tab Extra -->
+                <div id="tab-extra" class="col s12 page">
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Astro settings</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 l2 input-field">
+                            <input type="text" class="value" id="latitude" />
+                            <label for="latitude" class="translate"></label>
+                            <span class="translate">latitude</span>
+                        </div>
+                        <div class="col s6 l2 input-field">
+                            <input type="text" class="value" id="longitude" />
+                            <label for="longitude" class="translate"></label>
+                            <span class="translate">longitude</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Extra Settings</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="sensorOutsideTemperature" />
+                            <label for="sensorOutsideTemperature" class="translate"></label>
+                            <span class="translate">Temperatur-Sensor</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>						
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="sensorOutsideHumidity" />
+                            <label for="sensorOutsideHumidity" class="translate"></label>
+                            <span class="translate">Luftfeuchtigkeits-Sensor</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="sensorWindSpeed" />
+                            <label for="sensorWindSpeed" class="translate"></label>
+                            <span class="translate">Windgeschwindigkeits-Sensor</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="sensorBrightness" />
+                            <label for="sensorBrightness" class="translate"></label>
+                            <span class="translate">HelligkeitsSensor</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>
+                        <div class="col s6 l3 input-field">
+                            <input type="text" class="value" id="sensorRainfall" />
+                            <label for="sensorRainfall" class="translate"></label>
+                            <span class="translate">Sensor Niederschlag</span>
+                        </div>
+                        <div class="col s1 m2 l2">
+                            <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                        </div>						
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    <div class="m material-dialogs">
+        <div id="dialog-select-member" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <div class="row">
+                    <div class="col s12 title"></div>
+                </div>
+                <div class="row">
+                    <div class="col s12 dialog-content">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Select</span></a>
+                <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
+            </div>
+        </div>
+        <div id="dialog-shutter-edit" class="modal modal-fixed-footer">
+            <div class="row">
+                <div class="modal-content">
+                    
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="title"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
+                        </div>
+                    </div>
+                    <div class="col s12">
+                        <ul class="tabs">
+                            <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">main settings</a></li>
+                            <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">pump settings</a></li>
+                        </ul>
+                    </div>
+                    <div id="tab-pumpPopUp" class="col s12 page">
+						<div class="row">
+							<div class="col s6 l2 input-field">
+								<input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
+								<label for="pipeFlow" class="translate"></label>
+								<span class="translate">flowAmount</span>
+							</div>
+                        </div>
+                    </div>
+                    <div id="tab-settingsPopUp" class="col s12 page">
+						<div class="row">
+							<div class="col s6 l2 input-field">
+								<input type="number" class="value" id="wateringTime" min=5 max=90 />
+								<label for="wateringTime" class="translate"></label>
+								<span class="translate">Bewässerungsdauer</span>
+							</div>
+							<div class="col s6 l2 input-field">
+								<input type="number" class="value" id="wateringAdd" min=100 max=300 step="10" />
+								<label for="wateringAdd" class="translate"></label>
+								<span class="translate">BewässerungsAddProz</span>
+							</div>							
+							<div class="col s6 l2 input-field">
+								<input type="number" class="value" id="wateringInterval" min=0 max=30 step="5" />
+								<label for="wateringInterval" class="translate"></label>
+								<span class="translate">BewässerungsInterval</span>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col s6 l2 input-field">
+								<input type="number" class="value" id="triggersIrrigation" min=30 max=80 />
+								<label for="triggersIrrigation" class="translate"></label>
+								<span class="translate">minBodFeuchteProz</span>
+							</div>							
+                        </div>
+						<div class="row">
+							<div class="col s6 l2 input-field">
+								<input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
+								<label for="maxSoilMoistureIrrigation" class="translate"></label>
+								<span class="translate">maxBodFeuBereg</span>
+							</div>
+							<div class="col s6 l2 input-field">
+								<input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
+								<label for="maxSoilMoistureRain" class="translate"></label>
+								<span class="translate">maxBodFeuRegen</span>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Ok</span></a>
+                <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left">close</i><span class="translate">Cancel</span></a>
+            </div>
+        </div>
+        </div>
+    </div>  
+</body>
+
+</html>
