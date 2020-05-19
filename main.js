@@ -138,7 +138,7 @@ const ObjThread = {
 				curFlow -= entry.pipeFlow;	// ermitteln der RestFörderkapazität
 				parallel ++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
 				adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });	// Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, <<< 2 >>> Active, < 3 > Pause
-				// adapter.setForeignState(entry.name, {val: true, ack: false});	// Ventil einschalten
+				adapter.setForeignState(entry.name, {val: true, ack: false});	// Ventil einschalten
 				/*if (entry.onOffTime > 0) {
 					entry.onOffTimeoutOn = setTimeout(()=>{
 						entry.enabled = false;
@@ -338,13 +338,12 @@ function startAdapter(options) {
 				}				
 				// Change in outside temperature => Änderung der Außentemperatur
 				if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
-					let timeDifference;
+					let timeDifference = (state.ts - lastChangeEvaPor) / 86400000;		// 24/h * 60/min * 60/s * 1000/ms = 86400000 ms
+					adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);
 					curTemperature = state.val;
-					timeDifference = (state.ts - lastChangeEvaPor) / 86400000;		// 24/h * 60/min * 60/s * 1000/ms = 86400000 ms
 					//
 					if (timeDifference) {
 						setTimeout(function() {
-							adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);
 							calcEvaporation(timeDifference);
 						}, 500);
 					} 
@@ -445,7 +444,7 @@ function calcEvaporation (timeDifference) {
 	let m7 = 0.13 + 0.14 * curWindSpeed / 3.6;
 	
 	// pot. Evapotranspiration nach Penmann ETp in mm/d
-    let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 ));
+    let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
         adapter.log.info('RE: ' + RE);
         adapter.log.info(' ETp:' + eTp);
 		adapter.setState('evaporation.ETpCurrent', { val: eTp, ack: true });
