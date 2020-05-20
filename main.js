@@ -128,8 +128,8 @@ const ObjThread = {
 				parallel ++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
 			}
 		}
-
-		ObjThread.threadList.sort(mySort);     // sortieren nach der Verbrauchsmenge
+		// sortieren nach der Verbrauchsmenge
+		ObjThread.threadList.sort(mySort);
 		
 		// einschalten der Sprängerventile nach Verbrauchsmenge und maximaler Anzahl
 		for(let entry of ObjThread.threadList) {
@@ -137,22 +137,10 @@ const ObjThread = {
 				entry.enabled = true;	// einschalten merken
 				curFlow -= entry.pipeFlow;	// ermitteln der RestFörderkapazität
 				parallel ++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
-				adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });	// Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, <<< 2 >>> Active, < 3 > Pause
-				adapter.setForeignState(entry.name, {val: true, ack: false});	// Ventil einschalten
-				/*if (entry.onOffTime > 0) {
-					entry.onOffTimeoutOn = setTimeout(()=>{
-						entry.enabled = false;
-						entry.myBreak = true;
-						adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 3, ack: true});	// Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten,
-						ObjThread.updateList();
-						clearInterval(entry.countdown);
-						entry.onOffTimeoutOff = setTimeout(()=>{
-							entry.myBreak = false;
-							adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 1, ack: true});	// Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten,
-							ObjThread.updateList();
-						},entry.onOffTime);
-					}, entry.onOffTime);
-				}*/
+				// Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, <<< 2 >>> Active, < 3 > Pause
+				adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });
+				// Ventil einschalten
+				adapter.setForeignState(entry.name, {val: true, ack: false});
 				// countdown starten
 				if (!entry.startTime) {entry.startTime = new Date();}
 				entry.countdown = setInterval(() => {countSprinkleTime()}, 1000);	// 1000 = 1s
