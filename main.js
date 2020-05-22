@@ -608,7 +608,7 @@ function checkStates() {
 	// akt. kW ermitteln für history last week
 	kwStr = formatTime('','kW');
     // akt. Tag ermitteln für history ETpYesterday
-    dayStr = new Date(state.ts).getDay;
+    dayStr = new Date().getDay;
 };
 //	aktuelle States checken nach 2000 ms
 function checkActualStates () {
