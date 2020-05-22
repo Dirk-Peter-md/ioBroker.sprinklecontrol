@@ -34,7 +34,7 @@ let publicHolidayStr;
 let publicHolidayTomorowStr;
 /** @type {any} */
 let startTime;
-let dayStr;	// 0..6 0 = Sonntag
+let dayStr = new Date().getDay;	// 0..6 0 = Sonntag
 let kwStr; // akt. KW der Woche
 // calcEvaporation
 	let curTemperature;		/*Temperatur*/
@@ -43,10 +43,10 @@ let kwStr; // akt. KW der Woche
 	let curWindSpeed;		/*WindGeschwindigkeit*/
 	let lastRainCounter = 0;		/*last rain container => letzter Regenkontainer*/
 	let curAmountOfRain = 0;	/*current amount of rain => aktuelle Regenmenge*/
-	let lastChangeEvaPor;	/*letzte Aktualisierungszeit*/
+	let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
 let ObjSprinkle = [];
 let resObjektName = [];
-let resActSoilMoisture = [];
+let resSoilMoisture = [];
 let resRunningTime =[]; /* Laufzeit der Ventile in den Objekten */
 
 /**
@@ -56,14 +56,14 @@ let resRunningTime =[]; /* Laufzeit der Ventile in den Objekten */
 //
 const ObjThread = {
 	threadList: [],
-	addList : function (sprinkleName, name, wateringTime, pipeFlow, onOffTime, maxSoilMoistureIrrigation, maxSoilMoistureRain) {
+	addList : function (sprinkleName, name, wateringTime, pipeFlow, onOffTime, autoOn) {
 		let addDone = false;
 		if (ObjThread.threadList) {
 			for(let entry of ObjThread.threadList) {
 				if (entry.sprinkleName == sprinkleName) {
 					if (entry.wateringTime == parseInt(wateringTime)) {return;}
 					entry.wateringTime = parseInt(wateringTime);
-					entry.maxSoilMoistureIrrigation = parseInt(maxSoilMoistureIrrigation);
+					entry.autoOn = autoOn;
 					adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {val: addTime(wateringTime), ack: false});
 					addDone = true;
 					break;
@@ -83,8 +83,8 @@ const ObjThread = {
 			newThread.myBreak = false;
 			newThread.litersPerSecond = pipeFlow / 3600;
 			newThread.onOffTime = (parseInt(onOffTime) || 0);
-			newThread.maxSoilMoistureIrrigation = (parseInt(maxSoilMoistureIrrigation) || 0);
-			newThread.maxSoilMoistureRain = (parseInt(maxSoilMoistureRain) || 1); // 1 da Divison / 0
+			newThread.autoOn = autoOn;
+			newThread.soilMoisture15s = 15 * (resSoilMoisture[sprinkleName].irrigation - resSoilMoisture[sprinkleName].val) / parseInt(wateringTime);
 			newThread.id = ObjThread.threadList.length || 0;			
 			ObjThread.threadList.push(newThread);
 			adapter.setState('sprinkle.' + sprinkleName + '.sprinklerState', {val: 1, ack: false });	// Zustand des Ventils im Thread < 0 > Aus, <<< 1 >>> warten, < 2 > Active, < 3 > Pause
@@ -153,6 +153,12 @@ const ObjThread = {
 					if (entry.count < entry.wateringTime) {
 						// zeit läuft
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: addTime(entry.wateringTime - entry.count), ack: true});
+						// Alle 15s die Bodenfeuchte anpassen
+						if !(entry.count % 15) {	// alle 15s ausführen
+							resSoilMoisture[entry.sprinkleName].val += entry.soilMoisture15s;
+							let mySoilMoisture = 100% Math.round(1000 * resSoilMoisture[entry.sprinkleName].val / resSoilMoisture.rain) / 10;	// Berechnung in %
+							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: mySoilMoisture, ack: true});
+						}
 						// Intervallberegnung wenn angegeben (onOffTime > 0)
 						if ((entry.onOffTime > 0) && !(entry.count % entry.onOffTime)) {
 							entry.enabled = false;
@@ -172,9 +178,9 @@ const ObjThread = {
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 0, ack: true});	// Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten, < 2 > Active, < 3 > Pause
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.runningTime', { val: 0, ack: true});
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
-						if (entry.maxSoilMoistureIrrigation > 0) {
-							resActSoilMoisture[entry.sprinkleName].val = entry.maxSoilMoistureIrrigation;
-							newSoilMoisture = Math.round(1000 * resActSoilMoisture[entry.sprinkleName].val / result[i].maxSoilMoistureRain) / 10;	// Berechnung in %
+						if (entry.autoOn) {
+							resSoilMoisture[entry.sprinkleName].val = resSoilMoisture[entry.sprinkleName].irrigation;
+							newSoilMoisture = 100;	// 100% Math.round(1000 * resSoilMoisture[entry.sprinkleName].val / resSoilMoisture.rain) / 10;	// Berechnung in %
 							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: newSoilMoisture, ack: true});
 						}
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastConsumed', { val: Math.round(entry.litersPerSecond * entry.count), ack: true});					
@@ -307,7 +313,7 @@ function startAdapter(options) {
 					autoOnOffStr = state.val;
 					// startTimeSprinkle();
 				}
-				// wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] nicht gestartet
+				// wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
 				if (resRunningTime && !state.ack) {
 					for ( const i in resRunningTime) {
 						if (id === (resRunningTime[i].objectID)) {
@@ -322,7 +328,7 @@ function startAdapter(options) {
 									for (const r in result) {
 										let objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
 										if (objectName == resRunningTime[i].objectName) {
-											ObjThread.addList(objectName, result[r].name, Math.round(60*state.val), result[r].pipeFlow, Math.round(60*result[r].wateringInterval), 0, result[r].maxSoilMoistureRain)
+											ObjThread.addList(objectName, result[r].name, Math.round(60*state.val), result[r].pipeFlow, Math.round(60*result[r].wateringInterval), false);
 											setTimeout (() => {
 												ObjThread.updateList();
 											}, 50);
@@ -470,22 +476,22 @@ function calcEvaporation (timeDifference) {
 function applyEvaporation (eTP){
     let resultFull = adapter.config.events;
 	// Filter enabled => nur aktivierte Sprängerkreise
-	let resEnabled = resultFull.filter(d => d.enabled === true);
-	let result = resEnabled;		
+	/* let resEnabled = resultFull.filter(d => d.enabled === true); // Ausgeblendet da eTP auf alle Kreise angewendet werden soll */
+	let result = resultFull; // resEnabled;
     if (result) {
 	
 		for ( const i in result) {
 			let objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
 			let pfadActSoiMoi = 'sprinkle.' + objectName + '.actualSoilMoisture';
 			let newSoilMoisture;
-			resActSoilMoisture[objectName].val -= eTP;		// Abfrage => resActSoilMoisture[objectName].val;
-			if (resActSoilMoisture[objectName].val < resActSoilMoisture[objectName].min) {
-				resActSoilMoisture[objectName].val = resActSoilMoisture[objectName].min;
-			} else if (resActSoilMoisture[objectName].val > result[i].maxSoilMoistureRain) {
-				resActSoilMoisture[objectName].val = result[i].maxSoilMoistureRain;
+			resSoilMoisture[objectName].val -= eTP;		// Abfrage => resSoilMoisture[objectName].val;
+			if (resSoilMoisture[objectName].val < resSoilMoisture[objectName].min) {
+				resSoilMoisture[objectName].val = resSoilMoisture[objectName].min;
+			} else if (resSoilMoisture[objectName].val > resSoilMoisture[objectName].rain) {
+				resSoilMoisture[objectName].val = resSoilMoisture[objectName].rain;
 			}
-			newSoilMoisture = Math.round(1000 * resActSoilMoisture[objectName].val / result[i].maxSoilMoistureRain) / 10;	// Berechnung in %
-			adapter.log.info(objectName + ' => soilMoisture: ' + resActSoilMoisture[objectName].val + ' soilMoisture in %: ' + newSoilMoisture + ' %');
+			newSoilMoisture = Math.round(1000 * resSoilMoisture[objectName].val / resSoilMoisture[objectName].rain) / 10;	// Berechnung in %
+			adapter.log.info(objectName + ' => soilMoisture: ' + resSoilMoisture[objectName].val + ' soilMoisture in %: ' + newSoilMoisture + ' %');
 			adapter.setState(pfadActSoiMoi, {val: newSoilMoisture, ack: true});
 		}
 	}		
@@ -608,7 +614,7 @@ function checkStates() {
 	// akt. kW ermitteln für history last week
 	kwStr = formatTime('','kW');
     // akt. Tag ermitteln für history ETpYesterday
-    dayStr = new Date().getDay;
+    // dayStr = new Date().getDay;
 };
 //	aktuelle States checken nach 2000 ms
 function checkActualStates () {
@@ -782,12 +788,12 @@ function startTimeSprinkle() {
 						const resIndex = resRunningTime.findIndex(d => d.objectName == objectName);
 						adapter.log.info('Bodenfeuchte: ' + state.val + ' <= ' + parseInt(result[i].triggersIrrigation) + ' AutoOnOff: ' + resRunningTime[resIndex].val);
 						if (state.val <= parseInt(result[i].triggersIrrigation) && (resRunningTime[resIndex].val)) {	// Bodenfeuchte zu gering && Ventil auf Automatik
-							let countdown = Math.round(result[i].wateringTime * (result[i].maxSoilMoistureIrrigation - resActSoilMoisture[objectName].val) / (result[i].maxSoilMoistureIrrigation - resActSoilMoisture[objectName].trigger)); // in sek
+							let countdown = Math.round(result[i].wateringTime * (result[i].maxSoilMoistureIrrigation - resSoilMoisture[objectName].val) / (resSoilMoisture[objectName].irrigation - resSoilMoisture[objectName].trigger)); // in sek
 							if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {	// Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (Proz.)
 								countdown = result[i].wateringTime * result[i].wateringAdd / 100;
 							}
-							adapter.log.info('sprinkleControll: ' + objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].maxSoilMoistureIrrigation + ', ' + resActSoilMoisture[objectName].val + ', ' + resActSoilMoisture[objectName].trigger + ')');
-							ObjThread.addList(objectName, result[i].name, 60*countdown, result[i].pipeFlow, 60*result[i].wateringInterval, result[i].maxSoilMoistureIrrigation, result[i].maxSoilMoistureRain);
+							adapter.log.info('sprinkleControll: ' + objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].maxSoilMoistureIrrigation + ', ' + resSoilMoisture[objectName].val + ', ' + resSoilMoisture[objectName].trigger + ')');
+							ObjThread.addList(objectName, result[i].name, 60*countdown, result[i].pipeFlow, 60*result[i].wateringInterval, true);
 						}
 					}
 				});
@@ -837,7 +843,7 @@ function createSprinklers() {
 					"unit":  "%",					
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -855,7 +861,7 @@ function createSprinklers() {
 					"states": "0:off;1:wait;2:on;3:break",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -868,7 +874,7 @@ function createSprinklers() {
                     "type":  "string",
                     "read":  true,
                     "write": true,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -881,7 +887,7 @@ function createSprinklers() {
                     "type":  "string",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -894,7 +900,7 @@ function createSprinklers() {
                     "type":  "string",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -907,7 +913,7 @@ function createSprinklers() {
                     "type":  "string",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -921,7 +927,7 @@ function createSprinklers() {
 					"unit":  "Liter",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -935,7 +941,7 @@ function createSprinklers() {
 					"unit":  "Liter",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -949,7 +955,7 @@ function createSprinklers() {
 					"unit":  "Liter",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -962,7 +968,7 @@ function createSprinklers() {
                     "type":  "string",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });
@@ -975,7 +981,7 @@ function createSprinklers() {
                     "type":  "string",
                     "read":  true,
                     "write": false,
-                    "def":   true
+                    "def":   false
                 },
                 "native": {},
             });			
@@ -984,22 +990,26 @@ function createSprinklers() {
 					let newEntry = {};
 					let soilMoisture, minMoisture, actSoilMoisture, triggerSoilMoisture;
 
-					resActSoilMoisture.push([objectName]);
-					minMoisture = result[i].maxSoilMoistureRain / 10;
+					resSoilMoisture.push([objectName]);
+					minMoisture = result[i].maxSoilMoistureIrrigation / 100; // 1%
 					triggerSoilMoisture = result[i].maxSoilMoistureIrrigation * result[i].triggersIrrigation / 100;
 					
 					if (state === null || state.val === null || state.val === true || state.val === 0) {
-						// 0% Wert der Bodenfeuchte im Array speichern. Spränger werden sofort eingeschaltet.
+						// 1% Wert der Bodenfeuchte im Array speichern. Spränger werden sofort eingeschaltet.
 						soilMoisture = minMoisture;
-						actSoilMoisture = Math.round(1000 * soilMoisture / result[i].maxSoilMoistureRain) / 10;	// Berechnung in %
+						actSoilMoisture = Math.round(1000 * soilMoisture / result[i].maxSoilMoistureIrrigation) / 10;	// Berechnung in %
 						adapter.setState(objPfad + '.actualSoilMoisture', {val: actSoilMoisture, ack: true});
 					} else {
 						// num Wert der Bodenfeuchte berechnen und speichern im Array							
-						soilMoisture = state.val * result[i].maxSoilMoistureRain / 100;
+						soilMoisture = state.val * result[i].maxSoilMoistureIrrigation / 100;
 					}
-					newEntry = {'val': soilMoisture, 'min': minMoisture, 'trigger': triggerSoilMoisture};	// val: actueller Wert, min: geringst möglicher Wert, trigger: Schaltpunkt 
-					resActSoilMoisture[objectName] = newEntry;		// Abfrage => resActSoilMoisture[objectName].val;
-					adapter.log.info('resActSoilMoisture: ' + objectName + ', .val: ' + resActSoilMoisture[objectName].val + ', state.val: ' + state.val + ', state: ' + state);
+					newEntry = {'val': soilMoisture,	// aktueller Wert /mm
+								'min': minMoisture,		// min Wert /mm
+								'trigger': triggerSoilMoisture,		// Schaltpunkt für Beregnung /mm
+								'irrigation': result[i].maxSoilMoistureIrrigation,		// max Bodenfeuchte nach der Beregnung /mm
+								'rain': result[i].maxSoilMoistureRain};		// max Bodenfeuchte nach einem Regen /mm
+					resSoilMoisture[objectName] = newEntry;		// Abfrage => resSoilMoisture[objectName].val;
+					adapter.log.info('resSoilMoisture: ' + objectName + ', .val: ' + resSoilMoisture[objectName].val + ', state.val: ' + state.val + ', state: ' + state);
 				});
 				
 				adapter.getState(objPfad + '.sprinklerState', (err, state) => {
@@ -1180,7 +1190,7 @@ function main() {
 	adapter.subscribeForeignStates(adapter.config.sensorWindSpeed);
     }
 	//
-	// Change State from Trigger ID's
+	// Report a change in the status of the trigger IDs (.runningTime) => Melden einer Änderung des Status der Trigger-IDs
     let resultFull = adapter.config.events;
 	// Filter enabled => nur aktivierte Sprängerkreise
 	let resEnabled = resultFull.filter(d => d.enabled === true);
