@@ -174,7 +174,7 @@ const ObjThread = {
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
 						if (entry.maxSoilMoistureIrrigation > 0) {
 							resActSoilMoisture[entry.sprinkleName].val = entry.maxSoilMoistureIrrigation;
-							newSoilMoisture = Math.round(1000 * resActSoilMoisture[entry.sprinkleName].val / result[i].maxSoilMoistureRain) / 10;	// Berechnung in %
+							newSoilMoisture = Math.round(1000 * resActSoilMoisture[entry.sprinkleName].val / entry.maxSoilMoistureRain) / 10;	// Berechnung in %
 							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: newSoilMoisture, ack: true});
 						}
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastConsumed', { val: Math.round(entry.litersPerSecond * entry.count), ack: true});					
