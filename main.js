@@ -34,7 +34,11 @@ let publicHolidayStr;
 let publicHolidayTomorowStr;
 /** @type {any} */
 let startTime;
-let dayStr = new Date().getDay;	// 0..6 0 = Sonntag
+/** @type {number} */
+let ETpTodayStr;
+/** @type {string} */
+let dayStr;		// 0..6; 0 = Sonntag
+/** @type {string} */
 let kwStr; // akt. KW der Woche
 // calcEvaporation
 	let curTemperature;		/*Temperatur*/
@@ -148,7 +152,6 @@ const ObjThread = {
 				if (!entry.startTime) {entry.startTime = new Date();}
 				entry.countdown = setInterval(() => {countSprinkleTime()}, 1000);	// 1000 = 1s
 				function countSprinkleTime() {
-					let newSoilMoisture
 					entry.count ++;
 					if (entry.count < entry.wateringTime) {
 						// zeit läuft
@@ -180,8 +183,7 @@ const ObjThread = {
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
 						if (entry.autoOn) {
 							resSoilMoisture[entry.sprinkleName].val = resSoilMoisture[entry.sprinkleName].irrigation;
-							newSoilMoisture = 100;	// actualSoilMoisure = 100%
-							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: newSoilMoisture, ack: true});
+							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: 100, ack: true});
 						}
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastConsumed', { val: Math.round(entry.litersPerSecond * entry.count), ack: true});					
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastRunningTime', { val: addTime(entry.count), ack: true});
@@ -450,26 +452,23 @@ function calcEvaporation (timeDifference) {
     let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
         adapter.log.info('RE: ' + RE);
         adapter.log.info(' ETp:' + eTp);
-		adapter.setState('evaporation.ETpCurrent', { val: eTp, ack: true });
+		adapter.setState('evaporation.ETpCurrent', { val: eTp.toFixed(4), ack: true });
 	
 	// Verdunstung des heutigen Tages
 	let curETp = (eTp * timeDifference) - curAmountOfRain;
+	let curDay = new Date().getDay;
 	curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
-	
-		adapter.getState('evaporation.ETpToday', (err, state) => {
-			if (state) {
-				let sumCurETp;
-				let curDay = new Date(state.ts).getDay;
-				if (dayStr == curDay) {
-					sumCurETp = state.val + curETp;
-					adapter.setState('evaporation.ETpToday', { val: sumCurETp, ack: true });
-				} else {	// neuer Tag
-					dayStr = curDay;
-					adapter.setState('evaporation.ETpYesterday', { val: state.val, ack: true});
-					adapter.setState('evaporation.ETpToday', { val: curETp, ack: true });
-				}
-			}
-		});
+
+	if (dayStr == curDay) {	// akt. Tag
+		ETpTodayStr += curETp;
+		adapter.setState('evaporation.ETpToday', { val: ETpTodayStr.toFixed(2), ack: true });
+	} else {	// neuer Tag
+		dayStr = curDay;
+		adapter.setState('evaporation.ETpYesterday', { val: ETpTodayStr.toFixed(2), ack: true});
+		ETpTodayStr = 0;
+		adapter.setState('evaporation.ETpToday', { val: 0, ack: true });
+	}
+
 	applyEvaporation (curETp);
 }
 // apply Evaporation => Verdunstung anwenden auf die einzelnen Sprengerkreise
@@ -579,8 +578,13 @@ function checkStates() {
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state === null || state.val === null) {
-            adapter.setState('evaporation.ETpToday', {val: 0, ack: true});
-        }
+        	ETpTodayStr = 0;
+			dayStr = new Date().getDay;
+            adapter.setState('evaporation.ETpToday', {val: ETpTodayStr, ack: true});
+        } else if (state) {
+        	ETpTodayStr = state.val;
+        	dayStr = new Date(state.ts).getDay();
+		}
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
         if (state === null || state.val === null) {
@@ -611,6 +615,7 @@ function checkStates() {
 			});			
 		}
 	}
+
 	// akt. kW ermitteln für history last week
 	kwStr = formatTime('','kW');
     // akt. Tag ermitteln für history ETpYesterday
@@ -669,8 +674,8 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '* 0 5 * * *', function() {
 	if (kwStr != formatTime('','kW')) {
 		let resultFull = adapter.config.events;
 		// Filter enabled
-		let resEnabled = resultFull.filter(d => d.enabled === true);
-		let result = resEnabled;
+		// let resEnabled = resultFull.filter(d => d.enabled === true);
+		let result = resultFull; // resEnabled;
 		if (result) {	
 			for ( const i in result) {
 				let objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
