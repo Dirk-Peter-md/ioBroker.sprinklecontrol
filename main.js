@@ -156,7 +156,7 @@ const ObjThread = {
 						// Alle 15s die Bodenfeuchte anpassen
 						if (!(entry.count % 15)) {	// alle 15s ausführen
 							resSoilMoisture[entry.sprinkleName].val += entry.soilMoisture15s;
-							let mySoilMoisture = 100% Math.round(1000 * resSoilMoisture[entry.sprinkleName].val / resSoilMoisture.rain) / 10;	// Berechnung in %
+							let mySoilMoisture = Math.round(1000 * resSoilMoisture[entry.sprinkleName].val / resSoilMoisture[entry.sprinkleName].irrigation) / 10;	// Berechnung in %
 							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: mySoilMoisture, ack: true});
 						}
 						// Intervallberegnung wenn angegeben (onOffTime > 0)
@@ -180,7 +180,7 @@ const ObjThread = {
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
 						if (entry.autoOn) {
 							resSoilMoisture[entry.sprinkleName].val = resSoilMoisture[entry.sprinkleName].irrigation;
-							newSoilMoisture = 100;	// 100% Math.round(1000 * resSoilMoisture[entry.sprinkleName].val / resSoilMoisture.rain) / 10;	// Berechnung in %
+							newSoilMoisture = 100;	// actualSoilMoisure = 100%
 							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: newSoilMoisture, ack: true});
 						}
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastConsumed', { val: Math.round(entry.litersPerSecond * entry.count), ack: true});					
