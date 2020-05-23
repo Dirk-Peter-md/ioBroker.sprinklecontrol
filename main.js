@@ -154,7 +154,7 @@ const ObjThread = {
 						// zeit läuft
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: addTime(entry.wateringTime - entry.count), ack: true});
 						// Alle 15s die Bodenfeuchte anpassen
-						if !(entry.count % 15) {	// alle 15s ausführen
+						if (!(entry.count % 15)) {	// alle 15s ausführen
 							resSoilMoisture[entry.sprinkleName].val += entry.soilMoisture15s;
 							let mySoilMoisture = 100% Math.round(1000 * resSoilMoisture[entry.sprinkleName].val / resSoilMoisture.rain) / 10;	// Berechnung in %
 							adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: mySoilMoisture, ack: true});
