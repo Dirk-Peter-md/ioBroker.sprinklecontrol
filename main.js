@@ -23,7 +23,7 @@ let sunriseStr;
 /** @type {string} */
 let goldenHourEnd;
 /** @type {string} */
-let maxSunshine;	//Sonnenscheindauer in Stunden)
+let maxSunshine;	//	(Sonnenscheindauer in Stunden)
 /** @type {any} */
 let HolidayStr;
 /** @type {any} */
@@ -211,7 +211,7 @@ const ObjThread = {
 		adapter.setState('control.parallelOfMax', {val: parallel + ' : ' + maxParallel, ack: true});
 		adapter.setState('control.restFlow', {val: curFlow, ack: true});
 		// Steuerspannung ein/aus
-		if (adapter.config.triggerControlVoltage != '') {
+		if (adapter.config.triggerControlVoltage !== '') {
 			adapter.getForeignState(adapter.config.triggerControlVoltage, (err, state) => {
 				if (state) {
 					if (parallel > 0) {
@@ -228,7 +228,7 @@ const ObjThread = {
 		}
 		
 		// Pumpe ein/aus
-		if (adapter.config.triggerMainPump != '') {
+		if (adapter.config.triggerMainPump !== '') {
 			adapter.getForeignState(adapter.config.triggerMainPump, (err, state) => {
 				if (state) {
 					if (parallel > 0) {
@@ -591,14 +591,14 @@ function checkStates() {
             adapter.setState('evaporation.ETpYesterday', {val: 0, ack: true});
         }
     });
-	if (adapter.config.triggerMainPump != '') {
+	if (adapter.config.triggerMainPump !== '') {
 		adapter.getState('adapter.config.triggerMainPump', (err, state) => {
 			if (state) {
 				adapter.setState(adapter.config.triggerMainPump, {val: false, ack: false});
 			}
 		});
 	}
-	if (adapter.config.triggerCisternPump != '') {
+	if (adapter.config.triggerCisternPump !== '') {
 		adapter.getState('adapter.config.triggerCisternPump', (err, state) => {
 			if (state) {
 				adapter.setState(adapter.config.triggerCisternPump, {val: false, ack: false});
@@ -671,7 +671,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '* 0 5 * * *', function() {
 	sunPos();
 
 	// History Daten aktualisieren wenn eine neue Woche beginnt
-	if (kwStr != formatTime('','kW')) {
+	if (kwStr !== formatTime('','kW')) {
 		let resultFull = adapter.config.events;
 		// Filter enabled
 		// let resEnabled = resultFull.filter(d => d.enabled === true);
@@ -725,11 +725,9 @@ function sunPos() {
 	
     // format sunrise time from the Date object => Formatieren Sie die Sonnenaufgangzeit aus dem Date-Objekt
     sunriseStr = ('0' + times.sunrise.getHours()).slice(-2) + ':' + ('0' + times.sunrise.getMinutes()).slice(-2);
-    adapter.setState('info.Sunrise', { val: sunriseStr, ack: true });
 
     // format goldenhourend time from the Date object => Formatiere goldenhourend time aus dem Date-Objekt
     goldenHourEnd = ('0' + times.goldenHourEnd.getHours()).slice(-2) + ':' + ('0' + times.goldenHourEnd.getMinutes()).slice(-2);
-    adapter.setState('info.GoldenHourEnd', { val: goldenHourEnd, ack: true });
 	
 }
 // Determination of the irrigation time => Bestimmung der Bewässerungszeit
@@ -740,44 +738,74 @@ function startTimeSprinkle() {
 	// if autoOnOff == false => keine auto Start
 	if (!autoOnOffStr) {
 		adapter.log.info('Sprinkle: autoOnOff == Aus(' + autoOnOffStr + ')');
+		adapter.setState('info.nextAutoStart', { val: 'autoOnOff = off(0)', ack: true });
 		return;
 	}
 	
 	let infoMesetsch;
+	let curTime = new Date();
+	let startTimeSplit;
 
-    adapter.setState('info.TimeLiving', { val: adapter.config.weekLiving, ack: true });
-    adapter.setState('info.TimeLivingWE', { val: adapter.config.weekEndLiving, ack: true });	
 
-	// Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
-	switch(adapter.config.wateringStartTime) {
-		case 'livingTime' :				/*Startauswahl = festen Zeit*/
-			infoMesetsch = 'Start zur festen Zeit um ';
-			startTime = adapter.config.weekLiving;
-			break;
-		case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
-			infoMesetsch = 'Start mit Sonnenaufgang um ';
-		    // format sunset/sunrise time from the Date object
-			startTime = sunriseStr;
-			break;
-		case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Houer*/
-			infoMesetsch = "Start zum Ende der Golden Houer um ";
-			// format goldenhour/goldenhourend time from the Date object
-			startTime = goldenHourEnd;
-			break;
-    }
-	// Start am Wochenende => wenn andere Zeiten verwendet werden soll
-	if((adapter.config.publicWeekend) && ((dayStr) == 6 || (dayStr) == 0)){
-		infoMesetsch = 'Start am Wochenende um ';
-		startTime = adapter.config.weekEndLiving;
+	function nextStartTime (today) {
+		let myStartTime, myStartTimeLong;
+		let myHours = checkTime(curTime.getHours());
+		let myMinutes = checkTime(curTime.getMinutes());
+		let myWeekday = curTime.getDay();
+		let myWeekdayStr = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+		let myTime = myHours + ':' + myMinutes;
+
+		/* ? => 0? */
+		function checkTime(i) {
+			return (i < 10) ? '0' + i : i;
+		}
+		if (!today) {
+			(myWeekday > 6) ? myWeekday = 0 : myWeekday ++;
+		}
+		// Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
+		switch(adapter.config.wateringStartTime) {
+			case 'livingTime' :				/*Startauswahl = festen Zeit*/
+				infoMesetsch = 'Start zur festen Zeit um ';
+				myStartTime = adapter.config.weekLiving;
+				break;
+			case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
+				infoMesetsch = 'Start mit Sonnenaufgang um ';
+				// format sunset/sunrise time from the Date object
+				myStartTime = sunriseStr;
+				break;
+			case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Houer*/
+				infoMesetsch = "Start zum Ende der Golden Houer um ";
+				// format goldenhour/goldenhourend time from the Date object
+				myStartTime = goldenHourEnd;
+				break;
+		}
+		// Start am Wochenende => wenn andere Zeiten verwendet werden soll
+		if((adapter.config.publicWeekend) && ((dayStr) == 6 || (dayStr) == 0)){
+			infoMesetsch = 'Start am Wochenende um ';
+			myStartTime = adapter.config.weekEndLiving;
+		}
+		// Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
+		if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
+			&& (((publicHolidayStr) === true) && today)
+			|| (((publicHolidayTomorowStr) === true)&& !today)) {
+			infoMesetsch = 'Start am Feiertag um ';
+			myStartTime = adapter.config.weekEndLiving;
+		}
+
+		if ((myStartTime < myTime) && today) {
+			myStartTimeLong = myWeekdayStr[myWeekday] + myStartTime;
+			adapter.setState('info.nextAutoStart', { val: 'autoOnOff = off(0)', ack: true });
+			adapter.log.info(infoMesetsch + myStartTime);
+			return myStartTime;
+		} else {
+			nextStartTime(false);
+		}
+
 	}
-	// Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
-	if((adapter.config.publicHolidays) && (adapter.config.publicWeekend) && ((publicHolidayStr) === true)){
-		infoMesetsch = 'Start am Feiertag um ';
-		startTime = adapter.config.weekEndLiving;
-	}
-	
-	let startTimeSplit = startTime.split(':');
-	adapter.log.info(infoMesetsch + startTime);
+    //
+
+
+	startTimeSplit = nextStartTime(true).split(':');
 
 	const schedStartTime = schedule.scheduleJob('sprinkleStartTime', startTimeSplit[1] + ' ' + startTimeSplit[0] + ' * * *', function() {
 		let resultFull = adapter.config.events;
@@ -1179,19 +1207,19 @@ function main() {
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance + '.morgen.*')) {
         adapter.subscribeForeignStates(adapter.config.publicHolInstance + '.morgen.*');
 	}
-    if (adapter.config.sensorBrightness != '') {
+    if (adapter.config.sensorBrightness !== '') {
         adapter.subscribeForeignStates(adapter.config.sensorBrightness);
     }
-	if (adapter.config.sensorOutsideHumidity != '') {
+	if (adapter.config.sensorOutsideHumidity !== '') {
 	adapter.subscribeForeignStates(adapter.config.sensorOutsideHumidity);
     }
-    if (adapter.config.sensorOutsideTemperature != '') {
+    if (adapter.config.sensorOutsideTemperature !== '') {
         adapter.subscribeForeignStates(adapter.config.sensorOutsideTemperature);
     }
-    if (adapter.config.sensorRainfall != '') {
+    if (adapter.config.sensorRainfall !== '') {
         adapter.subscribeForeignStates(adapter.config.sensorRainfall);
     }
-	if (adapter.config.sensorWindSpeed != '') {
+	if (adapter.config.sensorWindSpeed !== '') {
 	adapter.subscribeForeignStates(adapter.config.sensorWindSpeed);
     }
 	//

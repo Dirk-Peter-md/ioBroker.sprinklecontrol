@@ -229,50 +229,11 @@
             "native": {}
         },
         {
-            "_id": "info.GoldenHourEnd",
+            "_id": "info.nextAutoStart",
             "type": "state",
             "common": {
                 "role": "indicator",
-                "name": "Goldenhour end Time",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.Sunrise",
-            "type": "state",
-            "common": {
-                "role": "indicator",
-                "name": "Sunrise Time",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.TimeLiving",
-            "type": "state",
-            "common": {
-                "role": "indicator",
-                "name": "living sprinkler",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.TimeLivingWE",
-            "type": "state",
-            "common": {
-                "role": "indicator",
-                "name": "living sprinkler on the weekend",
+                "name": "Next automatic start of the sprinklers",
                 "type": "string",
                 "read": true,
                 "write": false,
