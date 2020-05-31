@@ -17,7 +17,7 @@ let adapter;
 const adapterName = require('./package.json').name.split('.').pop();
 
 /** @type {string} */
-let todaysStartTime;
+let startTimeStr;
 /** @type {string} */
 let sunriseStr;
 /** @type {string} */
@@ -32,8 +32,6 @@ let autoOnOffStr;
 let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorowStr;
-/** @type {any} */
-let startTime;
 /** @type {number} */
 let ETpTodayStr;
 /** @type {string} */
@@ -313,7 +311,7 @@ function startAdapter(options) {
 				// wenn (autoOnOff == true) so werden alle Spränger nicht automatisch gestartet.
 				if (id === adapter.namespace + '.control.autoOnOff') {
 					autoOnOffStr = state.val;
-					// startTimeSprinkle();
+					startTimeSprinkle();
 				}
 				// wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
 				if (resRunningTime && !state.ack) {
@@ -388,7 +386,7 @@ function startAdapter(options) {
 					}
 					if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
 						publicHolidayTomorowStr = state.val;
-						// startTimeSprinkle();
+						startTimeSprinkle();
 					}
 				}	
             } else {
@@ -765,47 +763,48 @@ function startTimeSprinkle() {
 		// Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
 		switch(adapter.config.wateringStartTime) {
 			case 'livingTime' :				/*Startauswahl = festen Zeit*/
-				infoMesetsch = 'Start zur festen Zeit um ';
+				infoMesetsch = 'Start zur festen Zeit ';
 				myStartTime = adapter.config.weekLiving;
 				break;
 			case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
-				infoMesetsch = 'Start mit Sonnenaufgang um ';
+				infoMesetsch = 'Start mit Sonnenaufgang ';
 				// format sunset/sunrise time from the Date object
 				myStartTime = sunriseStr;
 				break;
 			case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Houer*/
-				infoMesetsch = "Start zum Ende der Golden Houer um ";
+				infoMesetsch = "Start zum Ende der Golden Houer ";
 				// format goldenhour/goldenhourend time from the Date object
 				myStartTime = goldenHourEnd;
 				break;
 		}
 		// Start am Wochenende => wenn andere Zeiten verwendet werden soll
 		if((adapter.config.publicWeekend) && ((dayStr) == 6 || (dayStr) == 0)){
-			infoMesetsch = 'Start am Wochenende um ';
+			infoMesetsch = 'Start am Wochenende ';
 			myStartTime = adapter.config.weekEndLiving;
 		}
 		// Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
 		if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
 			&& (((publicHolidayStr) === true) && today)
 			|| (((publicHolidayTomorowStr) === true)&& !today)) {
-			infoMesetsch = 'Start am Feiertag um ';
+			infoMesetsch = 'Start am Feiertag ';
 			myStartTime = adapter.config.weekEndLiving;
 		}
 
 		if ((myStartTime < myTime) && today) {
-			myStartTimeLong = myWeekdayStr[myWeekday] + myStartTime;
-			adapter.setState('info.nextAutoStart', { val: 'autoOnOff = off(0)', ack: true });
-			adapter.log.info(infoMesetsch + myStartTime);
-			return myStartTime;
-		} else {
 			nextStartTime(false);
+		} else {
+			startTimeStr = myStartTime;
+			myStartTimeLong = myWeekdayStr[myWeekday] + ' ' + myStartTime;
+			adapter.setState('info.nextAutoStart', { val: myStartTimeLong, ack: true });
+			adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + myStartTime);
+			return;
 		}
 
 	}
     //
 
-
-	startTimeSplit = nextStartTime(true).split(':');
+	nextStartTime(true);
+	startTimeSplit = startTimeStr.split(':');
 
 	const schedStartTime = schedule.scheduleJob('sprinkleStartTime', startTimeSplit[1] + ' ' + startTimeSplit[0] + ' * * *', function() {
 		let resultFull = adapter.config.events;
