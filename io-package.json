@@ -126,8 +126,7 @@
                 "type": "string",
                 "read": true,
                 "write": false,
-                "def": false,
-                "unit": "mm"
+                "def": false
             },
             "native": {}
         },

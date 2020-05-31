@@ -448,8 +448,8 @@ function calcEvaporation (timeDifference) {
 	
 	// pot. Evapotranspiration nach Penmann ETp in mm/d
     let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
-        adapter.log.info('RE: ' + RE);
-        adapter.log.info(' ETp:' + eTp);
+
+        adapter.log.info('RE: ' + RE + ' ETp:' + eTp);
 		adapter.setState('evaporation.ETpCurrent', { val: eTp.toFixed(4), ack: true });
 	
 	// Verdunstung des heutigen Tages
@@ -459,12 +459,16 @@ function calcEvaporation (timeDifference) {
 
 	if (dayStr == curDay) {	// akt. Tag
 		ETpTodayStr += curETp;
-		adapter.setState('evaporation.ETpToday', { val: ETpTodayStr.toFixed(2), ack: true });
+		adapter.setState('evaporation.ETpToday', { val: formatETp(ETpTodayStr), ack: true });
 	} else {	// neuer Tag
 		dayStr = curDay;
-		adapter.setState('evaporation.ETpYesterday', { val: ETpTodayStr.toFixed(2), ack: true});
+		adapter.setState('evaporation.ETpYesterday', { val: formatETp(ETpTodayStr), ack: true});
 		ETpTodayStr = 0;
-		adapter.setState('evaporation.ETpToday', { val: 0, ack: true });
+		adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
+	}
+
+	function formatETp(temp) {
+		return(temp.toFixed(2))
 	}
 
 	applyEvaporation (curETp);
@@ -578,7 +582,7 @@ function checkStates() {
         if (state === null || state.val === null) {
         	ETpTodayStr = 0;
 			dayStr = new Date().getDay;
-            adapter.setState('evaporation.ETpToday', {val: ETpTodayStr, ack: true});
+            adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
         } else if (state) {
         	ETpTodayStr = state.val;
         	dayStr = new Date(state.ts).getDay();
@@ -586,7 +590,7 @@ function checkStates() {
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
         if (state === null || state.val === null) {
-            adapter.setState('evaporation.ETpYesterday', {val: 0, ack: true});
+            adapter.setState('evaporation.ETpYesterday', {val: '0', ack: true});
         }
     });
 	if (adapter.config.triggerMainPump !== '') {
@@ -699,7 +703,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '* 0 5 * * *', function() {
 		adapter.getState('evaporation.ETpToday', (err, state) => {
 			if (state) {
 				adapter.setState('evaporation.ETpYesterday', { val: state.val, ack: true });
-				adapter.setState('evaporation.ETpToday', { val: 0, ack: true });				
+				adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
 			}
 		});	
 	},100);
