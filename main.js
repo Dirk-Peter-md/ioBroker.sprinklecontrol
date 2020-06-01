@@ -38,6 +38,8 @@ let ETpTodayStr;
 let dayStr;		// 0..6; 0 = Sonntag
 /** @type {string} */
 let kwStr; // akt. KW der Woche
+/** @type {boolean} */
+let debug = false;
 // calcEvaporation
 	let curTemperature;		/*Temperatur*/
 	let curHumidity;		/*LuftFeuchtigkeit*/
@@ -109,7 +111,7 @@ const ObjThread = {
 		// Wenn Ventil gefunden letzten Arrey (Auftrag) löschen
 		if (bValveFound) {
 			ObjThread.threadList.pop();
-			adapter.log.info(sprinkleName + ' !!! >>> wurde gelöscht');		
+			if (debug) {adapter.log.info(sprinkleName + ' !!! >>> wurde gelöscht');}
 		}
 	
 		ObjThread.updateList();
@@ -128,10 +130,14 @@ const ObjThread = {
 		}
 		// Wenn Ventil gefunden Pumpe und Spannungsversorgung ausschalten
 		if(bValveFound) {
-			if (adapter.config.triggerControlVoltage) {
+			/* Spannungsversorgung ausschalten wenn vorhanden */
+			if (adapter.config.triggerControlVoltage !== '') {
 				adapter.setForeignState(adapter.config.triggerControlVoltage, {val: false , ack: false});
 			}
-			adapter.setForeignState(adapter.config.triggerMainPump, {val: false , ack: false});
+			/* Hauptpumpe ausschalten wenn vorhanden */
+			if (adapter.config.triggerMainPump !== '') {
+				adapter.setForeignState(adapter.config.triggerMainPump, {val: false , ack: false});
+			}
 		}
 	}, // End clearEntireList
 
@@ -282,6 +288,8 @@ function startAdapter(options) {
         */
 		unload: (callback) => {
             try {
+            	/* alle Ventile und Aktoren deaktivieren */
+				ObjThread.clearEntireList();
                 adapter.log.info('cleaned everything up...');
                 callback();
             } catch (e) {
@@ -321,15 +329,16 @@ function startAdapter(options) {
         stateChange: (id, state) => {
             if (state) {
                 // The state was changed => Der Zustand wurde geändert
-                adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+                if (debug) {adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);}
 				// wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden. 
 				if (id === adapter.namespace + '.control.Holiday') {
 					HolidayStr = state.val;
 					startTimeSprinkle();
 				}
-				// wenn (autoOnOff == true) so werden alle Spränger nicht automatisch gestartet.
+				// wenn (autoOnOff == false) so werden alle Spränger nicht mehr automatisch gestartet.
 				if (id === adapter.namespace + '.control.autoOnOff') {
 					autoOnOffStr = state.val;
+					if (!state.val) {ObjThread.clearEntireList();}
 					startTimeSprinkle();
 				}
 				// wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
@@ -361,7 +370,7 @@ function startAdapter(options) {
 				// Change in outside temperature => Änderung der Außentemperatur
 				if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
 					let timeDifference = (state.ts - lastChangeEvaPor) / 86400000;		// 24/h * 60/min * 60/s * 1000/ms = 86400000 ms
-					adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);
+					if (debug) {adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);}
 					curTemperature = state.val;
 					//
 					if (timeDifference) {
@@ -389,13 +398,13 @@ function startAdapter(options) {
 				if (id === adapter.config.sensorRainfall) {
 					if (Math.abs(lastRainCounter - state.val) > 10) {
 						curAmountOfRain = 0;
-						adapter.log.info('if => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);
+						if (debug) {adapter.log.info('if => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
 					} else {
 						curAmountOfRain = state.val - lastRainCounter;
-						adapter.log.info('else => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);
+						if (debug) {adapter.log.info('else => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
 					}
 					lastRainCounter = state.val;
-					adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);
+					if (debug) {adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);}
 				}
 				// 
 				if (adapter.config.publicHolidays === true) {
@@ -434,7 +443,7 @@ function startAdapter(options) {
 }
 // evaporation calculation => Verdunstungsberechnung
 function calcEvaporation (timeDifference) {
-	adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);
+	if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
 	//	Sonnenscheindauer in %
 	let curSunshineDuration = (curIllumination < 100) ? (0) : (curIllumination > 7000) ? (1) : ((curIllumination - 100) / (6900));
 	
@@ -468,17 +477,16 @@ function calcEvaporation (timeDifference) {
 	// pot. Evapotranspiration nach Penmann ETp in mm/d
     let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
 
-        adapter.log.info('RE: ' + RE + ' ETp:' + eTp);
+        if (debug) {adapter.log.info('RE: ' + RE + ' ETp:' + eTp);}
 		adapter.setState('evaporation.ETpCurrent', { val: eTp.toFixed(4), ack: true });
 	
 	// Verdunstung des heutigen Tages
 	let curETp = (eTp * timeDifference) - curAmountOfRain;
-	let curDay = new Date().getDay;
+	let curDay = new Date().getDay();
 	curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
-
 	if (dayStr == curDay) {	// akt. Tag
 		ETpTodayStr += curETp;
-		adapter.log.info('ETpTodayStr = ' + ETpTodayStr + ' ( ' + curETp + ' )');
+		if (debug) {adapter.log.info('ETpTodayStr = ' + ETpTodayStr + ' ( ' + curETp + ' )');}
 		adapter.setState('evaporation.ETpToday', { val: Math.round(ETpTodayStr * 10000) / 10000, ack: true });
 	} else {	// neuer Tag
 		dayStr = curDay;
@@ -508,7 +516,7 @@ function applyEvaporation (eTP){
 				resSoilMoisture[objectName].val = resSoilMoisture[objectName].rain;
 			}
 			newSoilMoisture = Math.round(1000 * resSoilMoisture[objectName].val / resSoilMoisture[objectName].rain) / 10;	// Berechnung in %
-			adapter.log.info(objectName + ' => soilMoisture: ' + resSoilMoisture[objectName].val + ' soilMoisture in %: ' + newSoilMoisture + ' %');
+			if (debug) {adapter.log.info(objectName + ' => soilMoisture: ' + resSoilMoisture[objectName].val + ' soilMoisture in %: ' + newSoilMoisture + ' %');}
 			adapter.setState(pfadActSoiMoi, {val: newSoilMoisture, ack: true});
 		}
 	}		
@@ -597,7 +605,7 @@ function checkStates() {
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state === null || state.val === null) {
         	ETpTodayStr = 0;
-			dayStr = new Date().getDay;
+			dayStr = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
         } else if (state) {
         	ETpTodayStr = state.val;
@@ -638,7 +646,7 @@ function checkStates() {
 	kwStr = formatTime('','kW');
     // akt. Tag ermitteln für history ETpYesterday
     // dayStr = new Date().getDay;
-};
+}
 //	aktuelle States checken nach 2000 ms
 function checkActualStates () {
 	//
@@ -755,7 +763,7 @@ function startTimeSprinkle() {
 
 	// if autoOnOff == false => keine auto Start
 	if (!autoOnOffStr) {
-		adapter.log.info('Sprinkle: autoOnOff == Aus(' + autoOnOffStr + ')');
+		if (debug) {adapter.log.info('Sprinkle: autoOnOff == Aus(' + autoOnOffStr + ')');}
 		adapter.setState('info.nextAutoStart', { val: 'autoOnOff = off(0)', ack: true });
 		return;
 	}
@@ -816,8 +824,7 @@ function startTimeSprinkle() {
 			startTimeStr = myStartTime;
 			myStartTimeLong = myWeekdayStr[myWeekday] + ' ' + myStartTime;
 			adapter.setState('info.nextAutoStart', { val: myStartTimeLong, ack: true });
-			adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + myStartTime);
-			return;
+			if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + myStartTime);}
 		}
 
 	}
@@ -837,13 +844,13 @@ function startTimeSprinkle() {
 					if (state) {
 						// Test	
 						const resIndex = resRunningTime.findIndex(d => d.objectName == objectName);
-						adapter.log.info('Bodenfeuchte: ' + state.val + ' <= ' + parseInt(result[i].triggersIrrigation) + ' AutoOnOff: ' + resRunningTime[resIndex].val);
+						if (debug) {adapter.log.info('Bodenfeuchte: ' + state.val + ' <= ' + parseInt(result[i].triggersIrrigation) + ' AutoOnOff: ' + resRunningTime[resIndex].val);}
 						if (state.val <= parseInt(result[i].triggersIrrigation) && (resRunningTime[resIndex].val)) {	// Bodenfeuchte zu gering && Ventil auf Automatik
 							let countdown = Math.round(result[i].wateringTime * (result[i].maxSoilMoistureIrrigation - resSoilMoisture[objectName].val) / (resSoilMoisture[objectName].irrigation - resSoilMoisture[objectName].trigger)); // in sek
 							if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {	// Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (Proz.)
 								countdown = result[i].wateringTime * result[i].wateringAdd / 100;
 							}
-							adapter.log.info('sprinkleControll: ' + objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].maxSoilMoistureIrrigation + ', ' + resSoilMoisture[objectName].val + ', ' + resSoilMoisture[objectName].trigger + ')');
+							if (debug) {adapter.log.info('sprinkleControll: ' + objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].maxSoilMoistureIrrigation + ', ' + resSoilMoisture[objectName].val + ', ' + resSoilMoisture[objectName].trigger + ')');}
 							ObjThread.addList(objectName, result[i].name, 60*countdown, result[i].pipeFlow, 60*result[i].wateringInterval, true);
 						}
 					}
@@ -1061,7 +1068,7 @@ function createSprinklers() {
 								'irrigation': result[i].maxSoilMoistureIrrigation,		// max Bodenfeuchte nach der Beregnung /mm
 								'rain': result[i].maxSoilMoistureRain};		// max Bodenfeuchte nach einem Regen /mm
 					resSoilMoisture[objectName] = newEntry;		// Abfrage => resSoilMoisture[objectName].val;
-					adapter.log.info('resSoilMoisture: ' + objectName + ', .val: ' + resSoilMoisture[objectName].val + ', state.val: ' + state.val + ', state: ' + state);
+					if (debug) {adapter.log.info('resSoilMoisture: ' + objectName + ', .val: ' + resSoilMoisture[objectName].val + ', state.val: ' + state.val + ', state: ' + state);}
 				});
 				
 				adapter.getState(objPfad + '.sprinklerState', (err, state) => {
