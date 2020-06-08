@@ -1,6 +1,11 @@
 .git
+.github
+.vscode
 .idea
+
 *.code-workspace
+
+entpackt
 node_modules
 nbproject
 

@@ -25,7 +25,7 @@ let goldenHourEnd;
 /** @type {string} */
 let maxSunshine;	//	(Sonnenscheindauer in Stunden)
 /** @type {any} */
-let HolidayStr;
+let holidayStr;
 /** @type {any} */
 let autoOnOffStr;
 /** @type {any} */
@@ -60,7 +60,8 @@ let resRunningTime =[]; /* Laufzeit der Ventile in den Objekten */
 //
 const ObjThread = {
 	threadList: [],
-	addList : function (sprinkleName, id, wateringTime, pipeFlow, onOffTime, autoOn) {
+	/* Sprinkle hinzufügen*/
+	addList : function (sprinkleName, idState, wateringTime, pipeFlow, onOffTime, autoOn) {
 		let addDone = false;
 		if (ObjThread.threadList) {
 			for(let entry of ObjThread.threadList) {
@@ -69,7 +70,8 @@ const ObjThread = {
 					entry.wateringTime = parseInt(wateringTime);
 					entry.autoOn = autoOn;
 					adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {val: addTime(wateringTime), ack: false});
-					addDone = true;
+					addDone = true;		// Sprinkle found
+					adapter.log.info('addList (addDone): ' +entry.sprinkleName);
 					break;
 				}
 			}
@@ -79,7 +81,7 @@ const ObjThread = {
 			if (parseInt(wateringTime) <= 0) return;
 			let newThread = [];
 			newThread.sprinkleName = sprinkleName;	// z.B "Blumenbeet"
-			newThread.id = id;	// z.B. "hm-rpc.0.MEQ1810129.1.STATE"
+			newThread.idState = idState;	// z.B. "hm-rpc.0.MEQ1810129.1.STATE"
 			newThread.wateringTime = parseInt(wateringTime);
 			newThread.pipeFlow = parseInt(pipeFlow);
 			newThread.count = 0;
@@ -93,9 +95,10 @@ const ObjThread = {
 			ObjThread.threadList.push(newThread);
 			adapter.setState('sprinkle.' + sprinkleName + '.sprinklerState', {val: 1, ack: false });	// Zustand des Ventils im Thread < 0 > Aus, <<< 1 >>> warten, < 2 > Active, < 3 > Pause
 			adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {val: addTime(wateringTime), ack: false});
+			adapter.log.info('addList ' + ' (' + newThread.id + '): ' + 'sprName: ' + sprinkleName + ', idState: ' + idState + ' , wateringTime: ' + wateringTime + ' , pipeFlow: ' + pipeFlow);
 		}
 	}, // End addList
-	
+	/* Sprinkle löschen*/
 	delList : function (sprinkleName) {
 		let bValveFound = false;	// Ventil gefunden
 		for (var zaehler = 0,                                  // Loop über das Array
@@ -120,25 +123,43 @@ const ObjThread = {
 	/* switch off all devices, when close the adapter => Beim Beenden des adapters alles ausschalten */
 	clearEntireList: function () {
 		let bValveFound = false;	// Ventil gefunden
-		for (var zaehler = 0,                                  // Loop über das Array
-		 	lastArray = (ObjThread.threadList.length - 1);     // entsprechend der Anzahl der Eintragungen
-			zaehler <= lastArray;
-			zaehler++) {
-			let myId = ObjThread.threadList[zaehler].id;
-			/* Ventil einschalten */
-			adapter.setForeignState(myId, {val: false, ack: false});
-		}
-		// Wenn Ventil gefunden Pumpe und Spannungsversorgung ausschalten
-		if(bValveFound) {
-			/* Spannungsversorgung ausschalten wenn vorhanden */
-			if (adapter.config.triggerControlVoltage !== '') {
-				adapter.setForeignState(adapter.config.triggerControlVoltage, {val: false , ack: false});
+		for (var zaehler = ObjThread.threadList.length - 1;	// Loop über das Array
+			zaehler >= 0;
+			zaehler--) {
+			let myEntry = ObjThread.threadList[zaehler];
+			/* Ventil ausschalten */
+			adapter.setForeignState(myEntry.idState, {val: false, ack: false});	// Ventil ausschalten
+			adapter.setState('sprinkle.' + myEntry.sprinkleName + '.sprinklerState', { val: 0, ack: true});	// Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten, < 2 > Active, < 3 > Pause
+			adapter.setState('sprinkle.' + myEntry.sprinkleName + '.runningTime', { val: 0, ack: true});
+			adapter.setState('sprinkle.' + myEntry.sprinkleName + '.countdown', { val: 0, ack: true});
+			if (myEntry.autoOn) {
+				resSoilMoisture[myEntry.sprinkleName].val = resSoilMoisture[myEntry.sprinkleName].irrigation;
+				adapter.setState('sprinkle.' + myEntry.sprinkleName + '.actualSoilMoisture', { val: 100, ack: true});
 			}
-			/* Hauptpumpe ausschalten wenn vorhanden */
-			if (adapter.config.triggerMainPump !== '') {
-				adapter.setForeignState(adapter.config.triggerMainPump, {val: false , ack: false});
-			}
+			adapter.setState('sprinkle.' + myEntry.sprinkleName + '.history.lastConsumed', { val: Math.round(myEntry.litersPerSecond * myEntry.count), ack: true});
+			adapter.setState('sprinkle.' + myEntry.sprinkleName + '.history.lastRunningTime', { val: addTime(myEntry.count), ack: true});
+			adapter.setState('sprinkle.' + myEntry.sprinkleName + '.history.lastOn', { val: formatTime(myEntry.startTime, 'dd.mm. hh:mm'), ack: true});
+			adapter.getState('sprinkle.' + myEntry.sprinkleName + '.history.curCalWeekConsumed', (err, state) => {
+				if (state) {
+					adapter.setState('sprinkle.' + myEntry.sprinkleName + '.history.curCalWeekConsumed', { val: (state.val) + Math.round(myEntry.litersPerSecond * myEntry.count), ack: false});
+				}
+			});
+			adapter.getState('sprinkle.' + myEntry.sprinkleName + '.history.curCalWeekRunningTime', (err, state) => {
+				if (state) {
+					adapter.setState('sprinkle.' + myEntry.sprinkleName + '.history.curCalWeekRunningTime', { val: addTime(state.val,myEntry.count), ack: true});
+				}
+			});
+			/* del timer countdown */
+			clearInterval(myEntry.countdown);
+			/* del timer onOffTimeoutOff */
+			clearTimeout(myEntry.onOffTimeoutOff);
+
+			adapter.log.info('133 Test: Ventil wird gelöscht: ' + myEntry.sprinkleName);
+			ObjThread.threadList.pop();
+			adapter.log.info('133 Test: Ventil ist gelöscht => noch vorhandene Ventile: ' + ObjThread.threadList.length);
 		}
+		ObjThread.updateList();
+
 	}, // End clearEntireList
 
 	updateList : function () {
@@ -170,7 +191,7 @@ const ObjThread = {
 				/* Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, <<< 2 >>> Active, < 3 > Pause */
 				adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });
 				/* Ventil einschalten */
-				adapter.setForeignState(entry.id, {val: true, ack: false});
+				adapter.setForeignState(entry.idState, {val: true, ack: false});
 				/* countdown starten */
 				if (!entry.startTime) {entry.startTime = new Date();}
 				entry.countdown = setInterval(() => {countSprinkleTime()}, 1000);	// 1000 = 1s
@@ -190,7 +211,7 @@ const ObjThread = {
 							entry.enabled = false;
 							entry.myBreak = true;
 							adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 3, ack: true});	// Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten,
-							adapter.setForeignState(entry.id, {val: false, ack: false});	// Ventil ausschalten
+							adapter.setForeignState(entry.idState, {val: false, ack: false});	// Ventil ausschalten
 							ObjThread.updateList();
 							clearInterval(entry.countdown);
 							entry.onOffTimeoutOff = setTimeout(()=>{
@@ -200,7 +221,7 @@ const ObjThread = {
 							},1000 * entry.onOffTime);
 						}						
 					} else {
-						adapter.setForeignState(entry.id, {val: false, ack: false});	// Ventil ausschalten
+						adapter.setForeignState(entry.idState, {val: false, ack: false});	// Ventil ausschalten
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 0, ack: true});	// Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten, < 2 > Active, < 3 > Pause
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.runningTime', { val: 0, ack: true});
 						adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
@@ -311,7 +332,7 @@ function startAdapter(options) {
 					}
 					if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
 						publicHolidayTomorowStr = state.val;
-						// startTimeSprinkle();
+						startTimeSprinkle();
 					}
 				}
 				
@@ -332,19 +353,20 @@ function startAdapter(options) {
                 if (debug) {adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);}
 				// wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden. 
 				if (id === adapter.namespace + '.control.Holiday') {
-					HolidayStr = state.val;
+					holidayStr = state.val;
 					startTimeSprinkle();
 				}
 				// wenn (autoOnOff == false) so werden alle Spränger nicht mehr automatisch gestartet.
 				if (id === adapter.namespace + '.control.autoOnOff') {
 					autoOnOffStr = state.val;
+					adapter.log.info('347 Test autoOnOff: ' + state.val);
 					if (!state.val) {ObjThread.clearEntireList();}
 					startTimeSprinkle();
 				}
 				// wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
 				if (resRunningTime && !state.ack) {
 					for ( const i in resRunningTime) {
-						if (id === (resRunningTime[i].objectID)) {
+						if (id == (resRunningTime[i].objectID)) {
 							if (!isNaN(state.val)) {
 							//if (state.val.indexOf(':') == -1) {	// Kontolle ob es sich um eine Eingabe handelt, Eingabe Zahl in Minuten, keine Eingabe mm:ss 
 								//resRunningTime[i].val = state.val;
@@ -354,7 +376,7 @@ function startAdapter(options) {
 								let result = resEnabled;
 								if (result) {
 									for (const r in result) {
-										let objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
+										let objectName = result[r].sprinkleName.replace(/[.;, ]/g, '_');
 										if (objectName == resRunningTime[i].objectName) {
 											ObjThread.addList(objectName, result[r].name, Math.round(60*state.val), result[r].pipeFlow, Math.round(60*result[r].wateringInterval), false);
 											setTimeout (() => {
@@ -406,7 +428,7 @@ function startAdapter(options) {
 					lastRainCounter = state.val;
 					if (debug) {adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);}
 				}
-				// 
+				// Feiertagskalender
 				if (adapter.config.publicHolidays === true) {
 					if (id === adapter.config.publicHolInstance + '.heute.boolean') {
 						publicHolidayStr = state.val;
@@ -515,7 +537,7 @@ function applyEvaporation (eTP){
 			} else if (resSoilMoisture[objectName].val > resSoilMoisture[objectName].rain) {
 				resSoilMoisture[objectName].val = resSoilMoisture[objectName].rain;
 			}
-			newSoilMoisture = Math.round(1000 * resSoilMoisture[objectName].val / resSoilMoisture[objectName].rain) / 10;	// Berechnung in %
+			newSoilMoisture = Math.round(1000 * resSoilMoisture[objectName].val / resSoilMoisture[objectName].irrigation) / 10;	// Berechnung in %
 			if (debug) {adapter.log.info(objectName + ' => soilMoisture: ' + resSoilMoisture[objectName].val + ' soilMoisture in %: ' + newSoilMoisture + ' %');}
 			adapter.setState(pfadActSoiMoi, {val: newSoilMoisture, ack: true});
 		}
@@ -652,7 +674,7 @@ function checkActualStates () {
 	//
     adapter.getState('control.Holiday', (err, state) => {
         if (state) {
-            HolidayStr = state.val;
+            holidayStr = state.val;
         }
     });
     adapter.getState('control.autoOnOff', (err, state) => {
@@ -801,7 +823,7 @@ function startTimeSprinkle() {
 				break;
 			case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Houer*/
 				infoMesetsch = "Start zum Ende der Golden Houer ";
-				// format goldenhour/goldenhourend time from the Date object
+				// format goldenhour / goldenhourend time from the Date object
 				myStartTime = goldenHourEnd;
 				break;
 		}
@@ -813,12 +835,13 @@ function startTimeSprinkle() {
 		// Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
 		if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
 			&& (((publicHolidayStr) === true) && today)
-			|| (((publicHolidayTomorowStr) === true)&& !today)) {
+			|| (((publicHolidayTomorowStr) === true)&& !today)
+			|| ((holidayStr) === true)) {
 			infoMesetsch = 'Start am Feiertag ';
 			myStartTime = adapter.config.weekEndLiving;
 		}
 
-		if ((myStartTime < myTime) && today) {
+		if ((myStartTime <= myTime) && today) {
 			nextStartTime(false);
 		} else {
 			startTimeStr = myStartTime;
@@ -843,7 +866,8 @@ function startTimeSprinkle() {
 				adapter.getState('sprinkle.' + objectName + '.actualSoilMoisture', (err, state) => {
 					if (state) {
 						// Test	
-						const resIndex = resRunningTime.findIndex(d => d.objectName == objectName);
+						const resIndex = resRunningTime.findIndex(d => d.objectName === objectName);
+						adapter.log.info('849 Test Name result: ' + objectName + ' resIndex: ' + resRunningTime[resIndex].objectName)
 						if (debug) {adapter.log.info('Bodenfeuchte: ' + state.val + ' <= ' + parseInt(result[i].triggersIrrigation) + ' AutoOnOff: ' + resRunningTime[resIndex].val);}
 						if (state.val <= parseInt(result[i].triggersIrrigation) && (resRunningTime[resIndex].val)) {	// Bodenfeuchte zu gering && Ventil auf Automatik
 							let countdown = Math.round(result[i].wateringTime * (result[i].maxSoilMoistureIrrigation - resSoilMoisture[objectName].val) / (resSoilMoisture[objectName].irrigation - resSoilMoisture[objectName].trigger)); // in sek
@@ -860,7 +884,7 @@ function startTimeSprinkle() {
 		setTimeout (() => {
 			ObjThread.updateList();
 			nextStartTime(true);
-		}, 50);
+		}, 100);
 	});
 }
 //
