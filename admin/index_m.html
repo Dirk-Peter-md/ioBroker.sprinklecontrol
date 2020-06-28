@@ -74,7 +74,7 @@
             margin-left: 2rem !important;
             padding-top: 0 !important;
         }
-        #dialog-shutter-edit .title {
+        #dialog-sprinkle-edit .title {
             width: 100% !important;
             background: #64b5f6;
             color: #FFF;
@@ -83,25 +83,25 @@
         .modal .page {
             width: calc(100% - 20px)!important;
         }
-        #dialog-shutter-edit .modal-content {
+        #dialog-sprinkle-edit .modal-content {
             width: 100% !important;
             height: calc(100% - 10px) !important;
             
         }
-        #dialog-shutter-edit .tabs {
+        #dialog-sprinkle-edit .tabs {
             width: calc(100% - 20px) !important;
         }
-        #dialog-shutter-edit .page {
+        #dialog-sprinkle-edit .page {
             width: calc(100% - 10px) !important;
             
         }
-        #dialog-shutter-edit .btn {
+        #dialog-sprinkle-edit .btn {
             margin-right: 1.5rem;
         }
         #dialog-select-member {
             z-index: 9999 !important;
         }
-        #dialog-shutter-edit {
+        #dialog-sprinkle-edit {
             z-index: 9900 !important;
         }
         
@@ -121,9 +121,12 @@
 		#events th:nth-of-type(12) {visibility: hidden; display: none;}
 		#events td:nth-of-type(13) {visibility: hidden; display: none;}
 		#events th:nth-of-type(13) {visibility: hidden; display: none;}
+        #events td:nth-of-type(14) {visibility: hidden; display: none;}
+        #events th:nth-of-type(14) {visibility: hidden; display: none;}
+        #events td:nth-of-type(15) {visibility: hidden; display: none;}
+        #events th:nth-of-type(15) {visibility: hidden; display: none;}
 
-
-        #dialog-shutter-edit {
+        #dialog-sprinkle-edit {
             max-height:95% !important;
             max-width:85% !important;
             width:80% !important; 
@@ -138,24 +141,33 @@
     
 
         // This will be called by the admin adapter when the settings page loads
+        // Dies wird vom Administratoradapter aufgerufen, wenn die Einstellungsseite geladen wird
         function load(settings, onChange) {
             // example: select elements with id=key and class=value and insert value
+            // Beispiel: Wählen Sie Elemente mit id = key und class = value aus und fügen Sie einen Wert ein
             if (!settings) return;
             $('.value').each(function () {
                 var $key = $(this);
                 var id = $key.attr('id');
                 if ($key.attr('type') === 'checkbox') {
                     // do not call onChange direct, because onChange could expect some arguments
+                    // Rufen Sie onChange nicht direkt auf, da onChange einige Argumente erwarten kann
                     $key.prop('checked', settings[id]).on('change', function () {
                         showHideSettings();
                         onChange();
                     });
                 } else {
                     // do not call onChange direct, because onChange could expect some arguments
+                    // Rufen Sie onChange nicht direkt auf, da onChange einige Argumente erwarten kann
                     $key.val(settings[id])
                         .on('change', () => onChange())
                         .on('keyup', () => onChange())
                         ;
+                    if ($key.attr('type') === 'combobox') {
+                        $('#wateringStartTime').change(function(){
+                            showHideSettingsCombo();
+                        });
+                    }
                 }
             });
 
@@ -164,6 +176,7 @@
             events = settings.events    || [];
             
             showHideSettings();
+            showHideSettingsCombo();
             
             values2table('events', events, onChange, tableOnReady);
 
@@ -182,6 +195,8 @@
                     $('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val('10').trigger('change');
                     $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
                     $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val('700').trigger('change');
+                    $('#events .values-input[data-name="booster"][data-index="' + id + '"]').prop('checked', false);
+                    $('#events .values-input[data-name="endIrrigation"][data-index="' + id + '"]').prop('checked', true);
                 }, 1000);
                 
                 initSelectId(function (sid) {
@@ -293,6 +308,7 @@
             
             onChange(false);
             // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+            // Initialisieren Sie alle Materialise-Beschriftungen auf der Seite neu, wenn Sie dynamisch Eingaben hinzufügen:
             
             if (M) M.updateTextFields();
             
@@ -335,11 +351,13 @@
                 $('#maxSoilMoistureRain').val($('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val());
                 $('#triggersIrrigation').val($('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val());
                 $('#pipeFlow').val($('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val());
+                $('#booster').prop('checked', ($('#events .values-input[data-name="booster"][data-index="' + id + '"]')).prop('checked'));
+                $('#endIrrigation').prop('checked', ($('#events .values-input[data-name="endIrrigation"][data-index="' +id + '"]')).prop('checked'));
 								
                 $('#dialogDeviceEditSprinkle').html($('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val());
 
                 setTimeout(function () {
-                    initDialogShutter(function (sid) {
+                    initDialogSprinkle(function (sid) {
                         var newTriggerID = $('#triggerID').val();
                         var newWateringTime = $('#wateringTime').val();
 						var newWateringAdd = $('#wateringAdd').val();
@@ -347,8 +365,10 @@
                         var newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
                         var newMaxSoilMoistureRain = $('#maxSoilMoistureRain').val();
                         var newTriggersIrrigation = $('#triggersIrrigation').val();
-                        var newPpipeFlow = $('#pipeFlow').val();
-						
+                        var newPipeFlow = $('#pipeFlow').val();
+                        var newBooster = $('#booster').prop('checked');
+                        var newEndIrrigation = $('#endIrrigation').prop('checked');
+
                         $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
                         $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
 						$('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val(newWateringAdd).trigger('change');
@@ -356,15 +376,20 @@
                         $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val(newMaxSoilMoistureIrrigation).trigger('change');
                         $('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val(newMaxSoilMoistureRain).trigger('change');
                         $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val(newTriggersIrrigation).trigger('change');
-                        $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val(newPpipeFlow).trigger('change');
+                        $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val(newPipeFlow).trigger('change');
+                        $('#events .values-input[data-name="booster"][data-index="' + id + '"]').prop('checked',newBooster);
+                        $('#events .values-input[data-name="endIrrigation"][data-index="' + id + '"]').prop('checked',newEndIrrigation);
+
                     });
                 }, 20)
             });
         }
         
         // This will be called by the admin adapter when the user presses the save button
+        // Dies wird vom Admin-Adapter aufgerufen, wenn der Benutzer die Schaltfläche Speichern drückt
         function save(callback) {
             // example: select elements with class=value and build settings object
+            // Beispiel: Wählen Sie Elemente mit class = value aus und erstellen Sie das Einstellungsobjekt
             var obj = {};
             $('.value').each(function () {
                 var $this = $(this);
@@ -381,6 +406,27 @@
 
             callback(obj);
         }
+
+        function showHideSettingsCombo() {
+
+            // Zeiteinstellungen => Feiertagseinstellung sichtbar bei combobox
+
+            switch ($('#wateringStartTime').val()) {
+                case 'livingTime' :				/*Start zur festen Zeit*/
+                    $('.visTimeShift').hide();
+                    $('.visWeekLiving').show();
+                    break;
+                case 'livingSunrise' :			/*Start mit Sonnenaufgang*/
+                    $('.visTimeShift').show();
+                    $('.visWeekLiving').hide();
+                    break;
+                case 'livingGoldenHourEnd' :	/*Start mit dem Ende der Golden Houer*/
+                    $('.visTimeShift').hide();
+                    $('.visWeekLiving').hide();
+                    break;
+            }
+        }
+
         function showHideSettings() {
 		
             // Pumpeneinstellungen => Zysterne sichtbar bei checkbox
@@ -393,20 +439,7 @@
 			
 			// Zeiteinstellungen => Feiertagseinstellung sichtbar bei checkbox
 			
-//			switch ($('#wateringStartTime').prop('checked')) {
-//				case 'livingTime' :				/*Start zur festen Zeit*/
-//					$('.timeShi').hide();
-//					$('.weekLiv').show();
-//					break;
-//				case 'livingSunrise' :			/*Start mit Sonnenaufgang*/
-//					$('.timeShi').show();
-//					$('.weekLiv').hide();					
-//					break;
-//				case 'livingGoldenHourEnd' :	/*Start mit dem Ende der Golden Houer*/
-// 					$('.timeShi').hide();
-//					$('.weekLiv').hide();
-//					break;
-//			}
+
 			
             if ($('#publicWeekend').prop('checked')) {
                 $('.publicWeek').show();
@@ -480,8 +513,8 @@
             }
         }
 
-        function initDialogShutter(callback) {
-            var $editDialog = $('#dialog-shutter-edit');
+        function initDialogSprinkle(callback) {
+            var $editDialog = $('#dialog-sprinkle-edit');
             if (!$editDialog.data('inited')) {
                 $editDialog.data('inited', true);
                 $editDialog.modal({
@@ -489,7 +522,7 @@
                 });
                 
                 $editDialog.find('.btn-set').on('click', function () {
-                    var $editDialog = $('#dialog-shutter-edit');
+                    var $editDialog = $('#dialog-sprinkle-edit');
                     var callback = $editDialog.data('callback');
                     if (typeof callback === 'function') callback();
                     $editDialog.data('callback', null);
@@ -524,7 +557,7 @@
                     </div>
                     <div class="row">
                         <div class="col s12">
-                            <h6 class="translate sub-title">Shutter config</h6>
+                            <h6 class="translate sub-title">Sprinkler control</h6>
                         </div>
                     </div>
                     <div class="row">
@@ -539,9 +572,9 @@
                                     <thead>
                                     <tr>
                                         <th data-name="_index" style="width: 80px; background: #64b5f6; text-align: center" data-style="text-align: center">Nr</th>
-                                        <th data-name="enabled"  style="width: 70px; background: #64b5f6" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
+                                        <th data-name="enabled"  style="width: 70px; background: #64b5f6" data-style="width: 70px" data-type="checkbox" class="translate"></th>
                                         <th data-name="sprinkleName" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Name</th>
-                                        <th data-name="name" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Object-ID shutter</th>
+                                        <th data-name="name" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Object-ID sprinkler</th>
                                         <th data-buttons="edit2" style="width: 150px; background: #64b5f6; height: 40px" data-style="width: 150px; text-align: left" ></th>
                                         <!-- ********************** only for temp states ********************** -->
                                         <th data-name="triggerID" data-type="text" style="width: 30%; background: #64b5f6" class="translate"></th>
@@ -552,6 +585,8 @@
                                         <th data-name="maxSoilMoistureRain" data-type="number" style="width: 0px" class="translate"></th>
                                         <th data-name="triggersIrrigation" data-type="number" style="width: 0px" class="translate"></th>
                                         <th data-name="pipeFlow" data-type="number" style="width: 0px" class="translate"></th>
+                                        <th data-name="booster" data-type="checkbox" style="width: 0px" class="translate"></th>
+                                        <th data-name="endIrrigation" data-type="checkbox" style="..." class="translate"></th>
                                         <!-- ****************************************************************** -->
                                         <th data-buttons="edit up down delete" style="width: 100px; background: #64b5f6"></th>
                                     </tr>
@@ -572,7 +607,7 @@
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="triggerControlVoltage" />
                             <label for="triggerControlVoltage" class="translate"></label>
-                            <span class="translate">Steuerspannung der Ventile</span>
+                            <span class="translate">Control voltage of the valves</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="triggerControlVoltageDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -580,7 +615,7 @@
 						<div class="col s6 l2 input-field">
 							<input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
 							<label for="maximumParallelValves" class="translate"></label>
-							<span class="translate">maximaler Parallelbetrieb der Ventile</span>
+							<span class="translate">Maximum parallel operation of the valves</span>
 						</div>						
 					</div>
 					<div class="row">
@@ -592,7 +627,7 @@
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="triggerMainPump" />
                             <label for="triggerMainPump" class="translate"></label>
-                            <span class="translate">Hauptpumpe</span>
+                            <span class="translate">Main pump</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="triggerMainPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -600,13 +635,13 @@
 						<div class="col s6 l2 input-field">
 							<input type="number" class="value" id="triggerMainPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
 							<label for="triggerMainPumpPower" class="translate"></label>
-							<span class="translate">max Pumpenleistung der Hauptpumpe in l/h</span>
+							<span class="translate">maximum pump output of the main pump in l/h</span>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col s6 l2 input-field">
                             <input type="checkbox" class="value" id="cisternSettings" />
-                            <span for="cisternSettings" class="translate">Zysterne benutzen</span>
+                            <span for="cisternSettings" class="translate">Add cistern pump as priority pump</span>
                         </div>
 					</div>
 					<div class="row col s12 cisternObjekt">
@@ -614,7 +649,7 @@
 							<div class="input-field col s5 l4">
 								<input type="text" class="value" id="triggerCisternPump" />
 								<label for="triggerCisternPump" class="translate"></label>
-								<span class="translate">Pumpe der Zysterne</span>
+								<span class="translate">cistern pump</span>
 							</div>
 							<div class="col s1 l2">
 								<a id="triggerCisternPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -622,14 +657,14 @@
 							<div class="col s6 l2 input-field">
 								<input type="number" class="value" id="triggerCisternPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
 								<label for="triggerCisternPumpPower" class="translate"></label>
-								<span class="translate">max Pumpenleistung der Zysterne in l/h</span>
+								<span class="translate">maximum pump capacity of the cistern in l/h</span>
 							</div>
 						</div>
 						<div class="row">
 							<div class="input-field col s5 l4">
 								<input type="text" class="value" id="actualValueLevel" />
 								<label for="actualValueLevel" class="translate"></label>
-								<span class="translate">Fuellstand der Zysterne</span>
+								<span class="translate">Level of the cistern</span>
 							</div>
 							<div class="col s1 l2">
 								<a id="actualValueLevelDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -637,7 +672,7 @@
 							<div class="col s6 l2 input-field">
 								<input type="number" class="value" id="triggerMinCisternLevel" min=0 max=100 placeholder="0-100" step="25" />
 								<label for="triggerMinCisternLevel" class="translate"></label>
-								<span class="translate">Minimaler Füllstand der Zysterne in %</span>
+								<span class="translate">Minimum fill level of the cysts in %</span>
 							</div>
 						</div>
 					</div>
@@ -645,48 +680,43 @@
                 <!-- time settings -->
                 <div id="tab-time" class="col s12 page">
                     <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for Livingarea</h6>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="input-field col s12 m4">
-                            <select class="value" id="wateringStartTime">
-                                <option value="livingTime" class="translate">Start nach fester Zeitangabe</option>
-                                <option value="livingSunrise" class="translate">Start mit Sonnenaufgang</option>
-                                <option value="livingGoldenHourEnd" class="translate">Start mit Ende der Golden Hour</option>
+                            <select type="combobox" class="value" id="wateringStartTime">
+                                <option value="livingTime" class="translate">start with a fixed start time</option>
+                                <option value="livingSunrise" class="translate">Start time at sunrise</option>
+                                <option value="livingGoldenHourEnd" class="translate">Start time at the end of the golden hour</option>
                             </select>
                             <label for="wateringStartTime" class="translate"></label>
-                            <span class="translate">Startzeit der Bewässerung</span>
+                            <span class="translate">Start time for irrigation</span>
                         </div>
-                        <div class="input-field col s6 l2 TimeShi">
-                            <input type="number" id="timeShift" class="form-control" min="-50.0" max="100.0" placeholder="-50.0-100.0" step="0.1" />
+                        <div class="input-field col s6 l2 visTimeShift">
+                            <input type="number" id="timeShift" class="value" min="-120" max="120" placeholder="-120-120" step="1" />
 							<label for="timeShift" class="translate"></label>
-                            <span class="translate">Zeitverschiebung</span>
+                            <span class="translate">time shift</span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col s6 l2 weekLiv">
+                        <div class="input-field col s6 l2 visWeekLiving">
                             <input type="time" class="value" id="weekLiving" />
                             <label for="weekLiving" class="translate"></label>
-                            <span class="translate">Bewässerung in der Woche</span>
+                            <span class="translate">Start time in the week</span>
                         </div>
                     </div>
 					<div class="row">
 						<div class="input-field col s6 l2">
                             <input type="checkbox" class="value" id="publicWeekend" />
-                            <span for="publicWeekend" class="translate">Andere Startzeit am Wochenende</span>
+                            <span for="publicWeekend" class="translate">different start time on weekends</span>
 						</div>
                         <div class="input-field col s12 m6 l2 publicWeek">
                             <input type="time" class="value" id="weekEndLiving" />
                             <label for="weekEndLiving" class="translate"></label>
-                            <span class="translate">Bewässerung am Wochenende</span>
+                            <span class="translate">Start time at the weekend</span>
                         </div>						
 					</div>
 					<div class="row">
 						<div class="input-field col s6 l2 publicWeekHol">
                             <input type="checkbox" class="value" id="publicHolidays" />
-                            <span for="publicHolidays" class="translate">An Feiertagen Startzeit wie am Wochenende</span>
+                            <span for="publicHolidays" class="translate">Start time of public holidays as on weekends</span>
                         </div>
                         <div class="input-field col s12 m6 l2 publicHol">
                             <select id="publicHolInstance" class="value"></select>
@@ -697,33 +727,49 @@
                 </div>
                 <!-- Tab Extra -->
                 <div id="tab-extra" class="col s12 page">
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Astro settings</h6>
+                    <div class="col s6">
+                        <div class="row">
+                            <div class="col s6">
+                                <h6 class="translate sub-title">Astro settings</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s6 l2 input-field">
+                                <input type="text" class="value" id="latitude" />
+                                <label for="latitude" class="translate"></label>
+                                <span class="translate">latitude</span>
+                            </div>
+                            <div class="col s6 l2 input-field">
+                                <input type="text" class="value" id="longitude" />
+                                <label for="longitude" class="translate"></label>
+                                <span class="translate">longitude</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col s6 l2 input-field">
-                            <input type="text" class="value" id="latitude" />
-                            <label for="latitude" class="translate"></label>
-                            <span class="translate">latitude</span>
+                    <div class="col s6">
+                        <div class="row">
+                            <div class="col s6">
+                                <h6 class="translate sub-title">Debug settings</h6>
+                            </div>
                         </div>
-                        <div class="col s6 l2 input-field">
-                            <input type="text" class="value" id="longitude" />
-                            <label for="longitude" class="translate"></label>
-                            <span class="translate">longitude</span>
+                        <div class="row">
+                            <div class="col s6 input-field">
+                                <input type="checkbox" class="value" id="debug" />
+                                <span for="debug" class="translate">debug</span>
+                            </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col s12">
-                            <h6 class="translate sub-title">Extra Settings</h6>
+                            <h6 class="translate sub-title">Evaporation calculation sensors</h6>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="sensorOutsideTemperature" />
                             <label for="sensorOutsideTemperature" class="translate"></label>
-                            <span class="translate">Temperatur-Sensor</span>
+                            <span class="translate">Temperature sensor</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -731,7 +777,7 @@
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="sensorOutsideHumidity" />
                             <label for="sensorOutsideHumidity" class="translate"></label>
-                            <span class="translate">Luftfeuchtigkeits-Sensor</span>
+                            <span class="translate">Humidity sensor</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -741,7 +787,7 @@
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="sensorWindSpeed" />
                             <label for="sensorWindSpeed" class="translate"></label>
-                            <span class="translate">Windgeschwindigkeits-Sensor</span>
+                            <span class="translate">Wind speed sensor</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -751,7 +797,7 @@
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="sensorBrightness" />
                             <label for="sensorBrightness" class="translate"></label>
-                            <span class="translate">HelligkeitsSensor</span>
+                            <span class="translate">Brightness sensor</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -759,7 +805,7 @@
                         <div class="col s6 l3 input-field">
                             <input type="text" class="value" id="sensorRainfall" />
                             <label for="sensorRainfall" class="translate"></label>
-                            <span class="translate">Sensor Niederschlag</span>
+                            <span class="translate">rain sensor</span>
                         </div>
                         <div class="col s1 m2 l2">
                             <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -785,7 +831,7 @@
                 <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
             </div>
         </div>
-        <div id="dialog-shutter-edit" class="modal modal-fixed-footer">
+        <div id="dialog-sprinkle-edit" class="modal modal-fixed-footer">
             <div class="row">
                 <div class="modal-content">
                     
@@ -796,8 +842,8 @@
                     </div>
                     <div class="col s12">
                         <ul class="tabs">
-                            <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">main settings</a></li>
-                            <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">pump settings</a></li>
+                            <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
+                            <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
                         </ul>
                     </div>
                     <div id="tab-pumpPopUp" class="col s12 page">
@@ -805,45 +851,57 @@
 							<div class="col s6 l2 input-field">
 								<input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
 								<label for="pipeFlow" class="translate"></label>
-								<span class="translate">flowAmount</span>
+								<span class="translate">Flow amount</span>
 							</div>
+                        </div>
+                        <div class="row">
+                            <div class="col s6 l2 input-field">
+                                <input type="checkbox" class="form-control" id="booster" />
+                                <span for="booster" class="translate">Booster</span>
+                            </div>
                         </div>
                     </div>
                     <div id="tab-settingsPopUp" class="col s12 page">
 						<div class="row">
 							<div class="col s6 l2 input-field">
-								<input type="number" class="value" id="wateringTime" min=5 max=90 />
+								<input type="number" class="form-control" id="wateringTime" min=5 max=90 />
 								<label for="wateringTime" class="translate"></label>
-								<span class="translate">Bewässerungsdauer</span>
+								<span class="translate">Watering duration</span>
 							</div>
 							<div class="col s6 l2 input-field">
-								<input type="number" class="value" id="wateringAdd" min=100 max=300 step="10" />
+								<input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
 								<label for="wateringAdd" class="translate"></label>
-								<span class="translate">BewässerungsAddProz</span>
+								<span class="translate">maximum irrigation extension</span>
 							</div>							
 							<div class="col s6 l2 input-field">
-								<input type="number" class="value" id="wateringInterval" min=0 max=30 step="5" />
+								<input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
 								<label for="wateringInterval" class="translate"></label>
-								<span class="translate">BewässerungsInterval</span>
+								<span class="translate">Watering interval</span>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col s6 l2 input-field">
-								<input type="number" class="value" id="triggersIrrigation" min=30 max=80 />
+								<input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
 								<label for="triggersIrrigation" class="translate"></label>
-								<span class="translate">minBodFeuchteProz</span>
-							</div>							
+								<span class="translate">lowest percentage soil moisture</span>
+							</div>
+                            <div class="row">
+                                <div class="col s6 l2 input-field">
+                                    <input type="checkbox" class="form-control" id="endIrrigation" />
+                                    <span for="endIrrigation" class="translate">after irrigation = 100</span>
+                                </div>
+                            </div>
                         </div>
 						<div class="row">
 							<div class="col s6 l2 input-field">
 								<input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
 								<label for="maxSoilMoistureIrrigation" class="translate"></label>
-								<span class="translate">maxBodFeuBereg</span>
+								<span class="translate">maximum soil moisture after irrigation</span>
 							</div>
 							<div class="col s6 l2 input-field">
 								<input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
 								<label for="maxSoilMoistureRain" class="translate"></label>
-								<span class="translate">maxBodFeuRegen</span>
+								<span class="translate">maximum soil moisture after the rain</span>
 							</div>
 						</div>
                     </div>

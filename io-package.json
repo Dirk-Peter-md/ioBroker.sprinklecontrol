@@ -80,6 +80,7 @@
         "actualValueLevel": "",
         "triggerMinCisternLevel": "25",
         "wateringStartTime": "livingGoldenHourEnd",
+        "timeShift": "0",
         "weekLiving": "06:30",
         "publicWeekend": true,
         "weekEndLiving": "07:30",
@@ -103,7 +104,9 @@
                 "maxSoilMoistureIrrigation": "8",
                 "maxSoilMoistureRain": "10",
                 "triggersIrrigation": "50",
-                "pipeFlow": "1100"
+                "pipeFlow": "1100",
+                "booster": false,
+                "endIrrigation": true
             }
         ]
     },
