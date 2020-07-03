@@ -2,8 +2,14 @@
 # Grundlegendes
 
 
-In Sprinklecontroll werden die Umweltdaten (Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit, Regenmenge) ausgewertet. Die so ermittelte Verdunstung dient der Steuerung der Ventile, der einzelnen Sprängerkreise.
+In Sprinklecontroll werden die Umweltdaten (Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit, Regenmenge) ausgewertet.
+Die so ermittelte Verdunstung dient der Ermittlung der theoretischen Bodenfeuchte, der einzelnen Bewässerungskreise.
+Zu einer unter "Zeit-Einstellungen" festgelegten Zeit, werden die Bewässerungskreise aktiviert die einen festgelegten prozentualen Wert unterschreiten.
+Diese verschiedenen Bewässerungskreise werden dann so angesteuert, das die max. Pumpenleistung (l/h) und die max. Anzahl der Bewässerungskreise nicht überschritten wird.
+Beides ist individuell anpassbar.
+      
 Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und wurde nur mit diesem getestet.
+
 
 
 
@@ -70,22 +76,28 @@ Auch diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** 
 
 ![Vertil-Haupteinstellung.jpg](img/Vertil-Haupteinstellung.jpg)
 
-* **Bewässerungsdauer**
-* **maximale Bewässerungsverlängerung in %**
-* **Bewässerungsinterval**
-* **niedrigster Prozentsatz der Bodenfeuchte**
-* **Bedenfeuchte = 100 % nach der Bewässerung**
-* **maximale Bewässerung nach der Bewässerung**
-* **maximale Bodenfeuchte nach einem Regen**
-
+* **Bewässerungsdauer:** Einstellung der Zeit zum Bewässern (diese wird verlängert je weiter der Trigger "niedrigster Prozentsatz der Bodenfeuchte" unterschritten wurde) 
+* **maximale Bewässerungsverlängerung in %:** Begrenzung der Bewässerungsdauer in Prozent (100 % = Bewässerungsdauer wird nicht verlängert )
+* **Bewässerungsintervall:** Die Bewässerungsdauer wird in einem Intervall aufgeteilt. (z.B. 5 min an, 5 min aus, 5 min an, usw.)
+    * **Tipp:** Bei mir habe ich ein Rasengitter bei der Autoauffahrt. Hier läuft das Wasser beim Bewässern einfach nur die Schräge herunter. Durch die Bewässerung in Intervallen konnte ich dem entgegenwirken. 
+* **niedrigster Prozentsatz der Bodenfeuchte:** Auslösetrigger: Wenn dieser Wert unterschritten wird, so beginnt zum Startzeitpunkt die Bewässerung.
+* **Bedenfeuchte = 100 % nach der Bewässerung:** Bei Aktivierung, wird die Bodenfeuchte nach der Bewässerung auf 100 % gesetzt. Ansonsten bleibt sie knapp darunter Aufgrund der Verdunstung während der Bewässerung.
+* **maximale Bewässerung nach der Bewässerung:** Max. Wassergehalt im Boden nach der Bewässerung.
+    * **Tipp:** Rasengitter: 5; Blumenbeet: 8; Rasenfläche: 12
+* **maximale Bodenfeuchte nach einem Regen:** Max. Wassergehalt im Boden nach einem kräftigen Regen.
+    * **Tipp** Rasengitter: 6; Blumenbeet: 10; Rasenfläche: 15
+    
 ---
 
 ### Pumpeneinstellungen
 
 ![Ventil-Pumpeneinstellung.jpg](img/Ventil-Pumpeneinstellung.jpg)
 
-* **Durchflussmenge**
-* **Booster**
+* **Durchflussmenge:** Ermittelte Durchflussmenge des aktuellen Bewässerungskreises.
+    * **Tipp:** Steht oft in der Bedienungsanleitung bzw. im Internet.
+* **Booster:** Nimmt alle aktiven Bewässerungskreise für 15 s vom Netz und schaltet sie danach wieder zu. 
+    * **Tipp:** Meine Pumpe liefert max. 1800 l/h und meine Rasenspränger benötigen 1400 l/h, aber den vollen Druck zum herausfahren. Mit der Boosterfunktion kann ich nebenbei noch die Koniferen bewässern die nur 300 l/h benötigen. 
+    * **Achtung:** Mit dieser Funktion sollte man sehr sparsam umgehen, da immer nur ein Bewässerungskreis mit aktiven Booster bewässern kann.    
 
 ---
 ---
