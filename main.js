@@ -865,8 +865,9 @@ function startTimeSprinkle() {
         return;
     }
 
-    function nextStartTime (today) {
+    function nextStartTime () {
         let myStartTime, myStartTimeLong;
+        let run = 0;
         const myHours = checkTime(curTime.getHours());
         const myMinutes = checkTime(curTime.getMinutes());
         let myWeekday = curTime.getDay();
@@ -877,52 +878,50 @@ function startTimeSprinkle() {
         function checkTime(i) {
             return (i < 10) ? '0' + i : i;
         }
-        if (!today) {myWeekday++;}
-        if (myWeekday>6){myWeekday=0;}
-        // Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
-        switch(adapter.config.wateringStartTime) {
-            case 'livingTime' :				/*Startauswahl = festen Zeit*/
-                infoMesetsch = 'Start zur festen Zeit ';
-                myStartTime = adapter.config.weekLiving;
-                break;
-            case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
-                infoMesetsch = 'Start mit Sonnenaufgang ';
-                // format sunset/sunrise time from the Date object
-                myStartTime = sunriseStr;
-                break;
-            case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Houer*/
-                infoMesetsch = 'Start zum Ende der Golden Houer ';
-                // format goldenhour / goldenhourend time from the Date object
-                myStartTime = goldenHourEnd;
-                break;
-        }
-        // Start am Wochenende => wenn andere Zeiten verwendet werden soll
-        if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
-            infoMesetsch = 'Start am Wochenende ';
-            myStartTime = adapter.config.weekEndLiving;
-        }
-        // Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
-        if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
-			&& (((publicHolidayStr) === true) && today)
-			|| (((publicHolidayTomorowStr) === true)&& !today)
-			|| ((holidayStr) === true)) {
-            infoMesetsch = 'Start am Feiertag ';
-            myStartTime = adapter.config.weekEndLiving;
-        }
-        // do {} while ();
 
-        if ((myStartTime <= myTime) && today) {
-            nextStartTime(false);
-        } else {
-            startTimeStr = myStartTime;
-            myStartTimeLong = myWeekdayStr[myWeekday] + ' ' + myStartTime;
-            adapter.setState('info.nextAutoStart', { val: myStartTimeLong, ack: true });
-            if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + myStartTime);}
-        }
+        do {
+            myWeekday += run;
+            run++;
+            if (myWeekday>6){myWeekday=0;}
+            // Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
+            switch(adapter.config.wateringStartTime) {
+                case 'livingTime' :				/*Startauswahl = festen Zeit*/
+                    infoMesetsch = 'Start zur festen Zeit ';
+                    myStartTime = adapter.config.weekLiving;
+                    break;
+                case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
+                    infoMesetsch = 'Start mit Sonnenaufgang ';
+                    // format sunset/sunrise time from the Date object
+                    myStartTime = addTime(sunriseStr, parseInt(adapter.config.timeShift));
+                    break;
+                case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Hour*/
+                    infoMesetsch = 'Start zum Ende der Golden Hour ';
+                    // format goldenHourEnd time from the Date object
+                    myStartTime = goldenHourEnd;
+                    break;
+            }
+            // Start am Wochenende => wenn andere Zeiten verwendet werden soll
+            if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
+                infoMesetsch = 'Start am Wochenende ';
+                myStartTime = adapter.config.weekEndLiving;
+            }
+            // Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
+            if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
+                && (((publicHolidayStr) === true) && today)
+                || (((publicHolidayTomorowStr) === true)&& !today)
+                || ((holidayStr) === true)) {
+                infoMesetsch = 'Start am Feiertag ';
+                myStartTime = adapter.config.weekEndLiving;
+            }
+        } while ((myStartTime <= myTime) && (run === 1));
 
+        myStartTimeLong = myWeekdayStr[myWeekday] + ' ' + myStartTime;
+        adapter.setState('info.nextAutoStart', { val: myStartTimeLong, ack: true });
+        if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + myStartTime);}
+        return myStartTime;
     }
     //
-    nextStartTime(true);
+    startTimeStr = nextStartTime();
     startTimeSplit = startTimeStr.split(':');
 
     const schedStartTime = schedule.scheduleJob('sprinkleStartTime', startTimeSplit[1] + ' ' + startTimeSplit[0] + ' * * *', function() {
@@ -947,7 +946,8 @@ function startTimeSprinkle() {
         }
         setTimeout (() => {
             ObjThread.updateList();
-            nextStartTime(false);
+            nextStartTime();
+            schedule.cancelJob('sprinkleStartTime');
         }, 100);
     });
 }
@@ -1254,11 +1254,11 @@ function main() {
 
     /* The adapters config (in the instance object everything under the attribute "native") is accessible via
     * adapter.config:
-	* => Auf die Adapterkonfiguration (im Instanzobjekt alles unter dem Attribut "native") kann zugegriffen werden über 
+	* => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über
 	adapter.config:
 	*/
     adapter.log.debug(JSON.stringify(adapter.config.events));
-    
+
     adapter.getForeignObject('system.config', (err, obj) => {
         checkStates();
     });
@@ -1275,7 +1275,7 @@ function main() {
 		=> 
 		Für jeden Zustand im System muss es auch ein Objekt vom Typ Zustand geben
 		Hier eine einfache Vorlage für eine boolesche Variable namens "testVariable"
-		Da jede Adapterinstanz ihre eigenen eindeutigen Namespace-Variablennamen verwendet, können sie nicht mit anderen Adaptervariablen kollidieren
+		Da jede Adapterinstanz ihre eigenen eindeutigen Namespace-Variablennamen verwendet, können sie nicht mit anderen Adapter variablen kollidieren
     
     adapter.setObject('testVariable', {
         type: 'state',
