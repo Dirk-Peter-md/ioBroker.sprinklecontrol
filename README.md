@@ -31,7 +31,7 @@ Wetterabhängige automatische Bewässerungssteuerung
 
 ## Changelog
 
-### 0.0.4 (01.06.2020)
+### 0.0.4 (04.07.2020)
 * (Dirk-Peter-md) readme.md hinzugefügt
 * (Dirk-Peter-md) sprinklecontrol.md hinzugefügt
 * (Dirk-Peter-md) words.js hinzugefügt
