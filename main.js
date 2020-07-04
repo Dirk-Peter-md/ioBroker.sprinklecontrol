@@ -46,12 +46,19 @@ let boostReady = true;
 let boostOn = false;
 // calcEvaporation
 let curTemperature;		/*Temperatur*/
+/** @type {number} */
 let curHumidity;		/*LuftFeuchtigkeit*/
+/** @type {number} */
 let curIllumination;	/*Helligkeit*/
+/** @type {number} */
 let curWindSpeed;		/*WindGeschwindigkeit*/
+/** @type {number} */
 let lastRainCounter = 0;		/*last rain container => letzter Regenkontainer*/
+/** @type {number} */
 let curAmountOfRain = 0;	/*current amount of rain => aktuelle Regenmenge*/
+/** @type {number} */
 let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
+/** @type {any[]} */
 let ObjSprinkle = [];
 /** @type {any[]} */
 const resConfigChange = []; /* Speicher für Werte aus der Config und dem Programm für schnellzugriff */
@@ -376,9 +383,13 @@ function startAdapter(options) {
         */
         unload: (callback) => {
             try {
-            /* alle Ventile und Aktoren deaktivieren */
-                ObjThread.clearEntireList();
                 adapter.log.info('cleaned everything up...');
+                /*Startzeiten der Timer löschen*/
+                schedule.cancelJob('calcPosTimer');
+                schedule.cancelJob('sprinkleStartTime');
+                /* alle Ventile und Aktoren deaktivieren */
+                ObjThread.clearEntireList();
+
                 callback();
             } catch (e) {
                 callback();
@@ -886,7 +897,7 @@ function startTimeSprinkle() {
                 break;
         }
         // Start am Wochenende => wenn andere Zeiten verwendet werden soll
-        if((adapter.config.publicWeekend) && ((dayStr) == 6 || (dayStr) == 0)){
+        if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
             infoMesetsch = 'Start am Wochenende ';
             myStartTime = adapter.config.weekEndLiving;
         }
@@ -898,6 +909,8 @@ function startTimeSprinkle() {
             infoMesetsch = 'Start am Feiertag ';
             myStartTime = adapter.config.weekEndLiving;
         }
+        // do {} while ();
+
         if ((myStartTime <= myTime) && today) {
             nextStartTime(false);
         } else {
