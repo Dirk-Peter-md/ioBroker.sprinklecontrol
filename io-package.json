@@ -3,6 +3,18 @@
     "name": "sprinklecontrol",
     "version": "0.0.4",
     "news": {
+      "0.0.4": {
+        "en": "Mistake eliminated, Booster function added",
+        "de": "Fehler beseitigt, Booster-Funktion hinzugefügt",
+        "ru": "Ошибка устранена, добавлена функция Booster",
+        "pt": "Erro eliminado, função Booster adicionada",
+        "nl": "Fout verholpen, Booster-functie toegevoegd",
+        "fr": "Erreur éliminée, fonction Booster ajoutée",
+        "it": "Errore eliminato, aggiunta la funzione Booster",
+        "es": "Error eliminado, función de refuerzo añadida",
+        "pl": "Usunięto błąd, dodano funkcję Booster",
+        "zh-cn": "消除错误，增加了Booster功能"
+      },
       "0.0.1": {
         "en": "initial release",
         "de": "Erstveröffentlichung",
@@ -68,7 +80,7 @@
         "js-controller": ">=1.4.2"
       }
     ],
-    "installedFrom": "https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol/tarball/76df01a587b1eba9cf4c5d6b11d2bc7595b206ab"
+    "installedFrom": "iobroker.sprinklecontrol@0.0.4"
   },
   "native": {
     "triggerControlVoltage": "",
