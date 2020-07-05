@@ -854,7 +854,6 @@ function sunPos() {
 function startTimeSprinkle() {
     let startTimeSplit = [];
     let infoMesetsch;
-    const curTime = new Date();
 
     schedule.cancelJob('sprinkleStartTime'); 
 
@@ -866,13 +865,15 @@ function startTimeSprinkle() {
     }
 
     function nextStartTime () {
-        let newStartTime, newStartTimeLong;
+        let newStartTime, newStartTimeLong, myTime;
         let run = 0;
-        const myHours = checkTime(curTime.getHours());
-        const myMinutes = checkTime(curTime.getMinutes());
+        const curTime = new Date();
+        let myHours = checkTime(curTime.getHours());
+        let myMinutes = checkTime(curTime.getMinutes());
         let myWeekday = curTime.getDay();
         const myWeekdayStr = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-        const myTime = myHours + ':' + myMinutes;
+
+        myTime = myHours + ':' + myMinutes;
 
         /* ? => 0? */
         function checkTime(i) {
@@ -913,11 +914,12 @@ function startTimeSprinkle() {
                 infoMesetsch = 'Start am Feiertag ';
                 newStartTime = adapter.config.weekEndLiving;
             }
+            if (debug) {adapter.log.info('next Start Time: ' + newStartTime + ', ' + myTime + ', ' + (newStartTime <= myTime) + ', ' + (run === 1) + ', ' + ((newStartTime <= myTime) && (run === 1)));}
         } while ((newStartTime <= myTime) && (run === 1));
 
         newStartTimeLong = myWeekdayStr[myWeekday] + ' ' + newStartTime;
         adapter.setState('info.nextAutoStart', { val: newStartTimeLong, ack: true });
-        if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + StartTime);}
+        if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);}
         return newStartTime;
     }
     //
@@ -946,9 +948,11 @@ function startTimeSprinkle() {
         }
         setTimeout (() => {
             ObjThread.updateList();
-            nextStartTime();
+            setTimeout(()=>{
+                nextStartTime();
+            }, 800)
             schedule.cancelJob('sprinkleStartTime');
-        }, 100);
+        }, 200);
     });
 }
 //

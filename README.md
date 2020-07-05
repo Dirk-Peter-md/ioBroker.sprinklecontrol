@@ -1,6 +1,5 @@
 ![Logo](admin/sprinklecontrol.png)
 # ioBroker.sprinklecontrol
-Sprinkle, Irrigation, Bewässerung, Steuerung, wetterabhängig
 
 
 ![Number of Installations](http://iobroker.live/badges/sprinklecontrol-installed.svg) 
@@ -12,6 +11,7 @@ Sprinkle, Irrigation, Bewässerung, Steuerung, wetterabhängig
 
 [![NPM](https://nodei.co/npm/iobroker.sprinklecontrol.png?downloads=true)](https://nodei.co/npm/iobroker.sprinklecontrol/)
 
+Sprinkle, Irrigation, Bewässerung, Steuerung, wetterabhängig
 
 ## sprinklecontrol Adapter für ioBroker
 
