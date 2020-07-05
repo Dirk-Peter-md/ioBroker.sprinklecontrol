@@ -12,15 +12,10 @@ Sprinkle, Irrigation, Bewässerung, Steuerung, wetterabhängig
 
 [![NPM](https://nodei.co/npm/iobroker.sprinklecontrol.png?downloads=true)](https://nodei.co/npm/iobroker.sprinklecontrol/)
 
----
-
-
-
-
 
 ## sprinklecontrol Adapter für ioBroker
 
-Wetterabhängige automatische Bewässerungssteuerung
+Wetterabhängige automatische steuerung der Gartenbewässerungs
 
 [Deutsche Beschreibung hier](docs/de/sprinklecontrol.md)
 

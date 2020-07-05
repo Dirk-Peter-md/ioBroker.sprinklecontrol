@@ -866,7 +866,7 @@ function startTimeSprinkle() {
     }
 
     function nextStartTime () {
-        let myStartTime, myStartTimeLong;
+        let newStartTime, newStartTimeLong;
         let run = 0;
         const myHours = checkTime(curTime.getHours());
         const myMinutes = checkTime(curTime.getMinutes());
@@ -887,23 +887,23 @@ function startTimeSprinkle() {
             switch(adapter.config.wateringStartTime) {
                 case 'livingTime' :				/*Startauswahl = festen Zeit*/
                     infoMesetsch = 'Start zur festen Zeit ';
-                    myStartTime = adapter.config.weekLiving;
+                    newStartTime = adapter.config.weekLiving;
                     break;
                 case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
                     infoMesetsch = 'Start mit Sonnenaufgang ';
                     // format sunset/sunrise time from the Date object
-                    myStartTime = addTime(sunriseStr, parseInt(adapter.config.timeShift));
+                    newStartTime = addTime(sunriseStr, parseInt(adapter.config.timeShift));
                     break;
                 case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Hour*/
                     infoMesetsch = 'Start zum Ende der Golden Hour ';
                     // format goldenHourEnd time from the Date object
-                    myStartTime = goldenHourEnd;
+                    newStartTime = goldenHourEnd;
                     break;
             }
             // Start am Wochenende => wenn andere Zeiten verwendet werden soll
             if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
                 infoMesetsch = 'Start am Wochenende ';
-                myStartTime = adapter.config.weekEndLiving;
+                newStartTime = adapter.config.weekEndLiving;
             }
             // Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
             if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
@@ -911,14 +911,14 @@ function startTimeSprinkle() {
                 || (((publicHolidayTomorowStr) === true)&& !today)
                 || ((holidayStr) === true)) {
                 infoMesetsch = 'Start am Feiertag ';
-                myStartTime = adapter.config.weekEndLiving;
+                newStartTime = adapter.config.weekEndLiving;
             }
-        } while ((myStartTime <= myTime) && (run === 1));
+        } while ((newStartTime <= myTime) && (run === 1));
 
-        myStartTimeLong = myWeekdayStr[myWeekday] + ' ' + myStartTime;
-        adapter.setState('info.nextAutoStart', { val: myStartTimeLong, ack: true });
-        if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + myStartTime);}
-        return myStartTime;
+        newStartTimeLong = myWeekdayStr[myWeekday] + ' ' + newStartTime;
+        adapter.setState('info.nextAutoStart', { val: newStartTimeLong, ack: true });
+        if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + StartTime);}
+        return newStartTime;
     }
     //
     startTimeStr = nextStartTime();
@@ -1327,7 +1327,7 @@ function main() {
     // Report a change in the status of the trigger IDs (.runningTime) => Melden einer Änderung des Status der Trigger-IDs
     const result = adapter.config.events;
     if (result) {
-        for (const i in result) {
+        for (let i in result) {
             const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
             const newEntry = {
                 'enabled': result[i].enabled,

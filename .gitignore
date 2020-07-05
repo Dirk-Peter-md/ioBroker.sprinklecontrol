@@ -11,6 +11,7 @@ nbproject
 
 # npm package files
 iobroker.*.tgz
+iob_npm.done
 
 Thumbs.db
 
