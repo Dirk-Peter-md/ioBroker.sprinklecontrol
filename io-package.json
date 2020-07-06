@@ -79,8 +79,7 @@
       {
         "js-controller": ">=1.4.2"
       }
-    ],
-    "installedFrom": "iobroker.sprinklecontrol@0.0.4"
+    ]
   },
   "native": {
     "triggerControlVoltage": "",

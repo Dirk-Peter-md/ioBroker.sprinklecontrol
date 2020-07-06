@@ -82,7 +82,7 @@ const ObjThread = {
                     entry.autoOn = autoOn;
                     adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {val: addTime(wateringTime), ack: false});
                     addDone = true;		// Sprinkle found
-                    adapter.log.info('addList (addDone): ' +entry.sprinkleName);
+                    if (debug) {adapter.log.info('addList (addDone): ' +entry.sprinkleName);}
                     break;
                 }
             }
@@ -106,10 +106,10 @@ const ObjThread = {
                                         / (60 * resConfigChange[sprinkleID].wateringTime);
             newThread.id = ObjThread.threadList.length || 0;			
             ObjThread.threadList.push(newThread);
-            /* Zustand des Ventils im Thread < 0 > Aus, <<< 1 >>> warten, < 2 > Active, < 3 > Pause */
+            /* Zustand des Ventils im Thread < 0 > off, <<< 1 >>> wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
             adapter.setState('sprinkle.' + sprinkleName + '.sprinklerState', {val: 1, ack: false });
             adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {val: addTime(wateringTime), ack: false});
-            adapter.log.info('addList ' + ' (' + newThread.id + '): ' + JSON.stringify(newThread));
+            if (debug) {adapter.log.info('addList ' + ' (' + newThread.id + '): ' + newThread.join(', '));}
         }
     }, // End addList
 
@@ -126,7 +126,7 @@ const ObjThread = {
                 if (zaehler !== lastArray) ObjThread.threadList[zaehler] = ObjThread.threadList[zaehler + 1];
             }
         }
-        /* If a valve is found, delete the last array (entry). Wenn Ventil gefunden letzten Arrey (Auftrag) löschen */
+        /* If a valve is found, delete the last array (entry). Wenn Ventil gefunden letzten Array (Auftrag) löschen */
         if (bValveFound) {
             ObjThread.threadList.pop();
             if (debug) {adapter.log.info(sprinkleName + ' !!! >>> wurde gelöscht');}
@@ -144,7 +144,7 @@ const ObjThread = {
             const myEntry = ObjThread.threadList[zaehler];
             /* Ventil ausschalten */
             adapter.setForeignState(myEntry.idState, {val: false, ack: false});
-            /* Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten, < 2 > Active, < 3 > Pause */
+            /* Zustand des Ventils im Thread <<< 0 >>> off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
             adapter.setState('sprinkle.' + myEntry.sprinkleName + '.sprinklerState', { val: 0, ack: true});
             adapter.setState('sprinkle.' + myEntry.sprinkleName + '.runningTime', { val: 0, ack: true});
             adapter.setState('sprinkle.' + myEntry.sprinkleName + '.countdown', { val: 0, ack: true});
@@ -170,9 +170,9 @@ const ObjThread = {
             /* del timer onOffTimeoutOff */
             clearTimeout(myEntry.onOffTimeoutOff);
 
-            adapter.log.info('133 Test: Ventil wird gelöscht: ' + myEntry.sprinkleName);
+            if (debug) {adapter.log.info('clearEntireList: Ventil wird gelöscht: ' + myEntry.sprinkleName);}
             ObjThread.threadList.pop();
-            adapter.log.info('133 Test: Ventil ist gelöscht => noch vorhandene Ventile: ' + ObjThread.threadList.length);
+            if (debug) {adapter.log.info('clearEntireList: Ventil ist gelöscht => noch vorhandene Ventile: ' + ObjThread.threadList.length);}
         }
         ObjThread.updateList();
 
@@ -181,21 +181,21 @@ const ObjThread = {
     boostList : function (sprinkleID) {
         boostReady = false;
         boostOn = true;
-
+        if (debug) {adapter.log.info('boostList: sprinkleID: ' + sprinkleID);}
         for (const entry of ObjThread.threadList) {
             if (entry.enabled) {
                 if (entry.sprinkleID === sprinkleID) {
-                    /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), <<< 5 >>> off(Boost) */
+                    /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, <<< 4 >>> Boost(on), < 5 > off(Boost) */
                     adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 4, ack: true});
                     setTimeout(() => {adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true});},11000);
                 } else {
                     setTimeout(() => {
-                        /* Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, < 2 > Active, < 3 > Pause, <<< 4 >>> off(Boost), < 5 > Boost(on) */
+                        /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), <<< 5 >>> off(Boost) */
                         adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 5, ack: true});
                         adapter.setForeignState(entry.idState, {val: false, ack: false});	// Ventil ausschalten
                     },1000);
                     setTimeout(() => {
-                        /* Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, < 2 > Active, < 3 > Pause, <<< 4 >>> off(Boost), < 5 > Boost(on) */
+                        /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
                         adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true});
                         adapter.setForeignState(entry.idState, {val: true, ack: false});	// Ventil einschalten
                     },11000);
@@ -242,14 +242,14 @@ const ObjThread = {
                 if ((entry.onOffTime > 0) && !(entry.count % entry.onOffTime)) {
                     entry.enabled = false;
                     entry.myBreak = true;
-                    /* Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, < 2 > Active, <<< 3 >>> Pause */
+                    /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, <<< 3 >>> break, < 4 > Boost(on), < 5 > off(Boost) */
                     adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 3, ack: true});
                     adapter.setForeignState(entry.idState, {val: false, ack: false});	// Ventil ausschalten
                     ObjThread.updateList();
                     clearInterval(entry.countdown);
                     entry.onOffTimeoutOff = setTimeout(()=>{
                         entry.myBreak = false;
-                        /* Zustand des Ventils im Thread < 0 > Aus, <<< 1 >>> warten, < 2 > Active, < 3 > Pause */
+                        /* Zustand des Ventils im Thread < 0 > off, <<< 1 >>> wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
                         adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 1, ack: true});
                         ObjThread.updateList();
                     },1000 * entry.onOffTime);
@@ -257,7 +257,7 @@ const ObjThread = {
             } else {
                 /* Ventil ausschalten */
                 adapter.setForeignState(entry.idState, {val: false, ack: false});
-                /* Zustand des Ventils im Thread <<< 0 >>> Aus, < 1 > warten, < 2 > Active, < 3 > Pause */
+                /* Zustand des Ventils im Thread <<< 0 >>> off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 0, ack: true});
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.runningTime', { val: 0, ack: true});
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
@@ -278,7 +278,10 @@ const ObjThread = {
                         adapter.setState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekRunningTime', { val: addTime(state.val,entry.count), ack: true});
                     }
                 });
-                if (resConfigChange[entry.sprinkleID].booster) {boostReady = false;}
+                if (resConfigChange[entry.sprinkleID].booster) {
+                    boostReady = true;
+                    if (debug) {adapter.log.info('UpdateList Sprinkle Off: sprinkleID: ' + entry.sprinkleID + ', boostReady = ' + boostReady);}
+                }
                 ObjThread.delList(entry.sprinkleName);
                 clearInterval(entry.countdown);
                 /*clearTimeout(entry.onOffTimeoutOn);*/
@@ -308,20 +311,19 @@ const ObjThread = {
                 entry.enabled = true;	// einschalten merken
                 adapter.log.info('236 Test: sprinkleID: ' + entry.sprinkleID + ', boost: ' + resConfigChange[entry.sprinkleID].booster);
                 if (resConfigChange[entry.sprinkleID].booster) {
-                    adapter.log.info('238 Test: sprinkleID: ' + entry.sprinkleID + ', boostReady = false');
                     boostReady = false;
+                    if (debug) {adapter.log.info('UpdateList sprinkle On: sprinkleID: ' + entry.sprinkleID + ', boostReady = ' + boostReady);}
                     setTimeout(() => {ObjThread.boostList(entry.sprinkleID);},100);
                 }
                 curFlow -= entry.pipeFlow;	// ermitteln der RestFörderkapazität
                 parallel ++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
-                /* Zustand des Ventils im Thread < 0 > Aus, < 1 > warten, <<< 2 >>> Active, < 3 > Pause */
+                /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });
                 /* Ventil einschalten */
                 adapter.setForeignState(entry.idState, {val: true, ack: false});
                 /* countdown starten */
                 if (!entry.startTime) {entry.startTime = new Date();}
                 entry.countdown = setInterval(() => {countSprinkleTime(entry);}, 1000);	// 1000 = 1s
-                
 
             }
         }
@@ -437,7 +439,7 @@ function startAdapter(options) {
                 // wenn (autoOnOff == false) so werden alle Spränger nicht mehr automatisch gestartet.
                 if (id === adapter.namespace + '.control.autoOnOff') {
                     autoOnOffStr = state.val;
-                    adapter.log.info('347 Test autoOnOff: ' + state.val);
+                    adapter.log.info('startAdapter: control.autoOnOff: ' + state.val);
                     if (!state.val) {ObjThread.clearEntireList();}
                     startTimeSprinkle();
                 }
@@ -447,7 +449,7 @@ function startAdapter(options) {
                     if (found) {
                         if (id === resConfigChange[found.sprinkleID].objectID) {
                             if (!isNaN(state.val)) {
-                                adapter.log.info('Test 374 JSON: ' + JSON.stringify(found));
+                                if (debug) {adapter.log.info('sprinkleName.runningTime wurde geändert: JSON: ' + JSON.stringify(found));}
                                 ObjThread.addList(
                                     found.sprinkleID,
                                     Math.round(60 * state.val),
@@ -914,7 +916,7 @@ function startTimeSprinkle() {
                 infoMesetsch = 'Start am Feiertag ';
                 newStartTime = adapter.config.weekEndLiving;
             }
-            if (debug) {adapter.log.info('next Start Time: ' + newStartTime + ', ' + myTime + ', ' + (newStartTime <= myTime) + ', ' + (run === 1) + ', ' + ((newStartTime <= myTime) && (run === 1)));}
+            if (debug) {adapter.log.info('next Start Time: ' + myWeekdayStr[myWeekday] + ', ' + newStartTime + ', ' + myTime + ', ' + (newStartTime <= myTime) + ', ' + (run === 1) + ', ' + ((newStartTime <= myTime) && (run === 1)));}
         } while ((newStartTime <= myTime) && (run === 1));
 
         newStartTimeLong = myWeekdayStr[myWeekday] + ' ' + newStartTime;
@@ -1008,7 +1010,7 @@ function createSprinklers() {
                     'type':  'number',
                     'min':	0,
                     'max':	3,
-                    'states': '0:off;1:wait;2:on;3:break',
+                    'states': '0:off;1:wait;2:on;3:break;4:Boost(on);5:off(Boost)',
                     'read':  true,
                     'write': false,
                     'def':   false
@@ -1359,7 +1361,7 @@ function main() {
             if (newEntry.enabled) {
                 adapter.subscribeStates(newEntry.objectID);	// abonieren der Statusänderungen des Objekts
             }
-            adapter.log.info('Test 1281 Name: ' + objectName + '(' + newEntry.sprinkleID + ')   ' + JSON.stringify(resConfigChange[newEntry.sprinkleID]));
+            adapter.log.info('main: resConfigChange add: Name: ' + objectName + '(' + newEntry.sprinkleID + ')   ' + JSON.stringify(resConfigChange[newEntry.sprinkleID]));
         }
     }
 
