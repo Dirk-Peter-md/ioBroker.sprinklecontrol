@@ -183,3 +183,35 @@ Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 * **Windgeschwindigkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Windgeschwindigkeitssensor in km/h auswählen.
 * **Helligkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Helligkeitssensor auswählen.
 * **Regensensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Regensensor in mm auswählen.
+
+***
+
+# Objekte
+![control.jpg](img/control.jpg)
+
+## control
+* **Holiday** - 
+* **autoOnOff** -
+* **parallelOfMax** -
+* **restFlow** -
+
+## evaporation
+* **ETpCurrent** - 
+* **ETpToday** - 
+* **ETpYesterday** - 
+## info
+* **nextAutoStart** - 
+## sprinkle
+* **Auffahrt** - 
+    * **history**
+        * **curCalWeekConsumed**
+        * **curCalWeekRunningTime**
+        * **lastCalWeekConsumed**
+        * **lastCalWeekRunningTime**
+        * **lastConsumed**
+        * **lastOn**
+        * **lastRunningTime**
+    * **actualSoilMoisture**
+    * **countdown**
+    * **runningTime**
+    * **sprinklerState**

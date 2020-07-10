@@ -34,8 +34,8 @@ let publicHolidayStr;
 let publicHolidayTomorowStr;
 /** @type {number} */
 let ETpTodayStr;
-/** @type {string} */
-let dayStr;		// 0..6; 0 = Sonntag
+/** @type {number} */
+let dayNum;		// 0..6; 0 = Sonntag
 /** @type {string} */
 let kwStr; // akt. KW der Woche
 /** @type {boolean} */
@@ -63,10 +63,6 @@ let ObjSprinkle = [];
 /** @type {any[]} */
 const resConfigChange = []; /* Speicher für Werte aus der Config und dem Programm für schnellzugriff */
 
-/**
- * Starts the adapter instance
- * @param {Partial<ioBroker.AdapterOptions>} [options]
- */
 //
 const ObjThread = {
     threadList: [],
@@ -300,7 +296,7 @@ const ObjThread = {
         // sortieren nach der Verbrauchsmenge
         ObjThread.threadList.sort(mySort);
 		
-        // einschalten der Sprängerventile nach Verbrauchsmenge und maximaler Anzahl
+        // einschalten der Bewässerungsventile nach Verbrauchsmenge und maximaler Anzahl
         for(const entry of ObjThread.threadList) {
             if (!entry.enabled
 				&& !entry.myBreak
@@ -367,7 +363,12 @@ const ObjThread = {
     } // End updateList
 	
 }; // End ObjThread
-//
+
+/**
+ * +++++++++++++++++++++++++++ Starts the adapter instance ++++++++++++++++++++++++++++++++
+ *
+ * @param {Partial<ioBroker.AdapterOptions>} [options]
+ */
 function startAdapter(options) {
     // Create the adapter and define its methods => Erstellen Sie den Adapter und definieren Sie seine Methoden
     return adapter = utils.adapter(Object.assign({}, options, {
@@ -379,10 +380,10 @@ function startAdapter(options) {
         */
         ready: main, // Main method defined below for readability => Hauptmethode für die Lesbarkeit unten definiert
 
+        // +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
         /*
-		* is called when adapter shuts down - callback has to be called under any circumstances!
-		* => wird beim Herunterfahren des Adapters aufgerufen - Callback muss unbedingt aufgerufen werden!
-        */
+         * @param {() => void} callback
+         */
         unload: (callback) => {
             try {
                 adapter.log.info('cleaned everything up...');
@@ -398,10 +399,11 @@ function startAdapter(options) {
             }
         },
 
+        // ++++++++++++++++++ is called if a subscribed object changes ++++++++++++++++++
         /*
-		* is called if a subscribed object changes
-		* => wird aufgerufen, wenn sich ein abonniertes Objekt ändert
-		*/
+         * @param {string} id
+         * @param {{ obj: any; }} state
+         */
         objectChange: (id, obj) => {
             if (obj) {
                 // The object was changed
@@ -423,10 +425,11 @@ function startAdapter(options) {
             }
         },
 
+        // ++++++++++++++++++ is called if a subscribed state changes ++++++++++++++++++
         /*
-		* is called if a subscribed state changes
-		* wird aufgerufen, wenn sich ein abonnierter Status ändert
-		*/
+         * @param {string} id
+         * @param {{ val: string; ts: any; lc: any; ack: boolean}} state
+         */
         stateChange: (id, state) => {
             if (state) {
                 // The state was changed => Der Zustand wurde geändert
@@ -542,10 +545,11 @@ function calcEvaporation (timeDifference) {
     //	Sonnenscheindauer in %
     const curSunshineDuration = (curIllumination < 100) ? (0) : (curIllumination > 7000) ? (1) : ((curIllumination - 100) / (6900));
 	
-    // Extraterrestrische Strahlung in W/m³
-    // let ExStra = [86,149,247,354,439,479,459,388,287,184,104,70];   // "53NB"
-    // my $m = strftime("%m", localtime);
-    // my $RE = $ExStra[$m];
+    /* Extraterrestrische Strahlung in W/m³
+    let ExStra = [86,149,247,354,439,479,459,388,287,184,104,70];   // "53NB"
+    my m = strftime("%m", localtime);
+    my RE = ExStra[$m]; */
+
     const RE = 45.8 * maxSunshine - 293;
 
     // Sättigungsdampfdruck Es in hPa
@@ -579,12 +583,12 @@ function calcEvaporation (timeDifference) {
     const curETp = (eTp * timeDifference) - curAmountOfRain;
     const curDay = new Date().getDay();
     curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
-    if (dayStr === curDay) {	// akt. Tag
+    if (dayNum === curDay) {	// akt. Tag
         ETpTodayStr += curETp;
         if (debug) {adapter.log.info('ETpTodayStr = ' + ETpTodayStr + ' ( ' + curETp + ' )');}
         adapter.setState('evaporation.ETpToday', { val: Math.round(ETpTodayStr * 10000) / 10000, ack: true });
     } else {	// neuer Tag
-        dayStr = curDay;
+        dayNum = curDay;
         adapter.setState('evaporation.ETpYesterday', { val: Math.round(ETpTodayStr * 10000) / 10000 , ack: true});
         ETpTodayStr = 0;
         adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
@@ -594,10 +598,8 @@ function calcEvaporation (timeDifference) {
 }
 // apply Evaporation => Verdunstung anwenden auf die einzelnen Sprengerkreise
 function applyEvaporation (eTP){
-    const resultFull = resConfigChange;
-    // Filter enabled => nur aktivierte Sprängerkreise
-    /* let resEnabled = resultFull.filter(d => d.enabled === true); // Ausgeblendet da eTP auf alle Kreise angewendet werden soll */
-    const result = resultFull; // resEnabled;
+
+    const result = resConfigChange; // resEnabled;
     if (result) {
 	
         for ( const i in result) {
@@ -701,11 +703,11 @@ function checkStates() {
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state === null || state.val === null) {
             ETpTodayStr = 0;
-            dayStr = new Date().getDay();
+            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
         } else if (state) {
             ETpTodayStr = state.val;
-            dayStr = new Date(state.ts).getDay();
+            dayNum = new Date(state.ts).getDay();
         }
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
@@ -741,7 +743,7 @@ function checkStates() {
     // akt. kW ermitteln für history last week
     kwStr = formatTime('','kW');
     // akt. Tag ermitteln für history ETpYesterday
-    // dayStr = new Date().getDay;
+    // dayNum = new Date().getDay;
 }
 //	aktuelle States checken nach 2000 ms
 function checkActualStates () {
@@ -758,11 +760,19 @@ function checkActualStates () {
     });
     //
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance != 'none' || adapter.config.publicHolInstance != '')) {
+        /*
+         * @param {any} err
+         * @param {{ val: any; }} state
+         */
         adapter.getForeignState(adapter.config.publicHolInstance + '.heute.boolean', (err, state) => {
             if (state) {
                 publicHolidayStr = state.val;
             }
         });
+        /*
+         * @param {any} err
+         * @param {{ val: any; }} state
+         */
         adapter.getForeignState(adapter.config.publicHolInstance + '.morgen.boolean', (err, state) => {
             if (state) {
                 publicHolidayTomorowStr = state.val;
@@ -771,6 +781,10 @@ function checkActualStates () {
     }
     //
     adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel', function (err, list) {
+        /**
+        * @param {any} err
+        * @param {any[]} list
+        */
         if (err) {
             adapter.log.error(err);
         } else {
@@ -794,10 +808,8 @@ const calcPos = ('calcPosTimer', '* 5 0 * * *', function() {	//(..., 's m h d m 
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
     if (kwStr !== formatTime('','kW')) {
-        const resultFull = adapter.config.events;
-        // Filter enabled
-        // let resEnabled = resultFull.filter(d => d.enabled === true);
-        const result = resultFull; // resEnabled;
+
+        const result = adapter.config.events;
         if (result) {	
             for ( const i in result) {
                 const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
@@ -843,7 +855,7 @@ function sunPos() {
     maxSunshine = (('0' + times.sunset.getTime() - times.sunrise.getTime()) / 3600000); 
 	
     // Berechnung des heutigen Tages
-    // dayStr = times.sunrise.getDay();
+    // dayNum = times.sunrise.getDay();
 	
     // format sunrise time from the Date object => Formatieren Sie die Sonnenaufgangzeit aus dem Date-Objekt
     sunriseStr = ('0' + times.sunrise.getHours()).slice(-2) + ':' + ('0' + times.sunrise.getMinutes()).slice(-2);
