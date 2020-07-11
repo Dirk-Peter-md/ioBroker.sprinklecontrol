@@ -45,6 +45,7 @@ let boostReady = true;
 /** @type {boolean} */
 let boostOn = false;
 // calcEvaporation
+/** @type {number} */
 let curTemperature;		/*Temperatur*/
 /** @type {number} */
 let curHumidity;		/*LuftFeuchtigkeit*/
@@ -629,7 +630,7 @@ function addTime(time1, time2){
         const h = Math.trunc(n / 3600);
         const m = Math.trunc((n / 60 ) % 60);
         const sec = Math.trunc(n % 60);
-        return (h == 0)?(frmt(m) + ':' + frmt(sec)):(frmt(h) + ':' + frmt(m) + ':' + frmt(sec));
+        return (h === 0)?(frmt(m) + ':' + frmt(sec)):(frmt(h) + ':' + frmt(m) + ':' + frmt(sec));
     }   //  end function seconds2string
     
     function string2seconds(n) {
@@ -653,18 +654,21 @@ function addTime(time1, time2){
     function frmt(n) { return n < 10 ? '0' + n : n;}
 
 }   // end - function addTime
-// func Format Time
+
+/* func Format Time => hier wird der übergebene Zeitstempel, myDate, in das angegebene Format, timeFormat, umgewandelt.
+*   Ist myDate nicht angegeben, so wird die aktuelle Zeit verwendet.
+*/
 function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm' 
-    function zweistellen (s) {
+    function zweiStellen (s) {
         while (s.toString().length < 2) {s = '0' + s;}
         return s;
     }
 
     const d = (myDate)? new Date(myDate):new Date();
-    const tag = zweistellen(d.getDate());
-    const monat = zweistellen(d.getMonth() + 1);
-    const stunde = zweistellen(d.getHours());
-    const minute = zweistellen(d.getMinutes());
+    const tag = zweiStellen(d.getDate());
+    const monat = zweiStellen(d.getMonth() + 1);
+    const stunde = zweiStellen(d.getHours());
+    const minute = zweiStellen(d.getMinutes());
     const currentThursday = new Date(d.getTime() +(3-((d.getDay()+6) % 7)) * 86400000);
     // At the beginnig or end of a year the thursday could be in another year.
     const yearOfThursday = currentThursday.getFullYear();
@@ -731,7 +735,7 @@ function checkStates() {
     }
     const result = adapter.config.events;
     if (result) {	
-        for ( const i in result) {
+        for ( let i in result) {
             adapter.getState(result[i].name, (err, state) => {
                 if (state) {
                     adapter.setState(result[i].name, {val: false, ack: false});
@@ -748,11 +752,19 @@ function checkStates() {
 //	aktuelle States checken nach 2000 ms
 function checkActualStates () {
     //
+    /*
+     * @param {any} err
+     * @param {{ val: any; }} state
+     */
     adapter.getState('control.Holiday', (err, state) => {
         if (state) {
             holidayStr = state.val;
         }
     });
+    /*
+     * @param {any} err
+     * @param {{ val: any; }} state
+     */
     adapter.getState('control.autoOnOff', (err, state) => {
         if (state) {
             autoOnOffStr = state.val;
@@ -801,8 +813,8 @@ function checkActualStates () {
     }, 2000);
 	
 }
-/* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle */
-const calcPos = ('calcPosTimer', '* 5 0 * * *', function() {	//(..., 's m h d m wd')
+/* at 0:02 start of StartTimeSprinkle => um 0:02 start von StartTimeSprinkle */
+const calcPos = ('calcPosTimer', '* 2 0 * * *', function() {	//(..., 's m h d m wd')
     // Berechnungen mittels SunCalc
     sunPos();
 
@@ -976,7 +988,7 @@ function createSprinklers() {
         for ( const i in result) {
             const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
             const objPfad = 'sprinkle.' + objectName;
-            const j = resConfigChange.findIndex(d => d.objectName == objectName);
+            const j = resConfigChange.findIndex(d => d.objectName === objectName);
             // Create Object for sprinklers (ID)
             adapter.setObjectNotExists('sprinkle.' + objectName, {
                 'type': 'channel',
