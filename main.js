@@ -544,7 +544,7 @@ function startAdapter(options) {
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
     //	Sonnenscheindauer in %
-    const curSunshineDuration = (curIllumination < 100) ? (0) : (curIllumination > 7000) ? (1) : ((curIllumination - 100) / (6900));
+    let curSunshineDuration = (curIllumination < 100) ? (0) : (curIllumination > 7000) ? (1) : ((curIllumination - 100) / (6900));
 	
     /* Extraterrestrische Strahlung in W/m³
     let ExStra = [86,149,247,354,439,479,459,388,287,184,104,70];   // "53NB"
@@ -554,35 +554,35 @@ function calcEvaporation (timeDifference) {
     const RE = 45.8 * maxSunshine - 293;
 
     // Sättigungsdampfdruck Es in hPa
-    const m1 = 6.11 * ( 10 ** (( 7.48 * curTemperature ) / ( 237 + curTemperature )));
+    let m1 = 6.11 * ( ( 10 ) ** (( 7.48 * curTemperature ) / ( 237 + curTemperature )));
 
     // Dampfdruck Ea
-    const m2 = m1 * curHumidity / 100;
+    let m2 = m1 * curHumidity / 100;
 		
     // Globalstrahlung RG
-    const m3 = (0.19 + 0.55 * curSunshineDuration) * RE;
+    let m3 = (0.19 + 0.55 * curSunshineDuration) * RE;
 
     // Abstrahlung I in W/m²
-    const m4 = 5.67E-8 * (( curSunshineDuration + 273 ) ** 4 ) * ( 0.56 - 0.08 * ( m2 ** 0.5 )) * ( 0.1 + ( 0.9 * curSunshineDuration));
+    let m4 = 5.67E-8 * (( curSunshineDuration + 273 ) ** 4 ) * ( 0.56 - 0.08 * ( m2 ** 0.5 )) * ( 0.1 + ( 0.9 * curSunshineDuration));
 		
     // Strahlungsäquivalent EH in mm/d
-    const m5 = ( m3 * ( 1 - 0.2 ) - m4 ) / 28.3;	
+    let m5 = ( m3 * ( 1 - 0.2 ) - m4 ) / 28.3;
 		
     // Steigung der Sättigungsdampfdruckkurve Delta in hPa/K
-    const m6 = ( m1 * 4032 ) / (( 237 + curTemperature ) ** 2 );
+    let m6 = ( m1 * 4032 ) / (( 237 + curTemperature ) ** 2 );
 
     // Windfunktion f(v) in mm/d hPa
-    const m7 = 0.13 + 0.14 * curWindSpeed / 3.6;
+    let m7 = 0.13 + 0.14 * curWindSpeed / 3.6;
 	
     // pot. Evapotranspiration nach Penmann ETp in mm/d
-    const eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
+    let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
 
     if (debug) {adapter.log.info('RE: ' + RE + ' ETp:' + eTp);}
     adapter.setState('evaporation.ETpCurrent', { val: eTp.toFixed(4), ack: true });
 	
     // Verdunstung des heutigen Tages
-    const curETp = (eTp * timeDifference) - curAmountOfRain;
-    const curDay = new Date().getDay();
+    let curETp = (eTp * timeDifference) - curAmountOfRain;
+    let curDay = new Date().getDay();
     curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
     if (dayNum === curDay) {	// akt. Tag
         ETpTodayStr += curETp;
