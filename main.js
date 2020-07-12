@@ -698,7 +698,7 @@ function checkStates() {
      * @param {{ val: null; } | null} state
      */
     adapter.getState('control.Holiday', (err, state) => {
-        if (state === null || state.val === null) {
+        if ((state && state === null) || (state && state.val === null)) {
             adapter.setState('control.Holiday', {val: false, ack: true});
         }
     });
@@ -707,13 +707,13 @@ function checkStates() {
      * @param {{ val: null; } | null} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
-        if (state === null || state.val === null) {
+        if (state && ((state === null) || (state.val === null))) {
             autoOnOffStr = true;
             adapter.setState('control.autoOnOff', {val: autoOnOffStr, ack: true});
         }
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
-        if (state === null || state.val === null) {
+        if (state && ((state === null) || (state.val === null))) {
             ETpTodayStr = 0;
             dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
@@ -723,7 +723,7 @@ function checkStates() {
         }
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
-        if (state === null || state.val === null || state.val === false) {
+        if (state && (state === null || state.val === null || state.val === false)) {
             adapter.setState('evaporation.ETpYesterday', {val: '0', ack: true});
         }
     });
