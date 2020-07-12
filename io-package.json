@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "news": {
+      "0.0.5": {
+        "en": ".travis.yml for nodes js 10, 12, 14 adapted to the current ioBroker.template",
+        "de": ".travis.yml für Knoten js 10, 12, 14 angepasst an die aktuelle ioBroker.template",
+        "ru": ".travis.yml для узлов js 10, 12, 14, адаптированных к текущему шаблону ioBroker.template",
+        "pt": ".travis.yml para nós js 10, 12, 14 adaptados ao ioBroker.template atual",
+        "nl": ".travis.yml voor knooppunten js 10, 12, 14 aangepast aan de huidige ioBroker.template",
+        "fr": ".travis.yml pour les nœuds js 10, 12, 14 adaptés au modèle ioBroker.template actuel",
+        "it": ".travis.yml per i nodi js 10, 12, 14 adattato all'attuale ioBroker.template",
+        "es": ".travis.yml para los nodos js 10, 12, 14 adaptados al ioBroker.template actual",
+        "pl": ".travis.yml dla węzłów js 10, 12, 14 dostosowany do bieżącego ioBroker.template",
+        "zh-cn": "适用于当前ioBroker.template的节点js 10、12、14的.travis.yml"
+      },
       "0.0.4": {
         "en": "Mistake eliminated, Booster function added",
         "de": "Fehler beseitigt, Booster-Funktion hinzugefügt",
