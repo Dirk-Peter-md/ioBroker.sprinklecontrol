@@ -554,7 +554,7 @@ function calcEvaporation (timeDifference) {
     const RE = 45.8 * maxSunshine - 293;
 
     // Sättigungsdampfdruck Es in hPa
-    let m1 = 6.11 * ( ( 10 ) ** (( 7.48 * curTemperature ) / ( 237 + curTemperature )));
+    let m1 = 6.11 * ( 10 ** (( 7.48 * curTemperature ) / ( 237 + curTemperature )));
 
     // Dampfdruck Ea
     let m2 = m1 * curHumidity / 100;
@@ -693,11 +693,19 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
 // Sets the status at start to a defined value => Setzt den Status beim Start auf einen definierten Wert
 function checkStates() {
     //
+    /*
+     * @param {any} err
+     * @param {{ val: null; } | null} state
+     */
     adapter.getState('control.Holiday', (err, state) => {
         if (state === null || state.val === null) {
             adapter.setState('control.Holiday', {val: false, ack: true});
         }
     });
+    /*
+     * @param {any} err
+     * @param {{ val: null; } | null} state
+     */
     adapter.getState('control.autoOnOff', (err, state) => {
         if (state === null || state.val === null) {
             autoOnOffStr = true;
@@ -1290,7 +1298,9 @@ function main() {
     adapter.log.debug(JSON.stringify(adapter.config.events));
 
     adapter.getForeignObject('system.config', (err, obj) => {
-        checkStates();
+        if (!err) {
+            checkStates();
+        }
     });
     setTimeout(function() {
         checkActualStates();
