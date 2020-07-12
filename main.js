@@ -184,7 +184,7 @@ const ObjThread = {
                 if (entry.sprinkleID === sprinkleID) {
                     /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, <<< 4 >>> Boost(on), < 5 > off(Boost) */
                     adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 4, ack: true});
-                    setTimeout(() => {adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true});},11000);
+                    setTimeout(() => {adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true});},1000);
                 } else {
                     setTimeout(() => {
                         /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), <<< 5 >>> off(Boost) */
@@ -195,14 +195,14 @@ const ObjThread = {
                         /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
                         adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true});
                         adapter.setForeignState(entry.idState, {val: true, ack: false});	// Ventil einschalten
-                    },11000);
+                    },31000);
                 }
             }
         }
         setTimeout(() => {
             boostOn = false;
             ObjThread.updateList();
-        },12000);
+        },32000);
     }, // End boostList
 
     updateList : function () {
@@ -993,7 +993,7 @@ function startTimeSprinkle() {
 function createSprinklers() {
     const result = adapter.config.events;
     if (result) {	
-        for ( const i in result) {
+        for ( let i in result) {
             const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
             const objPfad = 'sprinkle.' + objectName;
             const j = resConfigChange.findIndex(d => d.objectName === objectName);
@@ -1201,37 +1201,37 @@ function createSprinklers() {
                 });
                 // history		
                 adapter.getState(objPfad + '.history.lastRunningTime', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.lastRunningTime', {val: '00:00', ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastOn', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.lastOn', {val: '-', ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastConsumed', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.lastConsumed', {val: 0, ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.curCalWeekConsumed', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.curCalWeekConsumed', {val: 0, ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastCalWeekConsumed', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.lastCalWeekConsumed', {val: 0, ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.curCalWeekRunningTime', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.curCalWeekRunningTime', {val: '00:00', ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastCalWeekRunningTime', (err, state) => {
-                    if (state.val === true) {
+                    if (state.val === false) {
                         adapter.setState(objPfad + '.history.lastCalWeekRunningTime', {val: '00:00', ack: true});
                     }
                 });
