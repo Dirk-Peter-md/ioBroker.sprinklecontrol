@@ -21,10 +21,13 @@ Wetterabhängige automatische steuerung der Gartenbewässerungs
 
 
 
-=============================================================================
+*************************************************************************************************************************************
 
 
 ## Changelog
+
+### 0.0.5 (12.07.2020)
+* (Dirk-Peter-md) .travis.yml für Node.js 10, 12 und 14 laut ioBroker.template angepasst
 
 ### 0.0.4 (04.07.2020)
 * (Dirk-Peter-md) readme.md hinzugefügt
@@ -35,7 +38,7 @@ Wetterabhängige automatische steuerung der Gartenbewässerungs
 * (Dirk-Peter-md) initial release
 
 
-=============================================================================
+*************************************************************************************************************************************
 
 
 

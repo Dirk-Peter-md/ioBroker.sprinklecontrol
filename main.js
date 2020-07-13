@@ -39,7 +39,7 @@ let dayNum;		// 0..6; 0 = Sonntag
 /** @type {string} */
 let kwStr; // akt. KW der Woche
 /** @type {boolean} */
-const debug = true;
+let debug = false;
 /** @type {boolean} */
 let boostReady = true;
 /** @type {boolean} */
@@ -754,6 +754,7 @@ function checkStates() {
 
     // akt. kW ermitteln für history last week
     kwStr = formatTime('','kW');
+    adapter.log.info('checkStates akt-KW: ' + kwStr);
     // akt. Tag ermitteln für history ETpYesterday
     // dayNum = new Date().getDay;
 }
@@ -821,12 +822,13 @@ function checkActualStates () {
     }, 2000);
 	
 }
-/* at 0:02 start of StartTimeSprinkle => um 0:02 start von StartTimeSprinkle */
-const calcPos = ('calcPosTimer', '* 2 0 * * *', function() {	//(..., 's m h d m wd')
+/* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle */
+const calcPos = ('calcPosTimer', '* 5 0 * * *', function() {	//(..., 's m h d m wd')
     // Berechnungen mittels SunCalc
     sunPos();
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
+    adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime('','kW') + ' if: ' + (kwStr !== formatTime('','kW')) );
     if (kwStr !== formatTime('','kW')) {
 
         const result = adapter.config.events;
@@ -1299,6 +1301,7 @@ function main() {
 
     adapter.getForeignObject('system.config', (err, obj) => {
         if (!err) {
+            debug = adapter.config.debug;
             checkStates();
         }
     });

@@ -112,6 +112,7 @@
     "publicHolInstance": "",
     "latitude": "52.123456789",
     "longitude": "12.123456789",
+    "debug": false,
     "sensorOutsideTemperature": "",
     "sensorOutsideHumidity": "",
     "sensorWindSpeed": "",
