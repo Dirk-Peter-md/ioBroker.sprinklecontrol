@@ -190,10 +190,10 @@ Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 ![control.jpg](img/control.jpg)
 
 ## control
-* **Holiday** - 
-* **autoOnOff** -
-* **parallelOfMax** -
-* **restFlow** -
+* **Holiday** - Wenn Holiday auf true gesetzt wird, so wird die Bewässerung zu der Zeit gestartet wie am Wochenende. Falls die Wochenendeinstellung aktiviert wurde. Die Verbindung mit einem Kalender wäre hier auch möglich.
+* **autoOnOff** - Bei Einstellung "off" ist der Automatikbetrieb der Bewässerungsanlage deaktiviert.
+* **parallelOfMax** - z.B. (3 : 4) Drei Bewässerungskreise sind von vier möglichen aktive. (Dies ist nur eine Anzeige!)
+* **restFlow** - Anzeige der noch möglichen Restfördermenge der Pumpe.  (Dies ist nur eine Anzeige!)
 
 ## evaporation
 * **ETpCurrent** - 

@@ -306,7 +306,6 @@ const ObjThread = {
 				&& ((boostReady) || !(resConfigChange[entry.sprinkleID].booster))
             ) {
                 entry.enabled = true;	// einschalten merken
-                adapter.log.info('236 Test: sprinkleID: ' + entry.sprinkleID + ', boost: ' + resConfigChange[entry.sprinkleID].booster);
                 if (resConfigChange[entry.sprinkleID].booster) {
                     boostReady = false;
                     if (debug) {adapter.log.info('UpdateList sprinkle On: sprinkleID: ' + entry.sprinkleID + ', boostReady = ' + boostReady);}
@@ -698,7 +697,7 @@ function checkStates() {
      * @param {{ val: null; } | null} state
      */
     adapter.getState('control.Holiday', (err, state) => {
-        if ((state && state === null) || (state && state.val === null)) {
+        if (state && ((state === null) || (state.val === null))) {
             adapter.setState('control.Holiday', {val: false, ack: true});
         }
     });
@@ -741,6 +740,7 @@ function checkStates() {
             }
         });
     }
+    /* alle Ventile (.name = "hm-rpc.0.MEQ1234567.3.STATE") in einem definierten Zustand (false) versetzen*/
     const result = adapter.config.events;
     if (result) {	
         for ( let i in result) {
@@ -801,16 +801,16 @@ function checkActualStates () {
         });
     }
     //
-    adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel', function (err, list) {
-        /**
+    adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel', /**
         * @param {any} err
         * @param {any[]} list
         */
-        if (err) {
-            adapter.log.error(err);
-        } else {
-            ObjSprinkle = list;
-        }
+        function (err, list) {
+            if (err) {
+                adapter.log.error(err);
+            } else {
+                ObjSprinkle = list;
+            }
     });	
 	
     //
@@ -823,17 +823,16 @@ function checkActualStates () {
 	
 }
 /* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle */
-const calcPos = ('calcPosTimer', '* 5 0 * * *', function() {	//(..., 's m h d m wd')
+const calcPos = schedule.scheduleJob('calcPosTimer', '* 5 0 * * *', function() {	//(..., 's m h d m wd')
     // Berechnungen mittels SunCalc
     sunPos();
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
     adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime('','kW') + ' if: ' + (kwStr !== formatTime('','kW')) );
     if (kwStr !== formatTime('','kW')) {
-
         const result = adapter.config.events;
         if (result) {	
-            for ( const i in result) {
+            for ( let i in result) {
                 const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
                 adapter.getState('sprinkle.' + objectName + '.history.curCalWeekConsumed', (err, state) => {
                     if (state) {
