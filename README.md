@@ -2,6 +2,7 @@
 # ioBroker.sprinklecontrol
 
 
+
 ![Number of Installations](http://iobroker.live/badges/sprinklecontrol-installed.svg) 
 [![NPM version](http://img.shields.io/npm/v/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
@@ -11,15 +12,18 @@
 
 [![NPM](https://nodei.co/npm/iobroker.sprinklecontrol.png?downloads=true)](https://nodei.co/npm/iobroker.sprinklecontrol/)
 
-Sprinkle, Irrigation, Bewässerung, Steuerung, wetterabhängig
 
-## sprinklecontrol Adapter für ioBroker
+## sprinklecontrol adapter for ioBroker
+
+This adapter controls individual irrigation circuits in the garden. Depending on the weather and soil conditions, they start working at a specific time or at sunrise, as specified in the configuration.
 
 Wetterabhängige automatische steuerung der Gartenbewässerungs
 
 [Deutsche Beschreibung hier](docs/de/sprinklecontrol.md)
 
+Weather-dependent automatic control of garden irrigation
 
+[English Description here](docs/en/sprinklecontrol.md)
 
 *************************************************************************************************************************************
 
