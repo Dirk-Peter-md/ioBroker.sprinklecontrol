@@ -196,22 +196,32 @@ Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 * **restFlow** - Anzeige der noch möglichen Restfördermenge der Pumpe.  (Dies ist nur eine Anzeige!)
 
 ## evaporation
-* **ETpCurrent** - 
-* **ETpToday** - 
-* **ETpYesterday** - 
+Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung der mittleren monatlichen Verdunstung nach Penman gerichtet. Dies ist für mich ausreichend, obwohl sie nicht zu 100 % umgesetzt wurde.
+* **ETpCurrent** - Dies ist dei aktuelle Verdunstung als Tageswert. 
+* **ETpToday** - Hier wird die aktuelle Tagesverdunstung angezeigt. Diese wird in der Nacht um 0:05 zur ETpYesterday verschoben und dann wieder auf 0 gesetzt.
+* **ETpYesterday** - ist die Anzeige der Verdunstung des gestrigen Tages.
 ## info
-* **nextAutoStart** - 
+* **nextAutoStart** - Anzeige des nächsten Starts der Bewässerungsanlage.
 ## sprinkle
-* **Auffahrt** - 
+* **Auffahrt** - Ort des Geschehens (wurde in der Config unter Haupteinstellung => Name so individuell benannt)
     * **history**
-        * **curCalWeekConsumed**
-        * **curCalWeekRunningTime**
-        * **lastCalWeekConsumed**
-        * **lastCalWeekRunningTime**
-        * **lastConsumed**
-        * **lastOn**
-        * **lastRunningTime**
-    * **actualSoilMoisture**
-    * **countdown**
-    * **runningTime**
-    * **sprinklerState**
+        * **curCalWeekConsumed** - aktueller wöchentlicher Verbrauch in Liter des Beregnungskreises
+        * **curCalWeekRunningTime** - aktuelle wöchentliche Gesamtlaufzeit des Beregnungskreises
+        * **lastCalWeekConsumed** - letzter wöchentlicher Verbrauch in Liter des Beregnungskreises
+        * **lastCalWeekRunningTime** - letzte wöchentliche Gesamtlaufzeit des Beregnungskreises
+        * **lastConsumed** - Wasserverbrauch bei der letzten Bewässerung in Liter
+        * **lastOn** - letzter Start des Beregnungskreises (05.07 14:14)
+        * **lastRunningTime** - letzte Bewässerungsdauer
+    * **actualSoilMoisture** - aktuelle virtuelle Bodenfeuchte in % (max. 100 % nach der Beregnung, >100 % nach einem kräftigen Regen) (hat mit der tatsächlichen nichts zu tun)
+    * **countdown** - Restzeit der Beregnungskreises
+    * **runningTime** - Laufzeit des Beregnungskreises
+        - wenn hier eine Zahl > 0 eingegeben wird, so startet der Beregnungskreises für die angegebene Zeit in Minuten
+        - bei eingabe einer 0 wird die Bewässerung des Beregnungskreises beendet 
+                         
+    * **sprinklerState** - Anzeige des Zustandes des Beregnungskreises
+        - 0:off;    => Beregnungskreises aus
+        - 1:wait;   => Beregnungskreises wartet auf eine freiwerdende Kapazität der Pumpe
+        - 2:on;     => Beregnungskreises ein
+        - 3:break;  => Beregnungskreises wurde unterbrochen (Configuration, Intervallberegnung)
+        - 4:Boost;  => Boostfunktion des aktuellen Beregnungskreises ist aktiv (Configuration, Booster ein)
+        - 5:off(Boost) => Beregnungskreis für 30 s unterbrochen da eine Boostfunktion aktive ist

@@ -113,7 +113,7 @@ const ObjThread = {
     /* Sprinkle (sprinkleName) delete */
     delList : function (sprinkleName) {
         let bValveFound = false;	// Ventil gefunden
-        for (let zaehler = 0,                                  // Loop über das Array
+        for(let zaehler = 0,                                  // Loop über das Array
             lastArray = (ObjThread.threadList.length - 1);     // entsprechend der Anzahl der Eintragungen
             zaehler <= lastArray;
             zaehler++) {
@@ -135,7 +135,7 @@ const ObjThread = {
     /* switch off all devices, when close the adapter => Beim Beenden des adapters alles ausschalten */
     clearEntireList: function () {
         // let bValveFound = false;	// Ventil gefunden
-        for (let zaehler = ObjThread.threadList.length - 1;	// Loop über das Array
+        for(let zaehler = ObjThread.threadList.length - 1;	// Loop über das Array
             zaehler >= 0;
             zaehler--) {
             const myEntry = ObjThread.threadList[zaehler];
@@ -179,7 +179,7 @@ const ObjThread = {
         boostReady = false;
         boostOn = true;
         if (debug) {adapter.log.info('boostList: sprinkleID: ' + sprinkleID);}
-        for (const entry of ObjThread.threadList) {
+        for(const entry of ObjThread.threadList) {
             if (entry.enabled) {
                 if (entry.sprinkleID === sprinkleID) {
                     /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, <<< 4 >>> Boost(on), < 5 > off(Boost) */
@@ -602,7 +602,7 @@ function applyEvaporation (eTP){
     const result = resConfigChange; // resEnabled;
     if (result) {
 	
-        for ( const i in result) {
+        for(const i in result) {
             const objectName = result[i].objectName;
             const pfadActSoiMoi = 'sprinkle.' + objectName + '.actualSoilMoisture';
 
@@ -743,7 +743,7 @@ function checkStates() {
     /* alle Ventile (.name = "hm-rpc.0.MEQ1234567.3.STATE") in einem definierten Zustand (false) versetzen*/
     const result = adapter.config.events;
     if (result) {	
-        for ( let i in result) {
+        for(const i in result) {
             adapter.getState(result[i].name, (err, state) => {
                 if (state) {
                     adapter.setState(result[i].name, {val: false, ack: false});
@@ -823,17 +823,17 @@ function checkActualStates () {
 	
 }
 /* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle */
-const calcPos = schedule.scheduleJob('calcPosTimer', '* 5 0 * * *', function() {	//(..., 's m h d m wd')
+const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {	//(..., '(s )m h d m wd')
     // Berechnungen mittels SunCalc
     sunPos();
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
-    adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime('','kW') + ' if: ' + (kwStr !== formatTime('','kW')) );
+    adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime('','kW') + ' if: ' + (kwStr !== formatTime('','kW')));
     if (kwStr !== formatTime('','kW')) {
-        const result = adapter.config.events;
+        const result = resConfigChange;
         if (result) {	
-            for ( let i in result) {
-                const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
+            for(const i in result) {
+                const objectName = result[i].objectName;
                 adapter.getState('sprinkle.' + objectName + '.history.curCalWeekConsumed', (err, state) => {
                     if (state) {
                         adapter.setState('sprinkle.' + objectName + '.history.lastCalWeekConsumed', { val: state.val, ack: true });
@@ -862,7 +862,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '* 5 0 * * *', function() {
     },100);
 	
     // Startzeit Festlegen => verzögert wegen Daten von SunCalc
-    setTimeout(function() {
+    setTimeout(() => {
         startTimeSprinkle();
     },1000);
     
@@ -965,7 +965,7 @@ function startTimeSprinkle() {
         // Filter enabled
         const result = resConfigChange.filter(d => d.enabled === true);
         if (result) {	
-            for (const i in result) {
+            for(const i in result) {
                 // Test
                 if (debug) {adapter.log.info('Bodenfeuchte: ' + result[i].soilMoisture.val + ' <= ' + parseInt(result[i].soilMoisture.triggersIrrigation) + ' AutoOnOff: ' + result[i].autoOnOff);}
                 if (result[i].soilMoisture.val <= parseInt(result[i].soilMoisture.triggersIrrigation) && (result[i].autoOnOff)) {	// Bodenfeuchte zu gering && Ventil auf Automatik
@@ -994,7 +994,7 @@ function startTimeSprinkle() {
 function createSprinklers() {
     const result = adapter.config.events;
     if (result) {	
-        for ( let i in result) {
+        for(const i in result) {
             const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
             const objPfad = 'sprinkle.' + objectName;
             const j = resConfigChange.findIndex(d => d.objectName === objectName);
@@ -1239,7 +1239,7 @@ function createSprinklers() {
             },1500);
         }
         // delete old sprinkle
-        for ( const i in ObjSprinkle) {
+        for(const i in ObjSprinkle) {
 
             const resID = ObjSprinkle[i]._id;
             const objectID = resID.split('.');
@@ -1248,7 +1248,7 @@ function createSprinklers() {
             const resultName = result.map(({ sprinkleName }) => ({ sprinkleName }));
             const fullRes = [];
 			
-            for ( const i in resultName) {
+            for(const i in resultName) {
                 const res = resultName[i].sprinkleName.replace(/[.;, ]/g, '_');
                 fullRes.push(res);
             }
@@ -1369,7 +1369,7 @@ function main() {
     // Report a change in the status of the trigger IDs (.runningTime) => Melden einer Änderung des Status der Trigger-IDs
     const result = adapter.config.events;
     if (result) {
-        for (let i in result) {
+        for(const i in result) {
             const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
             const newEntry = {
                 'enabled': result[i].enabled,
