@@ -100,7 +100,7 @@ Auch diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** 
 
 * **Durchflussmenge:** - Ermittelte Durchflussmenge des aktuellen Bewässerungskreises.
     * **Tipp:** - Steht oft in der Bedienungsanleitung bzw. im Internet.
-* **Booster:** - Nimmt alle aktiven Bewässerungskreise für 15 s vom Netz und schaltet sie danach wieder zu. 
+* **Booster:** - Nimmt alle aktiven Bewässerungskreise für 30 s vom Netz und schaltet sie danach wieder zu. 
     * **Tipp:** - Meine Pumpe liefert max. 1800 l/h und meine Rasenspränger benötigen 1400 l/h, aber den vollen Druck zum herausfahren. Mit der Boosterfunktion kann ich nebenbei noch die Koniferen bewässern die nur 300 l/h benötigen. 
     * **Achtung:** - Mit dieser Funktion sollte man sehr sparsam umgehen, da immer nur ein Bewässerungskreis mit aktiven Booster bewässern kann.    
 

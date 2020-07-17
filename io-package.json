@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "news": {
       "0.0.5": {
         "en": ".travis.yml for nodes js 10, 12, 14 adapted to the current ioBroker.template",

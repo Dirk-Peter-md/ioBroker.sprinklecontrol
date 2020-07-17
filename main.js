@@ -113,14 +113,14 @@ const ObjThread = {
     /* Sprinkle (sprinkleName) delete */
     delList : function (sprinkleName) {
         let bValveFound = false;	// Ventil gefunden
-        for(let zaehler = 0,                                  // Loop über das Array
+        for(let counter = 0,                                  // Loop über das Array
             lastArray = (ObjThread.threadList.length - 1);     // entsprechend der Anzahl der Eintragungen
-            zaehler <= lastArray;
-            zaehler++) {
-            const entry = ObjThread.threadList[zaehler].sprinkleName;
+            counter <= lastArray;
+            counter++) {
+            const entry = ObjThread.threadList[counter].sprinkleName;
             if ((sprinkleName === entry) || bValveFound) {
                 if (sprinkleName === entry) bValveFound = true;
-                if (zaehler !== lastArray) ObjThread.threadList[zaehler] = ObjThread.threadList[zaehler + 1];
+                if (counter !== lastArray) ObjThread.threadList[counter] = ObjThread.threadList[counter + 1];
             }
         }
         /* If a valve is found, delete the last array (entry). Wenn Ventil gefunden letzten Array (Auftrag) löschen */
@@ -135,10 +135,10 @@ const ObjThread = {
     /* switch off all devices, when close the adapter => Beim Beenden des adapters alles ausschalten */
     clearEntireList: function () {
         // let bValveFound = false;	// Ventil gefunden
-        for(let zaehler = ObjThread.threadList.length - 1;	// Loop über das Array
-            zaehler >= 0;
-            zaehler--) {
-            const myEntry = ObjThread.threadList[zaehler];
+        for(let counter = ObjThread.threadList.length - 1;	// Loop über das Array
+            counter >= 0;
+            counter--) {
+            const myEntry = ObjThread.threadList[counter];
             /* Ventil ausschalten */
             adapter.setForeignState(myEntry.idState, {val: false, ack: false});
             /* Zustand des Ventils im Thread <<< 0 >>> off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
@@ -472,7 +472,7 @@ function startAdapter(options) {
                     curTemperature = state.val;
                     //
                     if (timeDifference) {
-                        setTimeout(function() {
+                        setTimeout(() => {
                             calcEvaporation(timeDifference);
                         }, 500);
                     } 
@@ -814,10 +814,10 @@ function checkActualStates () {
     });	
 	
     //
-    setTimeout(function() {
+    setTimeout(() => {
         createSprinklers();
     }, 1000);
-    setTimeout(function() {
+    setTimeout(() => {
         startTimeSprinkle();
     }, 2000);
 	
@@ -852,7 +852,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {	/
     }
 
     // ETpToday und ETpYesterday in evaporation aktualisieren da ein neuer Tag
-    setTimeout(function() {
+    setTimeout(() => {
         adapter.getState('evaporation.ETpToday', (err, state) => {
             if (state) {
                 adapter.setState('evaporation.ETpYesterday', { val: state.val, ack: true });

@@ -30,6 +30,10 @@ Weather-dependent automatic control of garden irrigation
 
 ## Changelog
 
+### 0.0.6 (16.07.2020)
+* (Dirk-Peter-md) calcPosTimer angepasst
+* Beschreibung vervollständigt
+
 ### 0.0.5 (12.07.2020)
 * (Dirk-Peter-md) .travis.yml für Node.js 10, 12 und 14 laut ioBroker.template angepasst
 
