@@ -3,6 +3,18 @@
     "name": "sprinklecontrol",
     "version": "0.0.6",
     "news": {
+      "0.0.6": {
+        "en": "calcPosTimer adjusted; Description edited",
+        "de": "calcPosTimer angepasst; Beschreibung bearbeitet",
+        "ru": "отрегулирован calcPosTimer; Описание отредактировано",
+        "pt": "calcPosTimer ajustado; Descrição editada",
+        "nl": "calcPosTimer aangepast; Beschrijving bewerkt",
+        "fr": "calcPosTimer ajusté; Description modifiée",
+        "it": "calcPosTimer rettificato; Descrizione modificata",
+        "es": "calcPosTimer ajustado; Descripción editada",
+        "pl": "dostosowano calcPosTimer; Edytowano opis",
+        "zh-cn": "calcPosTimer已调整；说明已编辑"
+      },
       "0.0.5": {
         "en": ".travis.yml for nodes js 10, 12, 14 adapted to the current ioBroker.template",
         "de": ".travis.yml für Knoten js 10, 12, 14 angepasst an die aktuelle ioBroker.template",
