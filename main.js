@@ -33,9 +33,7 @@ let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorrowStr;
 /** @type {number} */
-let ETpTodayStr = 0;
-//** @type {number} */
-//let dayNum;		// 0..6; 0 = Sonntag
+let ETpTodayNum = 0;
 /** @type {string} */
 let kwStr; // akt. KW der Woche
 /** @type {boolean} */
@@ -632,19 +630,11 @@ function calcEvaporation (timeDifference) {
 	
     // Verdunstung des heutigen Tages
     const curETp = (eTp * timeDifference) - curAmountOfRain;
-    // let curDay = new Date().getDay();
     curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
-    // if (dayNum === curDay) {	// akt. Tag
-    ETpTodayStr += curETp;
-    // } else {	// neuer Tag
-    //    dayNum = curDay;
-    //    adapter.setState('evaporation.ETpYesterday', { val: Math.round(ETpTodayStr * 10000) / 10000 , ack: true});
-    //    ETpTodayStr = curETp;
-    // adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
-    //}
+    ETpTodayNum += curETp;
 
-    if (debug) {adapter.log.info('ETpTodayStr = ' + ETpTodayStr + ' ( ' + curETp + ' )');}
-    adapter.setState('evaporation.ETpToday', { val: Math.round(ETpTodayStr * 10000) / 10000, ack: true });
+    if (debug) {adapter.log.info('ETpTodayNum = ' + ETpTodayNum + ' ( ' + curETp + ' )');}
+    adapter.setState('evaporation.ETpToday', { val: Math.round(ETpTodayNum * 10000) / 10000, ack: true });
 
     applyEvaporation (curETp);
 }
@@ -765,11 +755,11 @@ function checkStates() {
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state && (state.val === null)) {
-            ETpTodayStr = 0;
+            ETpTodayNum = 0;
             //            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
         } else if (state) {
-            ETpTodayStr = state.val;
+            ETpTodayNum = state.val;
             //            dayNum = new Date(state.ts).getDay();
         }
     });
@@ -906,12 +896,9 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {	/
 
     // ETpToday und ETpYesterday in evaporation aktualisieren da ein neuer Tag
     setTimeout(() => {
-        adapter.getState('evaporation.ETpToday', (err, state) => {
-            if (state) {
-                adapter.setState('evaporation.ETpYesterday', { val: state.val, ack: true });
-                adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
-            }
-        });	
+        adapter.setState('evaporation.ETpYesterday', { val: Math.round(ETpTodayNum * 10000) / 10000, ack: true });
+        ETpTodayNum = 0;
+        adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
     },100);
 	
     // Startzeit Festlegen => verzögert wegen Daten von SunCalc
