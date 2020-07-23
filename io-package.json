@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "news": {
+      "0.0.7": {
+        "en": "Write history at a fixed time (0:05);\nmain.js cleaned up",
+        "de": "Schreiben der History zu einer festgelegten Zeit (0:05).\nmain.js aufgeräumt",
+        "ru": "Запись истории в определенное время (0:05);\nmain.js убрал",
+        "pt": "Escreva o histórico em um horário fixo (0:05);\nmain.js limpo",
+        "nl": "Schrijf geschiedenis op een vast tijdstip (0:05);\nmain.js opgeruimd",
+        "fr": "Ecrire l'historique à une heure fixe (0:05);\nmain.js nettoyé",
+        "it": "Scrivi la cronologia a un orario fisso (0:05);\nmain.js ripulito",
+        "es": "Escribe el historial a una hora fija (0:05);\nmain.js limpiado",
+        "pl": "Zapisuj historię w ustalonym czasie (0:05);\nWyczyszczono plik main.js",
+        "zh-cn": "在固定时间（0:05）写入历史记录；\nmain.js清理了"
+      },
       "0.0.6": {
         "en": "calcPosTimer adjusted; Description edited",
         "de": "calcPosTimer angepasst; Beschreibung bearbeitet",
@@ -99,6 +111,7 @@
     "type": "garden",
     "compact": true,
     "materialize": true,
+    "stopBeforeUpdate": true,
     "dependencies": [
       {
         "js-controller": ">=1.4.2"

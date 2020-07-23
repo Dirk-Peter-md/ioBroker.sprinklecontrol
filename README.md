@@ -30,6 +30,10 @@ Weather-dependent automatic control of garden irrigation
 
 ## Changelog
 
+### 0.0.7 (23.07.2020)
+* (Dirk-Peter-md) history zu festen Zeit 0:05 (nicht über dayNum)
+* (Dirk-Peter-md) main.js aufgeräumt
+
 ### 0.0.6 (16.07.2020)
 * (Dirk-Peter-md) calcPosTimer angepasst
 * (Dirk-Peter-md) Beschreibung vervollständigt

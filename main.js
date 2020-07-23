@@ -34,8 +34,8 @@ let publicHolidayStr;
 let publicHolidayTomorrowStr;
 /** @type {number} */
 let ETpTodayStr = 0;
-/** @type {number} */
-let dayNum;		// 0..6; 0 = Sonntag
+//** @type {number} */
+//let dayNum;		// 0..6; 0 = Sonntag
 /** @type {string} */
 let kwStr; // akt. KW der Woche
 /** @type {boolean} */
@@ -63,6 +63,182 @@ let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
 let ObjSprinkle = [];
 /** @type {any[]} */
 const resConfigChange = []; /* Speicher für Werte aus der Config und dem Programm für schnellzugriff */
+
+/**
+ * +++++++++++++++++++++++++++ Starts the adapter instance ++++++++++++++++++++++++++++++++
+ *
+ * @param {Partial<ioBroker.AdapterOptions>} [options]
+ */
+function startAdapter(options) {
+    // Create the adapter and define its methods => Erstellen Sie den Adapter und definieren Sie seine Methoden
+    return adapter = utils.adapter(Object.assign({}, options, {
+        name: adapterName,
+
+        /* The ready callback is called when databases are connected and adapter received configuration.
+		*=> Der Ready Callback wird aufgerufen, wenn die Datenbanken verbunden sind und der Adapter die Konfiguration erhalten hat.
+        * start here! => Starte hier
+        */
+        ready: main, // Main method defined below for readability => Hauptmethode für die Lesbarkeit unten definiert
+
+        // +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
+        /*
+         * @param {() => void} callback
+         */
+        unload: (callback) => {
+            try {
+                adapter.log.info('cleaned everything up...');
+                /*Startzeiten der Timer löschen*/
+                schedule.cancelJob('calcPosTimer');
+                schedule.cancelJob('sprinkleStartTime');
+                /* alle Ventile und Aktoren deaktivieren */
+                ObjThread.clearEntireList();
+
+                callback();
+            } catch (e) {
+                callback();
+            }
+        },
+
+        // ++++++++++++++++++ is called if a subscribed object changes ++++++++++++++++++
+        /*
+         * @param {string} id
+         * @param {{ obj: any; }} state
+         */
+        objectChange: (id, obj) => {
+            if (obj) {
+                // The object was changed
+                /*if (adapter.config.publicHolidays === true) {
+                    if (id === adapter.config.publicHolInstance + '.heute.boolean') {
+                        publicHolidayStr = state.val;
+                        startTimeSprinkle();
+                    }
+                    if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
+                        publicHolidayTomorrowStr = state.val;
+                        startTimeSprinkle();
+                    }
+                }*/
+
+                adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+            } else {
+                // The object was deleted
+                adapter.log.info(`object ${id} deleted`);
+            }
+        },
+
+        // ++++++++++++++++++ is called if a subscribed state changes ++++++++++++++++++
+        /*
+         * @param {string} id
+         * @param {{ val: string; ts: any; lc: any; ack: boolean}} state
+         */
+        stateChange: (id, state) => {
+            if (state) {
+                // The state was changed => Der Zustand wurde geändert
+                if (debug) {adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);}
+                // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
+                if (id === adapter.namespace + '.control.Holiday') {
+                    holidayStr = state.val;
+                    startTimeSprinkle();
+                }
+                // wenn (autoOnOff == false) so werden alle Spränger nicht mehr automatisch gestartet.
+                if (id === adapter.namespace + '.control.autoOnOff') {
+                    autoOnOffStr = state.val;
+                    adapter.log.info('startAdapter: control.autoOnOff: ' + state.val);
+                    if (!state.val) {ObjThread.clearEntireList();}
+                    startTimeSprinkle();
+                }
+                // wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
+                if (resConfigChange && !state.ack) {
+                    const found = resConfigChange.find(d => d.objectID === id);
+                    if (found) {
+                        if (id === resConfigChange[found.sprinkleID].objectID) {
+                            if (!isNaN(state.val)) {
+                                if (debug) {adapter.log.info('stateChange: (' + found.objectName + ')".runningTime" wurde geändert: JSON: ' + JSON.stringify(found));}
+                                ObjThread.addList(
+                                    found.sprinkleID,
+                                    Math.round(60 * state.val),
+                                    false);
+                                setTimeout (() => {
+                                    ObjThread.updateList();
+                                }, 50);
+                            }
+                        }
+                    }
+
+                }
+                // Change in outside temperature => Änderung der Außentemperatur
+                if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
+                    const timeDifference = (state.ts - lastChangeEvaPor) / 86400000;		// 24/h * 60/min * 60/s * 1000/ms = 86400000 ms
+                    if (debug) {adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);}
+                    curTemperature = state.val;
+                    //
+                    if (timeDifference) {
+                        setTimeout(() => {
+                            calcEvaporation(timeDifference);
+                        }, 500);
+                    }
+                    lastChangeEvaPor = state.ts;
+                }
+                // LuftFeuchtigkeit
+                if (id === adapter.config.sensorOutsideHumidity) {
+                    curHumidity = state.val;
+                }
+                // Helligkeit
+                if (id === adapter.config.sensorBrightness) {
+                    curIllumination = state.val;
+                }
+                // Windgeschwindigkeit
+                if (id === adapter.config.sensorWindSpeed) {
+                    curWindSpeed = state.val;
+                }
+                // Regenkontainer
+                /* If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
+				* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt. */
+                if (id === adapter.config.sensorRainfall) {
+                    if (Math.abs(lastRainCounter - state.val) > 10) {
+                        curAmountOfRain = 0;
+                        if (debug) {adapter.log.info('if => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
+                    } else {
+                        curAmountOfRain = state.val - lastRainCounter;
+                        if (debug) {adapter.log.info('else => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
+                    }
+                    lastRainCounter = state.val;
+                    if (debug) {adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);}
+                }
+                // Feiertagskalender
+                if (adapter.config.publicHolidays === true) {
+                    if (id === adapter.config.publicHolInstance + '.heute.boolean') {
+                        publicHolidayStr = state.val;
+                        startTimeSprinkle();
+                    }
+                    if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
+                        publicHolidayTomorrowStr = state.val;
+                        startTimeSprinkle();
+                    }
+                }
+            } else {
+                // The state was deleted
+                adapter.log.info(`state ${id} deleted`);
+            }
+        },
+
+
+        // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
+        // Über das Meldungsfeld wurde eine Nachricht an die Adapterinstanz gesendet. Verwendung per E-Mail, Pushover, Text2Speech, ...
+        // requires "common.message" property to be set to true in io-package.json
+        // erfordert, dass die Eigenschaft "common.message" in "io-package.json" auf "true" gesetzt ist
+        // message: (obj) => {
+        // 	if (typeof obj === 'object' && obj.message) {
+        // 		if (obj.command === 'send') {
+        // 			// e.g. send email or pushover or whatever => E-Mail oder Pushover oder was auch immer
+        // 			adapter.log.info('send command');
+
+        // 			// Send response in callback if required => Senden Sie bei Bedarf eine Antwort im Rückruf
+        // 			if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+        // 		}
+        // 	}
+        // },
+    }));
+}
 
 //
 const ObjThread = {
@@ -323,7 +499,7 @@ const ObjThread = {
                 });
                 /* Booster zurücksetzen */
                 if (resConfigChange[entry.sprinkleID].booster) {
-                    if (boostOn) {ObjThread.boostKill(entry.sprinkleID)}
+                    if (boostOn) {ObjThread.boostKill(entry.sprinkleID);}
                     boostReady = true;
                     if (debug) {adapter.log.info('UpdateList Sprinkle Off: sprinkleID: ' + entry.sprinkleID + ', boostReady = ' + boostReady);}
                 }
@@ -414,186 +590,11 @@ const ObjThread = {
 	
 }; // End ObjThread
 
-/**
- * +++++++++++++++++++++++++++ Starts the adapter instance ++++++++++++++++++++++++++++++++
- *
- * @param {Partial<ioBroker.AdapterOptions>} [options]
- */
-function startAdapter(options) {
-    // Create the adapter and define its methods => Erstellen Sie den Adapter und definieren Sie seine Methoden
-    return adapter = utils.adapter(Object.assign({}, options, {
-        name: adapterName,
-
-        /* The ready callback is called when databases are connected and adapter received configuration.
-		*=> Der Ready Callback wird aufgerufen, wenn die Datenbanken verbunden sind und der Adapter die Konfiguration erhalten hat.
-        * start here! => Starte hier
-        */
-        ready: main, // Main method defined below for readability => Hauptmethode für die Lesbarkeit unten definiert
-
-        // +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
-        /*
-         * @param {() => void} callback
-         */
-        unload: (callback) => {
-            try {
-                adapter.log.info('cleaned everything up...');
-                /*Startzeiten der Timer löschen*/
-                schedule.cancelJob('calcPosTimer');
-                schedule.cancelJob('sprinkleStartTime');
-                /* alle Ventile und Aktoren deaktivieren */
-                ObjThread.clearEntireList();
-
-                callback();
-            } catch (e) {
-                callback();
-            }
-        },
-
-        // ++++++++++++++++++ is called if a subscribed object changes ++++++++++++++++++
-        /*
-         * @param {string} id
-         * @param {{ obj: any; }} state
-         */
-        objectChange: (id, obj) => {
-            if (obj) {
-                // The object was changed
-                /*if (adapter.config.publicHolidays === true) {
-                    if (id === adapter.config.publicHolInstance + '.heute.boolean') {
-                        publicHolidayStr = state.val;
-                        startTimeSprinkle();
-                    }
-                    if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
-                        publicHolidayTomorrowStr = state.val;
-                        startTimeSprinkle();
-                    }
-                }*/
-				
-                adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-            } else {
-                // The object was deleted
-                adapter.log.info(`object ${id} deleted`);
-            }
-        },
-
-        // ++++++++++++++++++ is called if a subscribed state changes ++++++++++++++++++
-        /*
-         * @param {string} id
-         * @param {{ val: string; ts: any; lc: any; ack: boolean}} state
-         */
-        stateChange: (id, state) => {
-            if (state) {
-                // The state was changed => Der Zustand wurde geändert
-                if (debug) {adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);}
-                // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden. 
-                if (id === adapter.namespace + '.control.Holiday') {
-                    holidayStr = state.val;
-                    startTimeSprinkle();
-                }
-                // wenn (autoOnOff == false) so werden alle Spränger nicht mehr automatisch gestartet.
-                if (id === adapter.namespace + '.control.autoOnOff') {
-                    autoOnOffStr = state.val;
-                    adapter.log.info('startAdapter: control.autoOnOff: ' + state.val);
-                    if (!state.val) {ObjThread.clearEntireList();}
-                    startTimeSprinkle();
-                }
-                // wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
-                if (resConfigChange && !state.ack) {
-                    const found = resConfigChange.find(d => d.objectID === id);
-                    if (found) {
-                        if (id === resConfigChange[found.sprinkleID].objectID) {
-                            if (!isNaN(state.val)) {
-                                if (debug) {adapter.log.info('stateChange: (' + found.objectName + ')".runningTime" wurde geändert: JSON: ' + JSON.stringify(found));}
-                                ObjThread.addList(
-                                    found.sprinkleID,
-                                    Math.round(60 * state.val),
-                                    false);
-                                setTimeout (() => {
-                                    ObjThread.updateList();
-                                }, 50);
-                            }
-                        }
-                    }
-
-                }
-                // Change in outside temperature => Änderung der Außentemperatur
-                if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
-                    const timeDifference = (state.ts - lastChangeEvaPor) / 86400000;		// 24/h * 60/min * 60/s * 1000/ms = 86400000 ms
-                    if (debug) {adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);}
-                    curTemperature = state.val;
-                    //
-                    if (timeDifference) {
-                        setTimeout(() => {
-                            calcEvaporation(timeDifference);
-                        }, 500);
-                    } 
-                    lastChangeEvaPor = state.ts;	
-                }
-                // LuftFeuchtigkeit
-                if (id === adapter.config.sensorOutsideHumidity) {
-                    curHumidity = state.val;
-                }
-                // Helligkeit
-                if (id === adapter.config.sensorBrightness) {
-                    curIllumination = state.val;
-                }
-                // Windgeschwindigkeit
-                if (id === adapter.config.sensorWindSpeed) {
-                    curWindSpeed = state.val;
-                }			
-                // Regenkontainer
-                /* If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
-				* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt. */				
-                if (id === adapter.config.sensorRainfall) {
-                    if (Math.abs(lastRainCounter - state.val) > 10) {
-                        curAmountOfRain = 0;
-                        if (debug) {adapter.log.info('if => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
-                    } else {
-                        curAmountOfRain = state.val - lastRainCounter;
-                        if (debug) {adapter.log.info('else => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
-                    }
-                    lastRainCounter = state.val;
-                    if (debug) {adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);}
-                }
-                // Feiertagskalender
-                if (adapter.config.publicHolidays === true) {
-                    if (id === adapter.config.publicHolInstance + '.heute.boolean') {
-                        publicHolidayStr = state.val;
-                        startTimeSprinkle();
-                    }
-                    if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
-                        publicHolidayTomorrowStr = state.val;
-                        startTimeSprinkle();
-                    }
-                }	
-            } else {
-                // The state was deleted
-                adapter.log.info(`state ${id} deleted`);
-            }
-        },
-		
-
-        // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-        // Über das Meldungsfeld wurde eine Nachricht an die Adapterinstanz gesendet. Verwendung per E-Mail, Pushover, Text2Speech, ...
-        // requires "common.message" property to be set to true in io-package.json
-        // erfordert, dass die Eigenschaft "common.message" in "io-package.json" auf "true" gesetzt ist
-        // message: (obj) => {
-        // 	if (typeof obj === 'object' && obj.message) {
-        // 		if (obj.command === 'send') {
-        // 			// e.g. send email or pushover or whatever => E-Mail oder Pushover oder was auch immer
-        // 			adapter.log.info('send command');
-
-        // 			// Send response in callback if required => Senden Sie bei Bedarf eine Antwort im Rückruf
-        // 			if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-        // 		}
-        // 	}
-        // },
-    }));
-}
 // evaporation calculation => Verdunstungsberechnung
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
     //	Sonnenscheindauer in %
-    let curSunshineDuration = (curIllumination < 100) ? (0) : (curIllumination > 7000) ? (1) : ((curIllumination - 100) / (6900));
+    const curSunshineDuration = (curIllumination < 100) ? (0) : (curIllumination > 7000) ? (1) : ((curIllumination - 100) / (6900));
 	
     /* Extraterrestrische Strahlung in W/m³
     let ExStra = [86,149,247,354,439,479,459,388,287,184,104,70];   // "53NB"
@@ -603,44 +604,44 @@ function calcEvaporation (timeDifference) {
     const RE = 45.8 * maxSunshine - 293;
 
     // Sättigungsdampfdruck Es in hPa
-    let m1 = 6.11 * ( 10 ** (( 7.48 * curTemperature ) / ( 237 + curTemperature )));
+    const m1 = 6.11 * ( 10 ** (( 7.48 * curTemperature ) / ( 237 + curTemperature )));
 
     // Dampfdruck Ea
-    let m2 = m1 * curHumidity / 100;
+    const m2 = m1 * curHumidity / 100;
 		
     // Globalstrahlung RG
-    let m3 = (0.19 + 0.55 * curSunshineDuration) * RE;
+    const m3 = (0.19 + 0.55 * curSunshineDuration) * RE;
 
     // Abstrahlung I in W/m²
-    let m4 = 5.67E-8 * (( curSunshineDuration + 273 ) ** 4 ) * ( 0.56 - 0.08 * ( m2 ** 0.5 )) * ( 0.1 + ( 0.9 * curSunshineDuration));
+    const m4 = 5.67E-8 * (( curSunshineDuration + 273 ) ** 4 ) * ( 0.56 - 0.08 * ( m2 ** 0.5 )) * ( 0.1 + ( 0.9 * curSunshineDuration));
 		
     // Strahlungsäquivalent EH in mm/d
-    let m5 = ( m3 * ( 1 - 0.2 ) - m4 ) / 28.3;
+    const m5 = ( m3 * ( 1 - 0.2 ) - m4 ) / 28.3;
 		
     // Steigung der Sättigungsdampfdruckkurve Delta in hPa/K
-    let m6 = ( m1 * 4032 ) / (( 237 + curTemperature ) ** 2 );
+    const m6 = ( m1 * 4032 ) / (( 237 + curTemperature ) ** 2 );
 
     // Windfunktion f(v) in mm/d hPa
-    let m7 = 0.13 + 0.14 * curWindSpeed / 3.6;
+    const m7 = 0.13 + 0.14 * curWindSpeed / 3.6;
 	
     // pot. Evapotranspiration nach Penmann ETp in mm/d
-    let eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
+    const eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
 
     if (debug) {adapter.log.info('RE: ' + RE + ' ETp:' + eTp);}
     adapter.setState('evaporation.ETpCurrent', { val: eTp.toFixed(4), ack: true });
 	
     // Verdunstung des heutigen Tages
-    let curETp = (eTp * timeDifference) - curAmountOfRain;
-    let curDay = new Date().getDay();
+    const curETp = (eTp * timeDifference) - curAmountOfRain;
+    // let curDay = new Date().getDay();
     curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
-    if (dayNum === curDay) {	// akt. Tag
-        ETpTodayStr += curETp;
-    } else {	// neuer Tag
-        dayNum = curDay;
-        adapter.setState('evaporation.ETpYesterday', { val: Math.round(ETpTodayStr * 10000) / 10000 , ack: true});
-        ETpTodayStr = curETp;
-        // adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
-    }
+    // if (dayNum === curDay) {	// akt. Tag
+    ETpTodayStr += curETp;
+    // } else {	// neuer Tag
+    //    dayNum = curDay;
+    //    adapter.setState('evaporation.ETpYesterday', { val: Math.round(ETpTodayStr * 10000) / 10000 , ack: true});
+    //    ETpTodayStr = curETp;
+    // adapter.setState('evaporation.ETpToday', { val: '0', ack: true });
+    //}
 
     if (debug) {adapter.log.info('ETpTodayStr = ' + ETpTodayStr + ' ( ' + curETp + ' )');}
     adapter.setState('evaporation.ETpToday', { val: Math.round(ETpTodayStr * 10000) / 10000, ack: true });
@@ -765,11 +766,11 @@ function checkStates() {
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state && (state.val === null)) {
             ETpTodayStr = 0;
-            dayNum = new Date().getDay();
+            //            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
         } else if (state) {
             ETpTodayStr = state.val;
-            dayNum = new Date(state.ts).getDay();
+            //            dayNum = new Date(state.ts).getDay();
         }
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
@@ -862,7 +863,7 @@ function checkActualStates () {
             } else {
                 ObjSprinkle = list;
             }
-    });	
+        });	
 	
     //
     setTimeout(() => {
@@ -873,13 +874,14 @@ function checkActualStates () {
     }, 2000);
 	
 }
+
 /* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle */
 const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {	//(..., '(s )m h d m wd')
     // Berechnungen mittels SunCalc
     sunPos();
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
-    adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime('','kW') + ' if: ' + (kwStr !== formatTime('','kW')));
+    if (debug) {adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime('','kW') + ' if: ' + (kwStr !== formatTime('','kW')));}
     if (kwStr !== formatTime('','kW')) {
         const result = resConfigChange;
         if (result) {	
@@ -939,7 +941,7 @@ function sunPos() {
 // Determination of the irrigation time => Bestimmung der Bewässerungszeit
 function startTimeSprinkle() {
     let startTimeSplit = [];
-    let infoMesetsch;
+    let infoMessage;
 
     schedule.cancelJob('sprinkleStartTime'); 
 
@@ -951,15 +953,14 @@ function startTimeSprinkle() {
     }
 
     function nextStartTime () {
-        let newStartTime, newStartTimeLong, myTime;
+        let newStartTime;
         let run = 0;
         const curTime = new Date();
-        let myHours = checkTime(curTime.getHours());
-        let myMinutes = checkTime(curTime.getMinutes());
+        const myHours = checkTime(curTime.getHours());
+        const myMinutes = checkTime(curTime.getMinutes());
         let myWeekday = curTime.getDay();
         const myWeekdayStr = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-
-        myTime = myHours + ':' + myMinutes;
+        const myTime = myHours + ':' + myMinutes;
 
         /* ? => 0? */
         function checkTime(i) {
@@ -973,23 +974,23 @@ function startTimeSprinkle() {
             // Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
             switch(adapter.config.wateringStartTime) {
                 case 'livingTime' :				/*Startauswahl = festen Zeit*/
-                    infoMesetsch = 'Start zur festen Zeit ';
+                    infoMessage = 'Start zur festen Zeit ';
                     newStartTime = adapter.config.weekLiving;
                     break;
                 case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
-                    infoMesetsch = 'Start mit Sonnenaufgang ';
+                    infoMessage = 'Start mit Sonnenaufgang ';
                     // format sunset/sunrise time from the Date object
                     newStartTime = addTime(sunriseStr, parseInt(adapter.config.timeShift));
                     break;
                 case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Hour*/
-                    infoMesetsch = 'Start zum Ende der Golden Hour ';
+                    infoMessage = 'Start zum Ende der Golden Hour ';
                     // format goldenHourEnd time from the Date object
                     newStartTime = goldenHourEnd;
                     break;
             }
             // Start am Wochenende => wenn andere Zeiten verwendet werden soll
             if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
-                infoMesetsch = 'Start am Wochenende ';
+                infoMessage = 'Start am Wochenende ';
                 newStartTime = adapter.config.weekEndLiving;
             }
             // Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
@@ -997,15 +998,14 @@ function startTimeSprinkle() {
                 && (((publicHolidayStr === true) && (run === 1))            // heute Feiertag && erster Durchlauf
                 || ((publicHolidayTomorrowStr === true) && (run === 2))     // morgen Feiertag && zweiter Durchlauf
                 || (holidayStr === true))) {                                // Urlaub
-                infoMesetsch = 'Start am Feiertag ';
+                infoMessage = 'Start am Feiertag ';
                 newStartTime = adapter.config.weekEndLiving;
             }
-            if (debug) {adapter.log.info('next Start Time: ' + myWeekdayStr[myWeekday] + ', ' + newStartTime + ', ' + myTime + ', ' + (newStartTime <= myTime) + ', ' + (run === 1) + ', ' + ((newStartTime <= myTime) && (run === 1)));}
         } while ((newStartTime <= myTime) && (run === 1));
 
-        newStartTimeLong = myWeekdayStr[myWeekday] + ' ' + newStartTime;
+        const newStartTimeLong = myWeekdayStr[myWeekday] + ' ' + newStartTime;
         adapter.setState('info.nextAutoStart', { val: newStartTimeLong, ack: true });
-        if (debug) {adapter.log.info(infoMesetsch + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);}
+        adapter.log.info(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
         return newStartTime;
     }
     //
@@ -1036,7 +1036,7 @@ function startTimeSprinkle() {
             ObjThread.updateList();
             setTimeout(()=>{
                 nextStartTime();
-            }, 800)
+            }, 800);
             schedule.cancelJob('sprinkleStartTime');
         }, 200);
     });
@@ -1360,28 +1360,6 @@ function main() {
         sunPos();
     }, 2000);
 
-
-    /*
-        For every state in the system there has to be also an object of type state
-        Here a simple template for a boolean variable named "testVariable"
-        Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-		=> 
-		Für jeden Zustand im System muss es auch ein Objekt vom Typ Zustand geben
-		Hier eine einfache Vorlage für eine boolesche Variable namens "testVariable"
-		Da jede Adapterinstanz ihre eigenen eindeutigen Namespace-Variablennamen verwendet, können sie nicht mit anderen Adapter variablen kollidieren
-    
-    adapter.setObject('testVariable', {
-        type: 'state',
-        common: {
-            name: 'testVariable',
-            type: 'boolean',
-            role: 'indicator',
-            read: true,
-            write: true,
-        },
-        native: {},
-    });
-	*/
     /*
     * in this template all states changes inside the adapters namespace are subscribed
 	* => In dieser Vorlage werden alle Statusänderungen im Namensraum des Adapters abonniert
@@ -1394,7 +1372,7 @@ function main() {
     //adapter.subscribeStates('info.Elevation');
     //adapter.subscribeStates('info.Azimut');
 	
-    // Request a notification from a third-party adapter => Fordern Sie eine Benachrichtigung von einem Drittanbieteradapter an
+    // Request a notification from a third-party adapter => Fordern Sie eine Benachrichtigung von einem Drittanbieter-Adapter an
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance + '.heute.*')) {
         adapter.subscribeForeignStates(adapter.config.publicHolInstance + '.heute.*');
     }
@@ -1448,43 +1426,9 @@ function main() {
             if (newEntry.enabled) {
                 adapter.subscribeStates(newEntry.objectID);	// abonieren der Statusänderungen des Objekts
             }
-            adapter.log.info('main: resConfigChange add: Name: ' + objectName + '(' + newEntry.sprinkleID + ')   ' + JSON.stringify(resConfigChange[newEntry.sprinkleID]));
+            if (debug) {adapter.log.info('main => resConfigChange add: ' + objectName + '(' + newEntry.sprinkleID + ')   ' + JSON.stringify(resConfigChange[newEntry.sprinkleID]));}
         }
     }
-
-				
-			
-    /*
-	* setState examples
-	* you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-	* setState Beispiele
-	* Sie werden feststellen, dass bei jedem setState das stateChange-Ereignis ausgelöst wird (aufgrund des obigen subscribeStates cmd).
-    */
-	
-    // the variable testVariable is set to true as command (ack=false)
-    // => die Variable testVariable wird als Befehl auf true gesetzt (ack = false) es cmd)
-    // adapter.setState('testVariable', true);
-
-    // same thing, but the value is flagged "ack"
-    // ack should be always set to true if the value is received from or acknowledged from the target system
-    // => das gleiche, aber der Wert ist mit "ack" gekennzeichnet
-    // => ack sollte immer auf true gesetzt werden, wenn der Wert vom Zielsystem empfangen oder bestätigt wird
-    // adapter.setState('testVariable', { val: true, ack: true });
-
-    // same thing, but the state is deleted after 30s (getState will return null afterwards)
-    // => das gleiche, aber der Zustand wird nach 30s gelöscht (getState gibt danach null zurück)
-    // adapter.setState('testVariable', { val: true, ack: true, expire: 30 });
-/*
-    // examples for the checkPassword/checkGroup functions
-	// => Beispiele für die Funktionen checkPassword / checkGroup
-    adapter.checkPassword('admin', 'iobroker', (res) => {
-        adapter.log.info('check user admin pw ioboker: ' + res);
-    });
-
-    adapter.checkGroup('admin', 'admin', (res) => {
-        adapter.log.info('check group user admin group admin: ' + res);
-    });
-*/
 }
 
 // @ts-ignore parent is a valid property on module
