@@ -213,18 +213,18 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
         * **lastOn** - letzter Start des Beregnungskreises (05.07 14:14)
         * **lastRunningTime** - letzte Bewässerungsdauer
     * **actualSoilMoisture** - aktuelle virtuelle Bodenfeuchte in % (max. 100 % nach der Beregnung, >100 % nach einem kräftigen Regen) (hat mit der tatsächlichen nichts zu tun)
-    * **countdown** - Restzeit der Beregnungskreises
+    * **countdown** - Restzeit des Beregnungskreises
     * **runningTime** - Laufzeit des Beregnungskreises
         - wenn hier eine Zahl > 0 eingegeben wird, so startet der Beregnungskreises für die angegebene Zeit in Minuten
         - bei eingabe einer 0 wird die Bewässerung des Beregnungskreises beendet 
                          
     * **sprinklerState** - Anzeige des Zustandes des Beregnungskreises
-        - 0:off;    => Beregnungskreises aus
-        - 1:wait;   => Beregnungskreises wartet auf eine freiwerdende Kapazität der Pumpe
-        - 2:on;     => Beregnungskreises ein
-        - 3:break;  => Beregnungskreises wurde unterbrochen (Configuration, Intervallberegnung)
+        - 0:off;    => Beregnungskreis aus
+        - 1:wait;   => Beregnungskreis wartet auf eine freiwerdende Kapazität der Pumpe
+        - 2:on;     => Beregnungskreis ein
+        - 3:break;  => Beregnungskreis wurde unterbrochen (Configuration, Intervallberegnung)
         - 4:Boost;  => Boostfunktion des aktuellen Beregnungskreises ist aktiv (Configuration, Booster ein)
-        - 5:off(Boost) => Beregnungskreis für 30 s unterbrochen da eine Boostfunktion aktive ist
+        - 5:off(Boost) => Beregnungskreis für 30 s unterbrochen, da eine Boostfunktion aktive ist
 # Was ist für die Zukunft geplant
 * **Restfehler beseitigen (ESLint)**
 * **Steuerung einer 2. Wasserquelle hinzufügen mit automatischer Umschaltung, wenn Zisterne leer wird**
