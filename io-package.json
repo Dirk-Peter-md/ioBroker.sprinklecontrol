@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "news": {
+      "0.0.8": {
+        "en": "adapter.unload: (setTimeout > 1s) => delete",
+        "de": "adapter.unload: (setTimeout> 1s) => löschen",
+        "ru": "adapter.unload: (setTimeout> 1s) => удалить",
+        "pt": "adapter.unload: (setTimeout> 1s) => excluir",
+        "nl": "adapter.unload: (setTimeout> 1s) => verwijderen",
+        "fr": "adapter.unload: (setTimeout> 1s) => supprimer",
+        "it": "adapter.unload: (setTimeout> 1s) => elimina",
+        "es": "adapter.unload: (setTimeout> 1s) => eliminar",
+        "pl": "adapter.unload: (setTimeout> 1s) => usuń",
+        "zh-cn": "adapter.unload：（setTimeout> 1s）=>删除"
+      },
       "0.0.7": {
         "en": "Write history at a fixed time (0:05);\nmain.js cleaned up",
         "de": "Schreiben der History zu einer festgelegten Zeit (0:05).\nmain.js aufgeräumt",
