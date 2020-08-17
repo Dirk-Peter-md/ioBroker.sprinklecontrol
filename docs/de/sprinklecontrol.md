@@ -86,7 +86,7 @@ Auch diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** 
 * **Bewässerungsintervall:** - Die Bewässerungsdauer wird in einem Intervall aufgeteilt. (z.B. 5 min an, 5 min aus, 5 min an, usw.)
     * **Tipp:** - Bei mir habe ich ein Rasengitter bei der Autoauffahrt. Hier läuft das Wasser beim Bewässern einfach nur die Schräge herunter. Durch die Bewässerung in Intervallen konnte ich dem entgegenwirken. 
 * **niedrigster Prozentsatz der Bodenfeuchte:** - Auslösetrigger: Wenn dieser Wert unterschritten wird, so beginnt zum Startzeitpunkt die Bewässerung.
-* **Bedenfeuchte = 100 % nach der Bewässerung:** - Bei Aktivierung, wird die Bodenfeuchte nach der Bewässerung auf 100 % gesetzt. Ansonsten bleibt sie knapp darunter Aufgrund der Verdunstung während der Bewässerung.
+* **Bedenfeuchte = 100 % nach der Bewässerung:** - bei Aktivierung, wird die Bodenfeuchte nach der Bewässerung auf 100 % gesetzt. Ansonsten bleibt sie knapp darunter Aufgrund der Verdunstung während der Bewässerung.
 * **maximale Bewässerung nach der Bewässerung:** - Max. Wassergehalt im Boden nach der Bewässerung.
     * **Tipp:** - Rasengitter: 5; Blumenbeet: 10; Rasenfläche: 14
 * **maximale Bodenfeuchte nach einem Regen:** - Max. Wassergehalt im Boden nach einem kräftigen Regen.
@@ -101,7 +101,7 @@ Auch diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** 
 * **Durchflussmenge:** - Ermittelte Durchflussmenge des aktuellen Bewässerungskreises.
     * **Tipp:** - Steht oft in der Bedienungsanleitung bzw. im Internet.
 * **Booster:** - Nimmt alle aktiven Bewässerungskreise für 30 s vom Netz und schaltet sie danach wieder zu. 
-    * **Tipp:** - Meine Pumpe liefert max. 1800 l/h und meine Rasenspränger benötigen 1400 l/h, aber den vollen Druck zum herausfahren. Mit der Boosterfunktion kann ich nebenbei noch die Koniferen bewässern die nur 300 l/h benötigen. 
+    * **Tipp:** - Meine Pumpe liefert max. 1800 l/h und meine Rasensprenger benötigen 1400 l/h, aber den vollen Druck zum herausfahren. Mit der Boosterfunktion kann ich nebenbei noch die Koniferen bewässern die nur 300 l/h benötigen. 
     * **Achtung:** - Mit dieser Funktion sollte man sehr sparsam umgehen, da immer nur ein Bewässerungskreis mit aktiven Booster bewässern kann.    
 
 ---
@@ -120,7 +120,7 @@ Hier werden die Einstellung der Hauptpumpe und der Spannungsversorgung der Regel
     
 * **Einstellung der Pumpe:**
     * **Hauptpumpe:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier wird das STATE der Pumpe hinterlegt, welche für die Wasserversorgung zuständig ist.
-    * **maximale Pumpenleistung der Hauptpumpe in  l/h:** - Hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
+    * **maximale Pumpenleistung der Hauptpumpe in  l/h:** - hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
         * **Achtung:** - Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z.B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben.  
 
 * **Zisternenpumpe als Prioritätspumpe hinzufügen:** - (noch nicht programmiert, aber in Planung)

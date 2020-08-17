@@ -42,6 +42,10 @@ let debug = false;
 let boostReady = true;
 /** @type {boolean} */
 let boostOn = false;
+/** @type {number | undefined} */
+let boostListTimer;
+/** @type {number | undefined} */
+let timer;
 // calcEvaporation
 /** @type {number} */
 let curTemperature;		/*Temperatur*/
@@ -52,10 +56,10 @@ let curIllumination;	/*Helligkeit*/
 /** @type {number} */
 let curWindSpeed;		/*WindGeschwindigkeit*/
 /** @type {number} */
-let lastRainCounter = 0;		/*last rain container => letzter Regenkontainer*/
+let lastRainCounter = 0;		/*last rain container => letzter Regencontainer*/
 /** @type {number} */
 let curAmountOfRain = 0;	/*current amount of rain => aktuelle Regenmenge*/
-/** @type {number} */
+/** @type {object} */
 let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
 /** @type {any[]} */
 let ObjSprinkle = [];
@@ -85,9 +89,11 @@ function startAdapter(options) {
         unload: (callback) => {
             try {
                 adapter.log.info('cleaned everything up...');
+                clearTimeout(timer);
                 /*Startzeiten der Timer löschen*/
                 schedule.cancelJob('calcPosTimer');
                 schedule.cancelJob('sprinkleStartTime');
+                if (boostListTimer) {clearTimeout(boostListTimer);}
                 /* alle Ventile und Aktoren deaktivieren */
                 ObjThread.clearEntireList();
 
@@ -137,14 +143,14 @@ function startAdapter(options) {
                     holidayStr = state.val;
                     startTimeSprinkle();
                 }
-                // wenn (autoOnOff == false) so werden alle Spränger nicht mehr automatisch gestartet.
+                // wenn (autoOnOff == false) so werden alle Sprenger nicht mehr automatisch gestartet.
                 if (id === adapter.namespace + '.control.autoOnOff') {
                     autoOnOffStr = state.val;
                     adapter.log.info('startAdapter: control.autoOnOff: ' + state.val);
                     if (!state.val) {ObjThread.clearEntireList();}
                     startTimeSprinkle();
                 }
-                // wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Spränger [sprinkleName] gestartet
+                // wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Sprenger [sprinkleName] gestartet
                 if (resConfigChange && !state.ack) {
                     const found = resConfigChange.find(d => d.objectID === id);
                     if (found) {
@@ -188,7 +194,7 @@ function startAdapter(options) {
                 if (id === adapter.config.sensorWindSpeed) {
                     curWindSpeed = state.val;
                 }
-                // Regenkontainer
+                // Regencontainer
                 /* If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
 				* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt. */
                 if (id === adapter.config.sensorRainfall) {
@@ -269,12 +275,12 @@ const ObjThread = {
             newThread.sprinkleID = sprinkleID;	// Array[0...]
             newThread.sprinkleName = sprinkleName;	// z.B "Blumenbeet"
             newThread.idState = resConfigChange[sprinkleID].idState;	// z.B. "hm-rpc.0.MEQ1810129.1.STATE"
-            newThread.wateringTime = wateringTime;
-            newThread.pipeFlow = resConfigChange[sprinkleID].pipeFlow;
+            newThread.wateringTime = wateringTime;  // Bewässerungszeit
+            newThread.pipeFlow = resConfigChange[sprinkleID].pipeFlow;  // Wasserverbrauch
             newThread.count = 0;
             newThread.enabled = false;
             newThread.myBreak = false;
-            newThread.litersPerSecond = resConfigChange[sprinkleID].pipeFlow / 3600;
+            newThread.litersPerSecond = resConfigChange[sprinkleID].pipeFlow / 3600;    // Wasserverbrauchsmenge pro Sekunde
             newThread.onOffTime = resConfigChange[sprinkleID].wateringInterval;
             newThread.autoOn = autoOn;
             newThread.soilMoisture15s = 15 * (resConfigChange[sprinkleID].soilMoisture.maxIrrigation - resConfigChange[sprinkleID].soilMoisture.triggersIrrigation)
@@ -343,10 +349,21 @@ const ObjThread = {
                     adapter.setState('sprinkle.' + myEntry.sprinkleName + '.history.curCalWeekRunningTime', { val: addTime(state.val,myEntry.count), ack: true});
                 }
             });
+            
             /* del timer countdown */
             clearInterval(myEntry.countdown);
             /* del timer onOffTimeoutOff */
             clearTimeout(myEntry.onOffTimeoutOff);
+            /* del timer newThread.times.boostTime1 */
+            if (myEntry.times.boostTime1) {
+                clearTimeout(myEntry.times.boostTime1);
+                myEntry.times.boostTime1 = null;
+            }
+            /* del timer newThread.times.boostTime2 */
+            if (myEntry.times.boostTime2) {
+                clearTimeout(myEntry.times.boostTime2);
+                myEntry.times.boostTime2 = null;
+            }
 
             if (debug) {adapter.log.info('clearEntireList (' + myEntry.sprinkleName + '): Ventil wird gelöscht:');}
             ObjThread.threadList.pop();
@@ -386,7 +403,7 @@ const ObjThread = {
                 }
             }
         }
-        setTimeout(() => {
+        boostListTimer = setTimeout(() => {
             boostOn = false;
             ObjThread.updateList();
         },32000);
@@ -541,6 +558,7 @@ const ObjThread = {
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });
                 /* Ventil einschalten */
                 adapter.setForeignState(entry.idState, {val: true, ack: false});
+                adapter.log.info('Ventil "' + entry.sprinkleName + '" eingeschaltet für ' + entry.wateringTime);
                 /* countdown starten */
                 if (!entry.startTime) {entry.startTime = new Date();}
                 entry.countdown = setInterval(() => {countSprinkleTime(entry);}, 1000);	// 1000 = 1s
@@ -557,9 +575,13 @@ const ObjThread = {
                     if (parallel > 0) {
                         if (state.val === false) {
                             adapter.setForeignState(adapter.config.triggerControlVoltage, {val: true, ack: false});
+                            adapter.log.info('Versorgungsspannung der Ventile eingeschaltet');
                         }
                     } else {
-                        adapter.setForeignState(adapter.config.triggerControlVoltage, {val: false , ack: false});
+                        if (state.val !== false) {
+                            adapter.setForeignState(adapter.config.triggerControlVoltage, {val: false , ack: false});
+                            adapter.log.info('Versorgungsspannung der Ventile ausgeschaltet');
+                        }
                     }
                 } else if (err) {
                     adapter.log.error('triggerControlVoltage is not available (ist nicht erreichbar): ' + err);
@@ -574,9 +596,13 @@ const ObjThread = {
                     if (parallel > 0) {
                         if (state.val === false) {
                             adapter.setForeignState(adapter.config.triggerMainPump, {val: true, ack: false});
+                            adapter.log.info('Hauptpumpe eingeschaltet');
                         }
                     } else {
-                        adapter.setForeignState(adapter.config.triggerMainPump, {val: false, ack: false});
+                        if (state.val !== false) {
+                            adapter.setForeignState(adapter.config.triggerMainPump, {val: false, ack: false});
+                            adapter.log.info('Hauptpumpe ausgeschaltet');
+                        }
                     }				
                 } else if (err) {
                     adapter.log.error('triggerMainPump is not available (ist nicht erreichbar): ' + err);
@@ -588,7 +614,7 @@ const ObjThread = {
 	
 }; // End ObjThread
 
-// evaporation calculation => Verdunstungsberechnung
+// evaporation calculation => Berechnung der Verdunstung
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
     //	Sonnenscheindauer in %
@@ -638,7 +664,7 @@ function calcEvaporation (timeDifference) {
 
     applyEvaporation (curETp);
 }
-// apply Evaporation => Verdunstung anwenden auf die einzelnen Sprengerkreise
+// apply Evaporation => Verdunstung anwenden auf die einzelnen Sprenger kreise
 function applyEvaporation (eTP){
 
     const result = resConfigChange; // resEnabled;
@@ -711,7 +737,7 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
     const stunde = zweiStellen(d.getHours());
     const minute = zweiStellen(d.getMinutes());
     const currentThursday = new Date(d.getTime() +(3-((d.getDay()+6) % 7)) * 86400000);
-    // At the beginnig or end of a year the thursday could be in another year.
+    // At the beginning or end of a year the thursday could be in another year.
     const yearOfThursday = currentThursday.getFullYear();
     // Get first Thursday of the year
     const firstThursday = new Date(new Date(yearOfThursday,0,4).getTime() +(3-((new Date(yearOfThursday,0,4).getDay()+6) % 7)) * 86400000);
@@ -720,7 +746,7 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
     switch (timeFormat) {
         case 'kW':	// formatTime('','kW');
             // +1 we start with week number 1
-            // +0.5 an easy and dirty way to round result (in combinationen with Math.floor)
+            // +0.5 an easy and dirty way to round result (in combination with Math.floor)
             return Math.floor(1 + 0.5 + (currentThursday.getTime() - firstThursday.getTime()) / 86400000/7);
 			
         case 'dd.mm. hh:mm':
@@ -844,7 +870,7 @@ function checkActualStates () {
     }
     //
     adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel', /**
-        * @param {any} err
+        /** @param {any} err
         * @param {any[]} list
         */
         function (err, list) {
@@ -918,10 +944,10 @@ function sunPos() {
     // Berechnung des heutigen Tages
     // dayNum = times.sunrise.getDay();
 	
-    // format sunrise time from the Date object => Formatieren Sie die Sonnenaufgangzeit aus dem Date-Objekt
+    // format sunrise time from the Date object => Formatieren Sie die Sonnenaufgangszeit aus dem Date-Objekt
     sunriseStr = ('0' + times.sunrise.getHours()).slice(-2) + ':' + ('0' + times.sunrise.getMinutes()).slice(-2);
 
-    // format goldenhourend time from the Date object => Formatiere goldenhourend time aus dem Date-Objekt
+    // format golden hour end time from the Date object => Formatiere golden hour end time aus dem Date-Objekt
     goldenHourEnd = ('0' + times.goldenHourEnd.getHours()).slice(-2) + ':' + ('0' + times.goldenHourEnd.getMinutes()).slice(-2);
 	
 }
@@ -1008,10 +1034,10 @@ function startTimeSprinkle() {
                 if (debug) {adapter.log.info('Bodenfeuchte: ' + result[i].soilMoisture.val + ' <= ' + result[i].soilMoisture.triggersIrrigation + ' AutoOnOff: ' + result[i].autoOnOff);}
                 if ((result[i].soilMoisture.val <= result[i].soilMoisture.triggersIrrigation) && (result[i].autoOnOff)) {	// Bodenfeuchte zu gering && Ventil auf Automatik
                     let countdown = result[i].wateringTime * (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.val) / (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.triggersIrrigation); // in min
-                    if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {	// Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (Proz.)
+                    if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {	// Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                         countdown = result[i].wateringTime * result[i].wateringAdd / 100;
                     }
-                    if (debug) {adapter.log.info('sprinkleControll: ' + result[i].objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].soilMoisture.maxIrrigation + ', ' + result[i].soilMoisture.val + ', ' + result[i].soilMoisture.triggersIrrigation + ')');}
+                    if (debug) {adapter.log.info('sprinklecontrol: ' + result[i].objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].soilMoisture.maxIrrigation + ', ' + result[i].soilMoisture.val + ', ' + result[i].soilMoisture.triggersIrrigation + ')');}
                     ObjThread.addList(
                         result[i].sprinkleID,
                         Math.round(60*countdown),
@@ -1182,7 +1208,7 @@ function createSprinklers() {
                 },
                 'native': {},
             });
-            // History - Sprinkler running time of the current calendar week => History - Sprinkler-Lauzeit der aktuellen Kalenderwoche (783 Liter)
+            // History - Sprinkler running time of the current calendar week => History - Sprinkler-Laufzeit der aktuellen Kalenderwoche (783 Liter)
             adapter.setObjectNotExists(objPfad + '.history.curCalWeekRunningTime', {
                 'type': 'state',
                 'common': {
@@ -1335,14 +1361,19 @@ function main() {
 	adapter.config:
 	*/
     adapter.log.debug(JSON.stringify(adapter.config.events));
-
-    adapter.getForeignObject('system.config', (err, obj) => {
+    /**
+     * The adapters config (in the instance object everything under the attribute "native") is accessible via adapter.config:
+     * => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über adapter.config:
+     * @param {any} err
+     * @param {any} obj
+     */
+    adapter.getForeignObject('system.config', (err) => {
         if (!err) {
             debug = adapter.config.debug;
             checkStates();
         }
     });
-    setTimeout(function() {
+    timer = setTimeout(function() {
         checkActualStates();
         sunPos();
     }, 2000);
@@ -1411,7 +1442,7 @@ function main() {
             resConfigChange.push(newEntry);
             // resConfigChange[objectName] = newEntry;
             if (newEntry.enabled) {
-                adapter.subscribeStates(newEntry.objectID);	// abonieren der Statusänderungen des Objekts
+                adapter.subscribeStates(newEntry.objectID);	// abonnieren der Statusänderungen des Objekts
             }
             if (debug) {adapter.log.info('main => resConfigChange add: ' + objectName + '(' + newEntry.sprinkleID + ')   ' + JSON.stringify(resConfigChange[newEntry.sprinkleID]));}
         }
