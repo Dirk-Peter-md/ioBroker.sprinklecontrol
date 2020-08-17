@@ -82,8 +82,9 @@ function startAdapter(options) {
         */
         ready: main, // Main method defined below for readability => Hauptmethode für die Lesbarkeit unten definiert
 
-        // +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
         /*
+         * +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
+         *
          * @param {() => void} callback
          */
         unload: (callback) => {
@@ -103,8 +104,8 @@ function startAdapter(options) {
             }
         },
 
-        // ++++++++++++++++++ is called if a subscribed object changes ++++++++++++++++++
         /*
+         * ++++++++++++++++++ is called if a subscribed object changes ++++++++++++++++++
          * @param {string} id
          * @param {{ obj: any; }} state
          */
@@ -129,8 +130,8 @@ function startAdapter(options) {
             }
         },
 
-        // ++++++++++++++++++ is called if a subscribed state changes ++++++++++++++++++
         /*
+         * ++++++++++++++++++ is called if a subscribed state changes ++++++++++++++++++
          * @param {string} id
          * @param {{ val: string; ts: any; lc: any; ack: boolean}} state
          */
