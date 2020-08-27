@@ -178,11 +178,17 @@ Diese Einstellungen sind eigentlich selbsterklärend: Breiten- und Längengrad d
 
 Über die Sensoren wird die max. mögliche Verdunstung der pot. Evapotranspiration nach Penman ETp berechnet und zur Steuerung der Bewässerungsanlage genutzt.
 Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
-* **Temperatursensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Luftsensor in °C auswählen.
-* **Feuchtigkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Feuchtigkeitssensor in % auswählen.
-* **Windgeschwindigkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Windgeschwindigkeitssensor in km/h auswählen.
-* **Helligkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Helligkeitssensor auswählen.
-* **Regensensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Regensensor in mm auswählen.
+* **Temperatursensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Luftsensors in °C auswählen.
+* **Feuchtigkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Feuchtigkeitssensors in % auswählen.
+* **Windgeschwindigkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Windgeschwindigkeitssensors in km/h auswählen.
+* **Helligkeitssensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Helligkeitssensors auswählen.
+* **Regensensor:** - Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Regensensors in mm auswählen.
+
+## Wettervorhersage
+
+Beim Aktivieren des Feldes "Wettervorhersage verwenden", erscheint ein Auswahlfeld. In diesem muss die Instanz vom Adapter "Das Wetter" ausgewählt werden.
+Im Adapter "Das Wetter" muss der "Pfad 2: XML-Datei mit 5-Tage-Wettervorhersage und detaillierten Informationen für alle 3 Stunden" ausgefüllt sein, 
+damit SprinkleControl auf das Objekt "daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value" zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zug entscheidung einer Beregnung verwendet.
 
 ***
 
@@ -228,3 +234,5 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 # Was ist für die Zukunft geplant
 * **Restfehler beseitigen (ESLint)**
 * **Steuerung einer 2. Wasserquelle hinzufügen mit automatischer Umschaltung, wenn Zisterne leer wird**
+* **integration von Bodenfeuchtesensoren**
+* **Visualisierung**
