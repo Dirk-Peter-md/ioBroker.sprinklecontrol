@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "news": {
+      "0.0.9": {
+          "en": "Integration of the adapter \"Das Wetter\" for rain forecast",
+          "de": "Integration des Adapters \"Das Wetter\" zur Regenvorhersage",
+          "ru": "Интеграция адаптера \"Das Wetter\" для прогноза дождя.",
+          "pt": "Integração do adaptador \"Das Wetter\" para previsão de chuva",
+          "nl": "Integratie van de adapter \"Das Wetter\" voor regenvoorspelling",
+          "fr": "Intégration de l'adaptateur \"Das Wetter\" pour les prévisions de pluie",
+          "it": "Integrazione dell'adattatore \"Das Wetter\" per previsione pioggia",
+          "es": "Integración del adaptador \"Das Wetter\" para pronóstico de lluvia",
+          "pl": "Integracja adaptera „Das Wetter” do prognozy opadów",
+          "zh-cn": "集成适配器“ Das Wetter”以进行降雨预报"
+      },
       "0.0.8": {
         "en": "adapter.unload: (setTimeout > 1s) => delete",
         "de": "adapter.unload: (setTimeout> 1s) => löschen",
@@ -155,6 +167,8 @@
     "sensorWindSpeed": "",
     "sensorBrightness": "",
     "sensorRainfall": "",
+    "weatherForecast": false,
+    "weatherForInstance": "",
     "events": [
       {
         "enabled": true,
@@ -301,7 +315,35 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": ""
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.rainToday",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "Rain amount that day",
+        "type": "number",
+        "unit": "mm",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.rainTomorrow",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "Amount of rain tomorrow",
+        "type": "number",
+        "unit": "mm",
+        "read": true,
+        "write": false,
+        "def": false
       },
       "native": {}
     }

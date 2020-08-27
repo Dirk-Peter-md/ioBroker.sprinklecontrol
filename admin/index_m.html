@@ -17,8 +17,9 @@
     <script type="text/javascript" src="../../js/translate.js"></script>
     <script type="text/javascript" src="../../lib/js/selectID.js"></script>
     <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+    <!---
     <script type="text/javascript" src="actions.js"></script>
-
+        -->
     <!-- Load our own files -->
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script type="text/javascript" src="words.js"></script>
@@ -40,7 +41,7 @@
             width: calc(100% - 100px);
         }
         #dialog-command .title {
-            background: #64b5f6;
+            background: #187ef2;
             color: #FFF;
             padding: 0.5rem;
         }
@@ -76,7 +77,7 @@
         }
         #dialog-sprinkle-edit .title {
             width: 100% !important;
-            background: #64b5f6;
+            background: #187ef2;
             color: #FFF;
             padding: 0.3rem;
         }
@@ -147,8 +148,8 @@
             // Beispiel: Wählen Sie Elemente mit id = key und class = value aus und fügen Sie einen Wert ein
             if (!settings) return;
             $('.value').each(function () {
-                var $key = $(this);
-                var id = $key.attr('id');
+                let $key = $(this);
+                let id = $key.attr('id');
                 if ($key.attr('type') === 'checkbox') {
                     // do not call onChange direct, because onChange could expect some arguments
                     // Rufen Sie onChange nicht direkt auf, da onChange einige Argumente erwarten kann
@@ -173,7 +174,7 @@
 
             //var events = [];
             
-            events = settings.events    || [];
+            let events = settings.events    || [];
             
             showHideSettings();
             showHideSettingsCombo();
@@ -181,9 +182,9 @@
             values2table('events', events, onChange, tableOnReady);
 
             $('#responseOIDDialog').on('click', function () {
-                var devices = table2values('events');
-                var id = 0;
-                for (var i = 0; i < devices.length; i++) {
+                let devices = table2values('events');
+                let id = 0;
+                for (let i = 0; i < devices.length; i++) {
                 id = id +1;
                 }
                 setTimeout(function () {
@@ -204,7 +205,7 @@
                         if (newId) {
                             $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(newId).trigger('change');
                             socket.emit('getObject', newId, function (err, obj) {
-                                var name = getName(obj);
+                                let name = getName(obj);
                                 $('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val(name).trigger('change');
                             });
                         }
@@ -315,12 +316,17 @@
             getAdapterInstances('feiertage', function (instances) {
                 fillInstances('publicHolInstance', instances, settings['publicHolInstance']);
             });
+
+            getAdapterInstances('daswetter', function (instances) {
+                fillInstances('weatherForInstance', instances, settings['weatherForInstance']);
+            });
+
         }
         function fillInstances(id, arr, val) {
-            var $sel = $('#' + id);
+            let $sel = $('#' + id);
             $sel.html('<option value="">' + _('none') + '</option>');
-            for (var i = 0; i < arr.length; i++) {
-                var _id = arr[i]._id.replace('system.adapter.', '');
+            for (let i = 0; i < arr.length; i++) {
+                let _id = arr[i]._id.replace('system.adapter.', '');
                 $sel.append('<option value="' + _id + '"' + (_id === val ? ' selected' : '') + '>' + _id + '</option>');
             }
             $sel.select();
@@ -333,7 +339,7 @@
                         if (newId) {
                             $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(newId).trigger('change');
                             socket.emit('getObject', newId, function (err, obj) {
-                                var name = getName(obj);
+                                let name = getName(obj);
                                 $('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val(name).trigger('change');
                             });
                         }
@@ -358,16 +364,16 @@
 
                 setTimeout(function () {
                     initDialogSprinkle(function (sid) {
-                        var newTriggerID = $('#triggerID').val();
-                        var newWateringTime = $('#wateringTime').val();
-						var newWateringAdd = $('#wateringAdd').val();
-						var newWateringInterval = $('#wateringInterval').val();
-                        var newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
-                        var newMaxSoilMoistureRain = $('#maxSoilMoistureRain').val();
-                        var newTriggersIrrigation = $('#triggersIrrigation').val();
-                        var newPipeFlow = $('#pipeFlow').val();
-                        var newBooster = $('#booster').prop('checked');
-                        var newEndIrrigation = $('#endIrrigation').prop('checked');
+                        let newTriggerID = $('#triggerID').val();
+                        let newWateringTime = $('#wateringTime').val();
+						let newWateringAdd = $('#wateringAdd').val();
+						let newWateringInterval = $('#wateringInterval').val();
+                        let newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
+                        let newMaxSoilMoistureRain = $('#maxSoilMoistureRain').val();
+                        let newTriggersIrrigation = $('#triggersIrrigation').val();
+                        let newPipeFlow = $('#pipeFlow').val();
+                        let newBooster = $('#booster').prop('checked');
+                        let newEndIrrigation = $('#endIrrigation').prop('checked');
 
                         $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
                         $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
@@ -390,9 +396,9 @@
         function save(callback) {
             // example: select elements with class=value and build settings object
             // Beispiel: Wählen Sie Elemente mit class = value aus und erstellen Sie das Einstellungsobjekt
-            var obj = {};
+            let obj = {};
             $('.value').each(function () {
-                var $this = $(this);
+                let $this = $(this);
                 if ($this.attr('type') === 'checkbox') {
                     obj[$this.attr('id')] = $this.prop('checked');
                 } else {
@@ -438,9 +444,7 @@
 			}
 			
 			// Zeiteinstellungen => Feiertagseinstellung sichtbar bei checkbox
-			
 
-			
             if ($('#publicWeekend').prop('checked')) {
                 $('.publicWeek').show();
 				$('.publicWeekHol').show();
@@ -454,9 +458,18 @@
             } else {
                 $('.publicHol').hide();
             }
+
+            // zusätzliche Einstellungen => Wettervorhersage
+
+            if ($('#weatherForecast').prop('checked')) {
+                $('.weatherFor').show();
+            } else {
+                $('.weatherFor').hide();
+            }
+
         }
 
-        var selectId;
+        let selectId;
         function initSelectId(callback) {
             if (selectId) {
                 return callback(selectId);
@@ -495,26 +508,26 @@
         
         function getName(obj) {
             if (obj && obj.common && obj.common.name) {
-                var name = obj.common.name;
+                let name = obj.common.name;
                 if (typeof name === 'object') {
                     name = name[systemLang] || name.en;
                 }
                 return name;
             } else if (obj && obj.name) {
-                var name = obj.name;
+                let name = obj.name;
                 if (typeof name === 'object') {
                     name = name[systemLang] || name.en;
                 }
                 return name;
             } else {
-                var parts = obj.id.split('.');
-                var last = parts.pop();
+                let parts = obj.id.split('.');
+                let last = parts.pop();
                 return last[0].toUpperCase() + last.substring(1).toLowerCase();
             }
         }
 
         function initDialogSprinkle(callback) {
-            var $editDialog = $('#dialog-sprinkle-edit');
+            let $editDialog = $('#dialog-sprinkle-edit');
             if (!$editDialog.data('inited')) {
                 $editDialog.data('inited', true);
                 $editDialog.modal({
@@ -522,8 +535,8 @@
                 });
                 
                 $editDialog.find('.btn-set').on('click', function () {
-                    var $editDialog = $('#dialog-sprinkle-edit');
-                    var callback = $editDialog.data('callback');
+                    let $editDialog = $('#dialog-sprinkle-edit');
+                    let callback = $editDialog.data('callback');
                     if (typeof callback === 'function') callback();
                     $editDialog.data('callback', null);
                 });
@@ -727,6 +740,7 @@
                 </div>
                 <!-- Tab Extra -->
                 <div id="tab-extra" class="col s12 page">
+                    <!-- Astro Einstellungen -->
                     <div class="col s6">
                         <div class="row">
                             <div class="col s6">
@@ -746,6 +760,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Debug Einstellungen -->
                     <div class="col s6">
                         <div class="row">
                             <div class="col s6">
@@ -759,7 +774,7 @@
                             </div>
                         </div>
                     </div>
-
+                    <!-- aktuelle Wetterdaten -->
                     <div class="row">
                         <div class="col s12">
                             <h6 class="translate sub-title">Evaporation calculation sensors</h6>
@@ -811,109 +826,127 @@
                             <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>						
                     </div>
-                    
-                </div>
-            </div>
-        </div>
-    <div class="m material-dialogs">
-        <div id="dialog-select-member" class="modal modal-fixed-footer">
-            <div class="modal-content">
-                <div class="row">
-                    <div class="col s12 title"></div>
-                </div>
-                <div class="row">
-                    <div class="col s12 dialog-content">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Select</span></a>
-                <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
-            </div>
-        </div>
-        <div id="dialog-sprinkle-edit" class="modal modal-fixed-footer">
-            <div class="row">
-                <div class="modal-content">
-                    
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="title"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
-                        </div>
-                    </div>
-                    <div class="col s12">
-                        <ul class="tabs">
-                            <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
-                            <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
-                        </ul>
-                    </div>
-                    <div id="tab-pumpPopUp" class="col s12 page">
-						<div class="row">
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
-								<label for="pipeFlow" class="translate"></label>
-								<span class="translate">Flow amount</span>
-							</div>
+                    <!-- Wettervorhersage -->
+                    <div class="col s6">
+                        <div class="row">
+                            <div class="col s6">
+                                <h6 class="translate sub-title">Weather forecast</h6>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="col s6 l2 input-field">
-                                <input type="checkbox" class="form-control" id="booster" />
-                                <span for="booster" class="translate">Booster</span>
+                            <div class="input-field col s6 l2 weatherForecast">
+                                <input type="checkbox" class="value" id="weatherForecast" />
+                                <span for="weatherForecast" class="translate">Use weather forecast</span>
+                            </div>
+                            <div class="input-field col s12 m6 l2 weatherFor">
+                                <select id="weatherForInstance" class="value"></select>
+                                <label for="weatherForInstance" class="translate"></label>
+                                <span class="translate">Select the weather forecast instance</span>
                             </div>
                         </div>
                     </div>
-                    <div id="tab-settingsPopUp" class="col s12 page">
-						<div class="row">
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="wateringTime" min=5 max=90 />
-								<label for="wateringTime" class="translate"></label>
-								<span class="translate">Watering duration</span>
-							</div>
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
-								<label for="wateringAdd" class="translate"></label>
-								<span class="translate">maximum irrigation extension</span>
-							</div>							
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
-								<label for="wateringInterval" class="translate"></label>
-								<span class="translate">Watering interval</span>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
-								<label for="triggersIrrigation" class="translate"></label>
-								<span class="translate">lowest percentage soil moisture</span>
-							</div>
+                </div>
+            </div>
+        </div>
+        <div class="m material-dialogs">
+            <div id="dialog-select-member" class="modal modal-fixed-footer">
+                <div class="modal-content">
+                    <div class="row">
+                        <div class="col s12 title"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12 dialog-content">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Select</span></a>
+                    <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
+                </div>
+            </div>
+            <div id="dialog-sprinkle-edit" class="modal modal-fixed-footer">
+                <div class="row">
+                    <div class="modal-content">
+
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="title"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
+                            </div>
+                        </div>
+                        <div class="col s12">
+                            <ul class="tabs">
+                                <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
+                                <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
+                            </ul>
+                        </div>
+                        <div id="tab-pumpPopUp" class="col s12 page">
                             <div class="row">
                                 <div class="col s6 l2 input-field">
-                                    <input type="checkbox" class="form-control" id="endIrrigation" />
-                                    <span for="endIrrigation" class="translate">after irrigation = 100</span>
+                                    <input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
+                                    <label for="pipeFlow" class="translate"></label>
+                                    <span class="translate">Flow amount</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s6 l2 input-field">
+                                    <input type="checkbox" class="form-control" id="booster" />
+                                    <span for="booster" class="translate">Booster</span>
                                 </div>
                             </div>
                         </div>
-						<div class="row">
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
-								<label for="maxSoilMoistureIrrigation" class="translate"></label>
-								<span class="translate">maximum soil moisture after irrigation</span>
-							</div>
-							<div class="col s6 l2 input-field">
-								<input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
-								<label for="maxSoilMoistureRain" class="translate"></label>
-								<span class="translate">maximum soil moisture after the rain</span>
-							</div>
-						</div>
+                        <div id="tab-settingsPopUp" class="col s12 page">
+                            <div class="row">
+                                <div class="col s6 l2 input-field">
+                                    <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
+                                    <label for="wateringTime" class="translate"></label>
+                                    <span class="translate">Watering duration</span>
+                                </div>
+                                <div class="col s6 l2 input-field">
+                                    <input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
+                                    <label for="wateringAdd" class="translate"></label>
+                                    <span class="translate">maximum irrigation extension</span>
+                                </div>
+                                <div class="col s6 l2 input-field">
+                                    <input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
+                                    <label for="wateringInterval" class="translate"></label>
+                                    <span class="translate">Watering interval</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s6 l2 input-field">
+                                    <input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
+                                    <label for="triggersIrrigation" class="translate"></label>
+                                    <span class="translate">lowest percentage soil moisture</span>
+                                </div>
+                                <div class="row">
+                                    <div class="col s6 l2 input-field">
+                                        <input type="checkbox" class="form-control" id="endIrrigation" />
+                                        <span for="endIrrigation" class="translate">after irrigation = 100</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s6 l2 input-field">
+                                    <input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
+                                    <label for="maxSoilMoistureIrrigation" class="translate"></label>
+                                    <span class="translate">maximum soil moisture after irrigation</span>
+                                </div>
+                                <div class="col s6 l2 input-field">
+                                    <input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
+                                    <label for="maxSoilMoistureRain" class="translate"></label>
+                                    <span class="translate">maximum soil moisture after the rain</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Ok</span></a>
-                <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left">close</i><span class="translate">Cancel</span></a>
+                <div class="modal-footer">
+                    <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Ok</span></a>
+                    <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left">close</i><span class="translate">Cancel</span></a>
+                </div>
             </div>
         </div>
-        </div>
-    </div>  
+    </div>
 </body>
 
 </html>
