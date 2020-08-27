@@ -33,10 +33,6 @@ let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorrowStr;
 /** @type {number} */
-let weatherForecastTodayNum = 0;
-/** @type {number} */
-let weatherForecastTomorrowNum = 0;
-/** @type {number} */
 let ETpTodayNum = 0;
 /** @type {string} */
 let kwStr; // akt. KW der Woche
@@ -108,11 +104,10 @@ function startAdapter(options) {
             }
         },
 
-        /**
+        /*
          * ++++++++++++++++++ is called if a subscribed object changes ++++++++++++++++++
-         * ---------- wird aufgerufen, wenn sich ein abonniertes Objekt ändert ----------
          * @param {string} id
-         * @param {ioBroker.Object | null | undefined} obj
+         * @param {{ obj: any; }} state
          */
         objectChange: (id, obj) => {
             if (obj) {
@@ -135,11 +130,10 @@ function startAdapter(options) {
             }
         },
 
-        /**
+        /*
          * ++++++++++++++++++ is called if a subscribed state changes ++++++++++++++++++
-         * --------- wird aufgerufen, wenn sich ein abonnierter Status ändert ----------
          * @param {string} id
-         * @param {ioBroker.State | null | undefined} state
+         * @param {{ val: string; ts: any; lc: any; ack: boolean}} state
          */
         stateChange: (id, state) => {
             if (state) {
@@ -224,17 +218,6 @@ function startAdapter(options) {
                     if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
                         publicHolidayTomorrowStr = state.val;
                         startTimeSprinkle();
-                    }
-                }
-                // Wettervorhersage
-                if (adapter.config.weatherForecast === true) {
-                    if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value') {
-                        weatherForecastTodayNum = state.val;
-                        adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
-                    }
-                    if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value') {
-                        weatherForecastTomorrowNum = state.val;
-                        adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
                     }
                 }
             } else {
@@ -576,7 +559,7 @@ const ObjThread = {
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });
                 /* Ventil einschalten */
                 adapter.setForeignState(entry.idState, {val: true, ack: false});
-                adapter.log.info('Ventil "' + entry.sprinkleName + '" eingeschaltet für ' + addTime(entry.wateringTime));
+                adapter.log.info('Ventil "' + entry.sprinkleName + '" eingeschaltet für ' + entry.wateringTime);
                 /* countdown starten */
                 if (!entry.startTime) {entry.startTime = new Date();}
                 entry.countdown = setInterval(() => {countSprinkleTime(entry);}, 1000);	// 1000 = 1s
@@ -632,34 +615,6 @@ const ObjThread = {
 	
 }; // End ObjThread
 
-// +++++++++++++++++ Get longitude an latitude from system config ++++++++++++++++++++
-function GetSystemData() {
-    /**get longitude/latitude from system if not set or not valid
-     * do not change if we have already a valid value
-     * so we could use different settings compared to system if necessary
-     * >>>
-     * Längen- / Breitengrad vom System abrufen, falls nicht festgelegt oder ungültig
-     * Ändern Sie nicht, wenn wir bereits einen gültigen Wert haben
-     * Daher können wir bei Bedarf andere Einstellungen als das System verwenden
-     */
-    if (typeof adapter.config.longitude === undefined || adapter.config.longitude === null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
-        || typeof adapter.config.latitude === undefined || adapter.config.latitude === null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
-
-        adapter.log.debug('longitude/longitude not set, get data from system ' + typeof adapter.config.longitude + ' ' + adapter.config.longitude + '/' + typeof adapter.config.latitude + ' ' + adapter.config.latitude);
-
-        adapter.getForeignObject('system.config', (err, state) => {
-
-            if (err) {
-                adapter.log.error(err);
-            } else {
-                adapter.config.longitude = state.common.longitude;
-                adapter.config.latitude = state.common.latitude;
-                adapter.log.info('system  longitude ' + adapter.config.longitude + ' latitude ' + adapter.config.latitude);
-            }
-        });
-    }
-}
-
 // evaporation calculation => Berechnung der Verdunstung
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
@@ -694,7 +649,7 @@ function calcEvaporation (timeDifference) {
     // Windfunktion f(v) in mm/d hPa
     const m7 = 0.13 + 0.14 * curWindSpeed / 3.6;
 	
-    // pot. Evapotranspiration nach Penman ETp in mm/d
+    // pot. Evapotranspiration nach Penmann ETp in mm/d
     const eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
 
     if (debug) {adapter.log.info('RE: ' + RE + ' ETp:' + eTp);}
@@ -806,10 +761,9 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
 // Sets the status at start to a defined value => Setzt den Status beim Start auf einen definierten Wert
 function checkStates() {
     //
-    /**
-     * control.Holiday
-     * @param {string|null} err
-     * @param {ioBroker.State|null|undefined} state
+    /*
+     * @param {any} err
+     * @param {{ val: null; } | null} state
      */
     adapter.getState('control.Holiday', (err, state) => {
         if (state && (state.val === null)) {
@@ -875,20 +829,19 @@ function checkStates() {
 }
 //	aktuelle States checken nach 2000 ms
 function checkActualStates () {
-    /**
-     * switch Holiday
-     * @param {string|null} err
-     * @param {ioBroker.State|null|undefined} state
+    //
+    /*
+     * @param {any} err
+     * @param {{ val: any; }} state
      */
     adapter.getState('control.Holiday', (err, state) => {
         if (state) {
             holidayStr = state.val;
         }
     });
-    /**
-     * switch autoOnOff
+    /*
      * @param {any} err
-     * @param {ioBroker.State|null|undefined} state
+     * @param {{ val: any; }} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
         if (state) {
@@ -897,20 +850,18 @@ function checkActualStates () {
     });
     //
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance !== 'none' || adapter.config.publicHolInstance !== '')) {
-        /**
-         * Feiertag HEUTE
+        /*
          * @param {any} err
-         * @param {ioBroker.State|null|undefined} state
+         * @param {{ val: any; }} state
          */
         adapter.getForeignState(adapter.config.publicHolInstance + '.heute.boolean', (err, state) => {
             if (state) {
                 publicHolidayStr = state.val;
             }
         });
-        /**
-         * Feiertag MORGEN
+        /*
          * @param {any} err
-         * @param {ioBroker.State|null|undefined} state
+         * @param {{ val: any; }} state
          */
         adapter.getForeignState(adapter.config.publicHolInstance + '.morgen.boolean', (err, state) => {
             if (state) {
@@ -918,33 +869,9 @@ function checkActualStates () {
             }
         });
     }
-    if (adapter.config.weatherForecast === true && (adapter.config.weatherForInstance !== 'none' || adapter.config.weatherForInstance !== '')) {
-        /**
-         * Niederschlagsmenge HEUTE in mm
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
-         */
-        adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value', (err, state) => {
-            if (state) {
-                weatherForecastTodayNum = state.val;
-                adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
-            }
-        });
-        /**
-         * Niederschlagsmenge MORGEN in mm
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
-         */
-        adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value', (err, state) => {
-            if (state) {
-                weatherForecastTomorrowNum = state.val;
-                adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
-            }
-        });
-    }
     //
     adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel', /**
-        * @param {any} err
+        /** @param {any} err
         * @param {any[]} list
         */
         function (err, list) {
@@ -965,9 +892,8 @@ function checkActualStates () {
 	
 }
 
-/* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle
-* (..., '(s )m h d m wd') */
-const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
+/* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle */
+const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {	//(..., '(s )m h d m wd')
     // Berechnungen mittels SunCalc
     sunPos();
 
@@ -1014,7 +940,7 @@ function sunPos() {
     const times = SunCalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
 	
     //Sonnenscheindauer in Stunden)
-    maxSunshine = (('0' + times.sunset.getTime() - times.sunrise.getTime()) / 3600000);
+    maxSunshine = (('0' + times.sunset.getTime() - times.sunrise.getTime()) / 3600000); 
 	
     // Berechnung des heutigen Tages
     // dayNum = times.sunrise.getDay();
@@ -1100,30 +1026,23 @@ function startTimeSprinkle() {
     startTimeStr = nextStartTime();
     startTimeSplit = startTimeStr.split(':');
 
-    const scheduleStartTime = schedule.scheduleJob('sprinkleStartTime', startTimeSplit[1] + ' ' + startTimeSplit[0] + ' * * *', function() {
+    const schedStartTime = schedule.scheduleJob('sprinkleStartTime', startTimeSplit[1] + ' ' + startTimeSplit[0] + ' * * *', function() {
         // Filter enabled
         const result = resConfigChange.filter(d => d.enabled === true);
         if (result) {	
             for(const i in result) {
-                // Test Bodenfeuchte
+                // Test
                 if (debug) {adapter.log.info('Bodenfeuchte: ' + result[i].soilMoisture.val + ' <= ' + result[i].soilMoisture.triggersIrrigation + ' AutoOnOff: ' + result[i].autoOnOff);}
-                // Bodenfeuchte zu gering && Ventil auf Automatik
-                if ((result[i].soilMoisture.val <= result[i].soilMoisture.triggersIrrigation) && (result[i].autoOnOff)) {
-                    /* Wenn in Config Regenvorhersage aktiviert, Startvorgang abbrechen wenn es heute ausreichend regnen soll. */
-                    if (adapter.config.weatherForecast && ((result[i].soilMoisture.val + weatherForecastTodayNum) <= result[i].soilMoisture.triggersIrrigation)) {
-                        let countdown = result[i].wateringTime * (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.val) / (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.triggersIrrigation); // in min
-                        // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
-                        if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {
-                            countdown = result[i].wateringTime * result[i].wateringAdd / 100;
-                        }
-                        if (debug) {adapter.log.info('sprinklecontrol: ' + result[i].objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].soilMoisture.maxIrrigation + ', ' + result[i].soilMoisture.val + ', ' + result[i].soilMoisture.triggersIrrigation + ')');}
-                        ObjThread.addList(
-                            result[i].sprinkleID,
-                            Math.round(60*countdown),
-                            true);
-                    } else {
-                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + (result[i].soilMoisture.val + weatherForecastTodayNum) + ') <= ' + result[i].soilMoisture.triggersIrrigation);
+                if ((result[i].soilMoisture.val <= result[i].soilMoisture.triggersIrrigation) && (result[i].autoOnOff)) {	// Bodenfeuchte zu gering && Ventil auf Automatik
+                    let countdown = result[i].wateringTime * (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.val) / (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.triggersIrrigation); // in min
+                    if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {	// Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
+                        countdown = result[i].wateringTime * result[i].wateringAdd / 100;
                     }
+                    if (debug) {adapter.log.info('sprinklecontrol: ' + result[i].objectName + '  wateringTime: ' + countdown + ' (' + result[i].wateringTime + ', ' + result[i].soilMoisture.maxIrrigation + ', ' + result[i].soilMoisture.val + ', ' + result[i].soilMoisture.triggersIrrigation + ')');}
+                    ObjThread.addList(
+                        result[i].sprinkleID,
+                        Math.round(60*countdown),
+                        true);
                 }
             }
         }
@@ -1460,8 +1379,6 @@ function main() {
         sunPos();
     }, 2000);
 
-    GetSystemData();
-
     /*
     * in this template all states changes inside the adapters namespace are subscribed
 	* => In dieser Vorlage werden alle Statusänderungen im Namensraum des Adapters abonniert
@@ -1496,12 +1413,6 @@ function main() {
     if (adapter.config.sensorWindSpeed !== '') {
         adapter.subscribeForeignStates(adapter.config.sensorWindSpeed);
     }
-    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance === 'daswetter.0')) {
-        adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value');
-    }
-    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance === 'daswetter.0')) {
-        adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value');
-    }    
     //
     // Report a change in the status of the trigger IDs (.runningTime) => Melden einer Änderung des Status der Trigger-IDs
     const result = adapter.config.events;
