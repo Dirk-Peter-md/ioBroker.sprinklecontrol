@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "news": {
+      "0.0.10": {
+          "en": "Error processing rain forecast from adapter \"Das Wetter\"",
+          "de": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+          "ru": "Ошибка при обработке прогноза дождя от адаптера Das Wetter.",
+          "pt": "Erro ao processar previsão de chuva do adaptador \"Das Wetter\"",
+          "nl": "Fout bij het verwerken van regenvoorspelling van adapter \"Das Wetter\"",
+          "fr": "Erreur lors du traitement des prévisions de pluie de l'adaptateur \"Das Wetter\"",
+          "it": "Errore durante l'elaborazione delle previsioni di pioggia dall'adattatore \"Das Wetter\"",
+          "es": "Error al procesar el pronóstico de lluvia del adaptador \"Das Wetter\"",
+          "pl": "Błąd podczas przetwarzania prognozy opadów deszczu z adaptera „Das Wetter”",
+          "zh-cn": "处理适配器“ Das Wetter”的降雨预测时出错"
+      },
       "0.0.9": {
           "en": "Integration of the adapter \"Das Wetter\" for rain forecast",
           "de": "Integration des Adapters \"Das Wetter\" zur Regenvorhersage",

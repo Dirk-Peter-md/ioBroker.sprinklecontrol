@@ -188,7 +188,7 @@ Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 
 Beim Aktivieren des Feldes "Wettervorhersage verwenden", erscheint ein Auswahlfeld. In diesem muss die Instanz vom Adapter "Das Wetter" ausgewählt werden.
 Im Adapter "Das Wetter" muss der "Pfad 2: XML-Datei mit 5-Tage-Wettervorhersage und detaillierten Informationen für alle 3 Stunden" ausgefüllt sein, 
-damit SprinkleControl auf das Objekt "daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value" zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zug entscheidung einer Beregnung verwendet.
+damit SprinkleControl auf das Objekt "daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value" zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zur Entscheidung einer Beregnung verwendet.
 
 ***
 

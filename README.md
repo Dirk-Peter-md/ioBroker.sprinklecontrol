@@ -35,6 +35,9 @@ Weather-dependent automatic control of garden irrigation
 
 ## Changelog
 
+### 0.0.10 (29.08.2020)
+* (Dirk-Peter-md) Bug in der Verarbeitung der Regenvorhersage vom Adapter "Das Wetter"
+
 ### 0.0.9 (28.08.2020)
 * (Dirk-Peter-md) integration des Adapters "Das Wetter" <Pfad 2: XML-Datei mit 5-Tage-Wettervorhersage> zur Regenvorhersage (siehe Doku)
 

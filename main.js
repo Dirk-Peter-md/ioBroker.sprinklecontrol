@@ -1123,7 +1123,7 @@ function startTimeSprinkle() {
                             true);
                     } else {
                         /* Bewässerung unterdrückt da ausreichende regenvorhersage */
-                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + (result[i].soilMoisture.val + weatherForecastTodayNum) + ') <= ' + result[i].soilMoisture.triggersIrrigation);
+                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + (result[i].soilMoisture.val + weatherForecastTodayNum) + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
                     }
                 }
             }
