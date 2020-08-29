@@ -827,7 +827,7 @@ function checkStates() {
         }
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
-        if (state && (state.val === null) || isNaN(state.val)) {
+        if (state && (state.val === null)) {
             ETpTodayNum = 0;
             //            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
