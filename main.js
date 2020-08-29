@@ -22,7 +22,7 @@ let startTimeStr;
 let sunriseStr;
 /** @type {string} */
 let goldenHourEnd;
-/** @type {string} */
+/** @type {number} */
 let maxSunshine;	//	(Sonnenscheindauer in Stunden)
 /** @type {any} */
 let holidayStr;
@@ -827,7 +827,7 @@ function checkStates() {
         }
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
-        if (state && (state.val === null)) {
+        if (state && (state.val === null) || isNaN(state.val)) {
             ETpTodayNum = 0;
             //            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
@@ -1014,7 +1014,7 @@ function sunPos() {
     const times = SunCalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
 	
     //Sonnenscheindauer in Stunden)
-    maxSunshine = (('0' + times.sunset.getTime() - times.sunrise.getTime()) / 3600000);
+    maxSunshine = ((times.sunset.getTime() - times.sunrise.getTime()) / 3600000);
 	
     // Berechnung des heutigen Tages
     // dayNum = times.sunrise.getDay();
@@ -1123,7 +1123,7 @@ function startTimeSprinkle() {
                             true);
                     } else {
                         /* Bewässerung unterdrückt da ausreichende regenvorhersage */
-                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + (result[i].soilMoisture.val + weatherForecastTodayNum) + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
+                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + (Number(result[i].soilMoisture.val) + weatherForecastTodayNum) + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
                     }
                 }
             }
