@@ -229,7 +229,7 @@ function startAdapter(options) {
                 // Wettervorhersage
                 if (adapter.config.weatherForecast === true) {
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value') {
-                        weatherForecastTodayNum = typeToChoice(state.val, 'float');
+                        weatherForecastTodayNum = state.val;
                         adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
                     }
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value') {
@@ -803,39 +803,6 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
             break;
     }
 }
-
-//
-/**
- * Umwandlung von String | Number in Vorgabewerte
- * @param value
- * @param newType
- * @returns {string|number}
- */
-
-function typeToChoice(value, newType) {
-    switch (typeof value) {
-        case 'number':
-            if (newType === 'number') {return value;
-            } else if (newType === 'int') {return parseInt(value);
-            } else if (newType === 'float') {return parseFloat(value);
-            } else if (newType === 'string') {return value.toString;
-            }
-            break;
-
-        case 'string':
-            if (newType === 'number') {return parseFloat(value);
-            } else if (newType === 'int') {return parseInt(value);
-            } else if (newType === 'float') {return parseFloat(value);
-            } else if (newType === 'string') {return value;
-            }
-            break;
-
-        default:
-            console.log.info('function typeToChoice: Type nicht definiert: ' + typeof value);
-            return value;
-    }
-}
-
 // Sets the status at start to a defined value => Setzt den Status beim Start auf einen definierten Wert
 function checkStates() {
     //
@@ -959,7 +926,7 @@ function checkActualStates () {
          */
         adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value', (err, state) => {
             if (state) {
-                weatherForecastTodayNum = typeToChoice(state.val, 'float');
+                weatherForecastTodayNum = state.val;
                 adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
             }
         });
