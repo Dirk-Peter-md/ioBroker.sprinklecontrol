@@ -803,26 +803,36 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
             break;
     }
 }
+
 //
+/**
+ * Umwandlung von String | Number in Vorgabewerte
+ * @param value
+ * @param newType
+ * @returns {string|number}
+ */
+
 function typeToChoice(value, newType) {
     switch (typeof value) {
         case 'number':
-            if (newType === 'number') {return value;}
-            if (newType === 'int') {return parseInt(value);}
-            if (newType === 'float') {return parseFloat(value);}
-            if (newType === 'string') {return value.toString;}
+            if (newType === 'number') {return value;
+            } else if (newType === 'int') {return parseInt(value);
+            } else if (newType === 'float') {return parseFloat(value);
+            } else if (newType === 'string') {return value.toString;
+            }
             break;
 
         case 'string':
-            if (newType === 'number') {return parseFloat(value);}
-            if (newType === 'int') {return parseInt(value);}
-            if (newType === 'float') {return parseFloat(value);}
-            if (newType === 'string') {return value;}
+            if (newType === 'number') {return parseFloat(value);
+            } else if (newType === 'int') {return parseInt(value);
+            } else if (newType === 'float') {return parseFloat(value);
+            } else if (newType === 'string') {return value;
+            }
             break;
 
         default:
             console.log.info('function typeToChoice: Type nicht definiert: ' + typeof value);
-            break;
+            return value;
     }
 }
 
