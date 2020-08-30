@@ -229,7 +229,7 @@ function startAdapter(options) {
                 // Wettervorhersage
                 if (adapter.config.weatherForecast === true) {
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value') {
-                        weatherForecastTodayNum = state.val;
+                        weatherForecastTodayNum = typeToChoice(state.val, 'float');
                         adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
                     }
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value') {
@@ -798,11 +798,34 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
         case 'dd.mm. hh:mm':
             return tag + '.' + monat + ' ' + stunde + ':' + minute;
 		
-        case 'default':
+        default:
             adapter.log.info('function formatTime: falsches Format angegeben');
             break;
     }
 }
+//
+function typeToChoice(value, newType) {
+    switch (typeof value) {
+        case 'number':
+            if (newType === 'number') {return value;}
+            if (newType === 'int') {return parseInt(value);}
+            if (newType === 'float') {return parseFloat(value);}
+            if (newType === 'string') {return value.toString;}
+            break;
+
+        case 'string':
+            if (newType === 'number') {return parseFloat(value);}
+            if (newType === 'int') {return parseInt(value);}
+            if (newType === 'float') {return parseFloat(value);}
+            if (newType === 'string') {return value;}
+            break;
+
+        default:
+            console.log.info('function typeToChoice: Type nicht definiert: ' + typeof value);
+            break;
+    }
+}
+
 // Sets the status at start to a defined value => Setzt den Status beim Start auf einen definierten Wert
 function checkStates() {
     //
@@ -926,7 +949,7 @@ function checkActualStates () {
          */
         adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value', (err, state) => {
             if (state) {
-                weatherForecastTodayNum = state.val;
+                weatherForecastTodayNum = typeToChoice(state.val, 'float');
                 adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
             }
         });
@@ -1110,7 +1133,9 @@ function startTimeSprinkle() {
                 // Bodenfeuchte zu gering && Ventil auf Automatik
                 if ((result[i].soilMoisture.val <= result[i].soilMoisture.triggersIrrigation) && (result[i].autoOnOff)) {
                     /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
-                    if (adapter.config.weatherForecast && ((result[i].soilMoisture.val + weatherForecastTodayNum) <= result[i].soilMoisture.triggersIrrigation)) {
+                    const resMoisture = (+ result[i].soilMoisture.val) + (+ weatherForecastTodayNum);
+                    adapter.log.info('weatherForecastTodayNum, Typeof: ' + typeof weatherForecastTodayNum + '  Wert: ' + weatherForecastTodayNum + ' soilMoisture, Typeof: ' + typeof result[i].soilMoisture.val + ' Wert: ' + result[i].soilMoisture.val + ' Summe: ' + resMoisture + ' Auswertung: ' + (resMoisture <= result[i].soilMoisture.triggersIrrigation));
+                    if (adapter.config.weatherForecast && (resMoisture <= result[i].soilMoisture.triggersIrrigation)) {
                         let countdown = result[i].wateringTime * (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.val) / (result[i].soilMoisture.maxIrrigation - result[i].soilMoisture.triggersIrrigation); // in min
                         // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                         if (countdown > (result[i].wateringTime * result[i].wateringAdd / 100)) {
@@ -1123,7 +1148,7 @@ function startTimeSprinkle() {
                             true);
                     } else {
                         /* Bewässerung unterdrückt da ausreichende regenvorhersage */
-                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + (Number(result[i].soilMoisture.val) + weatherForecastTodayNum) + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
+                        adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + resMoisture + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
                     }
                 }
             }
