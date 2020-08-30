@@ -3,6 +3,18 @@
     "name": "sprinklecontrol",
     "version": "0.0.10",
     "news": {
+      "0.0.11": {
+        "en": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+        "de": "Fehler bei der Lösung der Regenvorhersage vom Adapter \"Das Wetter\"",
+        "ru": "Fehler bei der Verarbeitung der Regenvorhersage vom Адаптер \"Das Wetter\"",
+        "pt": "Fehler bei der Verarbeitung der Regenvorhersage vom Adaptador \"Das Wetter\"",
+        "nl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+        "fr": "Adaptateur pour Fehler bei der Verarbeitung der Regenvorhersage vom \"Das Wetter\"",
+        "it": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+        "es": "Adaptador \"Das Wetter\" Fehler bei der Verarbeitung der Regenvorhersage vom",
+        "pl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter „Das Wetter”",
+        "zh-cn": "Fehler bei der Verarbeitung der Regenvorhersage vom适配器“ Das Wetter”"
+      },
       "0.0.10": {
           "en": "Error processing rain forecast from adapter \"Das Wetter\"",
           "de": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
