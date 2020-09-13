@@ -226,10 +226,11 @@
       "common": {
         "role": "indicator",
         "name": "Calculation of the current pot. Evapotranspiration",
-        "type": "string",
+        "type": "number",
         "read": true,
         "write": false,
-        "def": false
+        "def": false,
+        "unit": "mm"
       },
       "native": {}
     },
@@ -239,7 +240,7 @@
       "common": {
         "role": "indicator",
         "name": "today's pot. Evapotranspiration",
-        "type": "string",
+        "type": "number",
         "read": true,
         "write": false,
         "def": false,
@@ -253,7 +254,7 @@
       "common": {
         "role": "indicator",
         "name": "yesterday's pot. Evapotranspiration",
-        "type": "string",
+        "type": "number",
         "read": true,
         "write": false,
         "def": false,
