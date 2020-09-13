@@ -642,8 +642,8 @@ function GetSystemData() {
      * Ändern Sie nicht, wenn wir bereits einen gültigen Wert haben
      * Daher können wir bei Bedarf andere Einstellungen als das System verwenden
      */
-    if (typeof adapter.config.longitude === undefined || adapter.config.longitude === null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
-        || typeof adapter.config.latitude === undefined || adapter.config.latitude === null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
+    if (typeof adapter.config.longitude === undefined || adapter.config.longitude == null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
+        || typeof adapter.config.latitude === undefined || adapter.config.latitude == null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
 
         adapter.log.debug('longitude/longitude not set, get data from system ' + typeof adapter.config.longitude + ' ' + adapter.config.longitude + '/' + typeof adapter.config.latitude + ' ' + adapter.config.latitude);
 
@@ -659,7 +659,6 @@ function GetSystemData() {
         });
     }
 }
-
 // evaporation calculation => Berechnung der Verdunstung
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
@@ -885,6 +884,7 @@ function checkActualStates () {
             holidayStr = state.val;
         }
     });
+
     /**
      * switch autoOnOff
      * @param {any} err
@@ -926,7 +926,13 @@ function checkActualStates () {
          */
         adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value', (err, state) => {
             if (state) {
-                weatherForecastTodayNum = state.val;
+                if (typeof state.val == 'string') {
+                    weatherForecastTodayNum = parseFloat(state.val);
+                } else if (typeof state.val == 'number') {
+                    weatherForecastTodayNum = state.val;
+                } else {
+                    weatherForecastTodayNum = 0;
+                }
                 adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
             }
         });
@@ -937,7 +943,13 @@ function checkActualStates () {
          */
         adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value', (err, state) => {
             if (state) {
-                weatherForecastTomorrowNum = state.val;
+                if (typeof state.val == 'string') {
+                    weatherForecastTomorrowNum = parseFloat(state.val);
+                } else if (typeof state.val == 'number') {
+                    weatherForecastTomorrowNum = state.val;
+                } else {
+                    weatherForecastTomorrowNum = 0;
+                }
                 adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
             }
         });
