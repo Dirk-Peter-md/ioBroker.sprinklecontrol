@@ -50,7 +50,7 @@ let boostOn = false;
 let boostListTimer;
 /** @type {number | undefined} */
 let timer;
-// calcEvaporation
+/* calcEvaporation */
 /** @type {number} */
 let curTemperature;		/*Temperatur*/
 /** @type {number} */
@@ -63,6 +63,9 @@ let curWindSpeed;		/*WindGeschwindigkeit*/
 let lastRainCounter = 0;		/*last rain container => letzter Regencontainer*/
 /** @type {number} */
 let curAmountOfRain = 0;	/*current amount of rain => aktuelle Regenmenge*/
+/*  */
+/** @type {number} */
+let fillLevelCistern;
 /** @type {object} */
 let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
 /** @type {any[]} */
@@ -229,7 +232,14 @@ function startAdapter(options) {
                 // Wettervorhersage
                 if (adapter.config.weatherForecast === true) {
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value') {
-                        weatherForecastTodayNum = state.val;
+                        if (typeof state.val == 'string') {
+                            weatherForecastTodayNum = parseFloat(state.val);
+                        } else if (typeof state.val == 'number') {
+                            weatherForecastTodayNum = state.val;
+                        } else {
+                            weatherForecastTodayNum = 0;
+                            console.log.info('StateChange => Wettervorhersage state.val ( ' + state.val + '; ' + typeof state.val + ' ) kann nicht als Number verarbeitet werden');
+                        }
                         adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
                     }
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value') {
@@ -237,12 +247,16 @@ function startAdapter(options) {
                         adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
                     }
                 }
+                if (adapter.config.cisternSettings && adapter.config.actualValueLevel) {
+                    if (id === adapter.config.actualValueLevel) {
+                        fillLevelCistern = state.val;
+                    }
+                }
             } else {
                 // The state was deleted
                 adapter.log.info(`state ${id} deleted`);
             }
         },
-
 
         // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
         // Über das Meldungsfeld wurde eine Nachricht an die Adapterinstanz gesendet. Verwendung per E-Mail, Pushover, Text2Speech, ...
@@ -642,8 +656,8 @@ function GetSystemData() {
      * Ändern Sie nicht, wenn wir bereits einen gültigen Wert haben
      * Daher können wir bei Bedarf andere Einstellungen als das System verwenden
      */
-    if (typeof adapter.config.longitude === undefined || adapter.config.longitude == null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
-        || typeof adapter.config.latitude === undefined || adapter.config.latitude == null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
+    if (typeof adapter.config.longitude === undefined || adapter.config.longitude === null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
+        || typeof adapter.config.latitude === undefined || adapter.config.latitude === null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
 
         adapter.log.debug('longitude/longitude not set, get data from system ' + typeof adapter.config.longitude + ' ' + adapter.config.longitude + '/' + typeof adapter.config.latitude + ' ' + adapter.config.latitude);
 
@@ -659,6 +673,7 @@ function GetSystemData() {
         });
     }
 }
+
 // evaporation calculation => Berechnung der Verdunstung
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
@@ -697,7 +712,7 @@ function calcEvaporation (timeDifference) {
     const eTp = (( m6 * m5 + 0.65 * m7 * ( m1 - m2 )) / ( m6 + 0.65 )) - 0.5;
 
     if (debug) {adapter.log.info('RE: ' + RE + ' ETp:' + eTp);}
-    adapter.setState('evaporation.ETpCurrent', { val: eTp.toFixed(4), ack: true });
+    adapter.setState('evaporation.ETpCurrent', { val: Math.round(eTp * 10000) / 10000, ack: true });
 	
     // Verdunstung des heutigen Tages
     const curETp = (eTp * timeDifference) - curAmountOfRain;
@@ -802,6 +817,7 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
             break;
     }
 }
+
 // Sets the status at start to a defined value => Setzt den Status beim Start auf einen definierten Wert
 function checkStates() {
     //
@@ -884,7 +900,6 @@ function checkActualStates () {
             holidayStr = state.val;
         }
     });
-
     /**
      * switch autoOnOff
      * @param {any} err
@@ -932,6 +947,7 @@ function checkActualStates () {
                     weatherForecastTodayNum = state.val;
                 } else {
                     weatherForecastTodayNum = 0;
+                    console.log.info('checkActualStates => Wettervorhersage state.val ( ' + state.val + '; ' + typeof state.val + ' ) kann nicht als Number verarbeitet werden');
                 }
                 adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
             }
@@ -943,13 +959,7 @@ function checkActualStates () {
          */
         adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value', (err, state) => {
             if (state) {
-                if (typeof state.val == 'string') {
-                    weatherForecastTomorrowNum = parseFloat(state.val);
-                } else if (typeof state.val == 'number') {
-                    weatherForecastTomorrowNum = state.val;
-                } else {
-                    weatherForecastTomorrowNum = 0;
-                }
+                weatherForecastTomorrowNum = state.val;
                 adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
             }
         });
@@ -1511,10 +1521,10 @@ function main() {
     if (adapter.config.sensorWindSpeed !== '') {
         adapter.subscribeForeignStates(adapter.config.sensorWindSpeed);
     }
-    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance === 'daswetter.0')) {
+    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.*')) {
         adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value');
     }
-    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance === 'daswetter.0')) {
+    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.*')) {
         adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value');
     }    
     //
