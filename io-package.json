@@ -371,6 +371,19 @@
         "def": false
       },
       "native": {}
+    },
+    {
+      "_id": "info.cisternState",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "State of the cistern",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
     }
   ]
 }

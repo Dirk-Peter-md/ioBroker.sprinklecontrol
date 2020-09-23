@@ -16,6 +16,16 @@ const SunCalc = require('suncalc2');
 let adapter;
 const adapterName = require('./package.json').name.split('.').pop();
 
+/* ext. Adapter */
+/** @type {any} */
+let publicHolidayStr;
+/** @type {any} */
+let publicHolidayTomorrowStr;
+/** @type {number} */
+let weatherForecastTodayNum = 0;
+/** @type {number} */
+let weatherForecastTomorrowNum = 0;
+
 /** @type {string} */
 let startTimeStr;
 /** @type {string} */
@@ -28,14 +38,6 @@ let maxSunshine;	//	(Sonnenscheindauer in Stunden)
 let holidayStr;
 /** @type {any} */
 let autoOnOffStr;
-/** @type {any} */
-let publicHolidayStr;
-/** @type {any} */
-let publicHolidayTomorrowStr;
-/** @type {number} */
-let weatherForecastTodayNum = 0;
-/** @type {number} */
-let weatherForecastTomorrowNum = 0;
 /** @type {number} */
 let ETpTodayNum = 0;
 /** @type {string} */
@@ -60,14 +62,22 @@ let curIllumination;	/*Helligkeit*/
 /** @type {number} */
 let curWindSpeed;		/*WindGeschwindigkeit*/
 /** @type {number} */
-let lastRainCounter = 0;		/*last rain container => letzter Regencontainer*/
+let lastRainCounter = 0;	/*last rain container => letzter Regencontainer*/
 /** @type {number} */
 let curAmountOfRain = 0;	/*current amount of rain => aktuelle Regenmenge*/
-/*  */
+/** @type {object} */
+let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
+/* Control of the cistern pump */
 /** @type {number} */
 let fillLevelCistern;
 /** @type {object} */
-let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
+const currentPumpUse = {
+    /** boolean */ enable: false,
+    /** boolean */ pumpCistern: false,
+    /** string */ pumpName: '', 
+    /** number */ pumpPower: 0
+};
+/* memo */
 /** @type {any[]} */
 let ObjSprinkle = [];
 /** @type {any[]} */
@@ -247,9 +257,11 @@ function startAdapter(options) {
                         adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
                     }
                 }
+                // Füllstand der Zysterne
                 if (adapter.config.cisternSettings && adapter.config.actualValueLevel) {
                     if (id === adapter.config.actualValueLevel) {
                         fillLevelCistern = state.val;
+                        adapter.log.info('Füllstand der Zisterne: ' + fillLevelCistern + ' ( ' + typeof  fillLevelCistern + ' )');
                     }
                 }
             } else {
@@ -831,9 +843,10 @@ function checkStates() {
             adapter.setState('control.Holiday', {val: false, ack: true});
         }
     });
-    /*
-     * @param {any} err
-     * @param {{ val: null; } | null} state
+    /**
+     * control.autoOnOff
+     * @param {string|null} err
+     * @param {ioBroker.State|null|undefined} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
         if (state && (state.val === null)) {
@@ -856,6 +869,7 @@ function checkStates() {
             adapter.setState('evaporation.ETpYesterday', {val: '0', ack: true});
         }
     });
+    /* Pumpe ausschalter wenn vorhanden */
     if (adapter.config.triggerMainPump !== '') {
         adapter.getState('adapter.config.triggerMainPump', (err, state) => {
             if (state) {
@@ -863,6 +877,7 @@ function checkStates() {
             }
         });
     }
+    /* Pumpe (Zisterne) ausschalter wenn vorhanden */
     if (adapter.config.triggerCisternPump !== '') {
         adapter.getState('adapter.config.triggerCisternPump', (err, state) => {
             if (state) {
@@ -957,10 +972,40 @@ function checkActualStates () {
          * @param {string|null} err
          * @param {ioBroker.State|null|undefined} state
          */
-        adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value', (err, state) => {
+        adapter.getForeignState(adapter.config.weatherForInstance, (err, state) => {
             if (state) {
                 weatherForecastTomorrowNum = state.val;
                 adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
+            }
+        });
+        /**
+         * Füllstand der Zisterne in %
+         * @param {string|null} err
+         * @param {ioBroker.State|null|undefined} state
+         */
+        adapter.getForeignState(adapter.config.actualValueLevel + '.NextDaysDetailed.Location_1.Day_2.rain_value', (err, state) => {
+            if (state) {
+                fillLevelCistern = state.val;
+                if (adapter.config.cisternSettings === true) {
+                    if (fillLevelCistern > adapter.config.triggerMinCisternLevel) {
+                        currentPumpUse.enable = false;
+                        currentPumpUse.pumpCistern = true;
+                        currentPumpUse.pumpName = adapter.config.triggerCisternPump;
+                        currentPumpUse.pumpPower = adapter.config.triggerCisternPumpPower;
+                        adapter.setState('info.cisternState', {val: 'Cistern filled: ' + fillLevelCistern + ' %  ('+ adapter.config.cisternSettings + ')', ack: true});
+                    } else {
+                        currentPumpUse.enable = false;
+                        currentPumpUse.pumpCistern = false;
+                        currentPumpUse.pumpName = adapter.config.triggerMainPump;
+                        currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+                        adapter.setState('info.cisternState', {val: 'Cistern empty: ' + fillLevelCistern + ' %  ('+ adapter.config.cisternSettings + ')', ack: true});
+                    }
+                } else {
+                    currentPumpUse.enable = false;
+                    currentPumpUse.pumpCistern = false;
+                    currentPumpUse.pumpName = adapter.config.triggerMainPump;
+                    currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+                }
             }
         });
     }
@@ -1526,7 +1571,12 @@ function main() {
     }
     if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.*')) {
         adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value');
-    }    
+    }
+    if (adapter.config.actualValueLevel !== '') {
+        adapter.subscribeForeignStates(adapter.config.actualValueLevel);
+    } else {
+        adapter.setState('info.cisternState', { val: 'Cistern not specified', ack: true });
+    }
     //
     // Report a change in the status of the trigger IDs (.runningTime) => Melden einer Änderung des Status der Trigger-IDs
     const result = adapter.config.events;

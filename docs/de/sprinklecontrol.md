@@ -13,23 +13,22 @@ Beides ist individuell anpassbar.
 **Beispiel eines Schaltverhaltens an einem Tag (Startzeit aller Ventile: 6:00)**      
 
 
-Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und wurde nur mit diesem getestet.
+Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und **wurde nur mit diesem** getestet.
 
 
 
 
 ## Installation
-Der Adapter befindet sich auf GitHub (https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol). Von hier kann er heruntergeladen werden. 
-Um ihn installieren zu können muss man in den Adapter von ioBroker gehen und dort "Installieren aus eigener URL" anklicken. 
-Unter beliebig kann dann der URL Pfad (https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol) eingegeben werden.
-
+Der Adapter befindet sich im "latest" Verwahrungsort von ioBroker. Von hier kann er heruntergeladen werden. 
+Um ihn installieren zu können muss man in den Adapter von ioBroker gehen und dort "VON GITHUB" anklicken. 
+Unter "Adapter auswählen" wählt man dann "sprinklecontrol [Dirk-Peter-md]" aus und drückt dann installieren.
 
 Spätestens nach Refresh der Adapterliste steht der Adapter **Sprinklecontrol** zur Verfügung.
 
 Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des Adapters vom Repository geladen:
 
 # Konfiguration - Haupteinstellungen
-Sollte in dem Installationsfenster die Checkbox "***schließen wenn fertig***" nicht angehakt sein muss man dieses natürlich noch schließen.
+Sollte in dem Installationsfenster die Checkbox "***schließen, wenn fertig***" nicht angehakt sein muss man dieses natürlich noch schließen.
 
 Das Konfigurationsfenster besteht aus drei Reitern:
 * Haupteinstellungen
