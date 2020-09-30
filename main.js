@@ -69,7 +69,7 @@ let curAmountOfRain = 0;	/*current amount of rain => aktuelle Regenmenge*/
 let lastChangeEvaPor = new Date();	/*letzte Aktualisierungszeit*/
 /* Control of the cistern pump */
 /** @type {number} */
-let fillLevelCistern;
+let fillLevelCistern = 0;
 /** @type {object} */
 const currentPumpUse = {
     /** boolean */ enable: false,
@@ -273,7 +273,7 @@ function startAdapter(options) {
                 }
                 // Füllstand der Zisterne bei Statusänderung
                 if (adapter.config.actualValueLevel && (id === adapter.config.actualValueLevel)) {
-                    fillLevelCistern = state.val;
+                    fillLevelCistern = state.val || 0;
                     setActualPump();
                 }
             } else {
@@ -1066,7 +1066,7 @@ function checkActualStates () {
          */
         adapter.getForeignState(adapter.config.actualValueLevel, (err, state) => {
             if (state) {
-                fillLevelCistern = state.val;
+                fillLevelCistern = state.val || 0;
                 setActualPump();
             }
         });
@@ -1590,7 +1590,9 @@ function main() {
             checkStates();
         }
     });
+
     timer = setTimeout(function() {
+        setActualPump();
         checkActualStates();
         sunPos();
     }, 2000);
