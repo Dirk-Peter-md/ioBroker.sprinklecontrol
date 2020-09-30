@@ -74,8 +74,8 @@ let fillLevelCistern;
 const currentPumpUse = {
     /** boolean */ enable: false,
     /** boolean */ pumpCistern: false,
-    /** string */ pumpName: '', 
-    /** number */ pumpPower: 0
+    /** string | null */  pumpName: '',
+    /** number */  pumpPower: 0
 };
 /* memo */
 /** @type {any[]} */
@@ -157,7 +157,9 @@ function startAdapter(options) {
         stateChange: (id, state) => {
             if (state) {
                 // The state was changed => Der Zustand wurde geändert
-                if (debug) {adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);}
+                if (debug) {
+                    adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+                }
                 // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
                 if (id === adapter.namespace + '.control.Holiday') {
                     holidayStr = state.val;
@@ -167,7 +169,9 @@ function startAdapter(options) {
                 if (id === adapter.namespace + '.control.autoOnOff') {
                     autoOnOffStr = state.val;
                     adapter.log.info('startAdapter: control.autoOnOff: ' + state.val);
-                    if (!state.val) {ObjThread.clearEntireList();}
+                    if (!state.val) {
+                        ObjThread.clearEntireList();
+                    }
                     startTimeSprinkle();
                 }
                 // wenn (sprinkleName.runningTime sich ändert) so wird der aktuelle Sprenger [sprinkleName] gestartet
@@ -176,12 +180,14 @@ function startAdapter(options) {
                     if (found) {
                         if (id === resConfigChange[found.sprinkleID].objectID) {
                             if (!isNaN(state.val)) {
-                                if (debug) {adapter.log.info('stateChange: (' + found.objectName + ')".runningTime" wurde geändert: JSON: ' + JSON.stringify(found));}
+                                if (debug) {
+                                    adapter.log.info('stateChange: (' + found.objectName + ')".runningTime" wurde geändert: JSON: ' + JSON.stringify(found));
+                                }
                                 ObjThread.addList(
                                     found.sprinkleID,
                                     Math.round(60 * state.val),
                                     false);
-                                setTimeout (() => {
+                                setTimeout(() => {
                                     ObjThread.updateList();
                                 }, 50);
                             }
@@ -192,7 +198,9 @@ function startAdapter(options) {
                 // Change in outside temperature => Änderung der Außentemperatur
                 if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
                     const timeDifference = (state.ts - lastChangeEvaPor) / 86400000;		// 24/h * 60/min * 60/s * 1000/ms = 86400000 ms
-                    if (debug) {adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' +  lastChangeEvaPor + ' = timeDifference: ' + timeDifference);}
+                    if (debug) {
+                        adapter.log.info('ts: ' + state.ts + ' - lastChangeEvaPor: ' + lastChangeEvaPor + ' = timeDifference: ' + timeDifference);
+                    }
                     curTemperature = state.val;
                     //
                     if (timeDifference) {
@@ -220,13 +228,19 @@ function startAdapter(options) {
                 if (id === adapter.config.sensorRainfall) {
                     if (Math.abs(lastRainCounter - state.val) > 10) {
                         curAmountOfRain = 0;
-                        if (debug) {adapter.log.info('if => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
+                        if (debug) {
+                            adapter.log.info('if => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);
+                        }
                     } else {
                         curAmountOfRain = state.val - lastRainCounter;
-                        if (debug) {adapter.log.info('else => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);}
+                        if (debug) {
+                            adapter.log.info('else => Math.abs: ' + Math.abs(lastRainCounter - state.val) + ' curAmountOfRain: ' + curAmountOfRain);
+                        }
                     }
                     lastRainCounter = state.val;
-                    if (debug) {adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);}
+                    if (debug) {
+                        adapter.log.info('lastRainCounter: ' + lastRainCounter + ' curAmountOfRain: ' + curAmountOfRain + ' state.val: ' + state.val);
+                    }
                 }
                 // Feiertagskalender
                 if (adapter.config.publicHolidays === true) {
@@ -257,18 +271,16 @@ function startAdapter(options) {
                         adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
                     }
                 }
-                // Füllstand der Zysterne
-                if (adapter.config.cisternSettings && adapter.config.actualValueLevel) {
-                    if (id === adapter.config.actualValueLevel) {
-                        fillLevelCistern = state.val;
-                        adapter.log.info('Füllstand der Zisterne: ' + fillLevelCistern + ' ( ' + typeof  fillLevelCistern + ' )');
-                    }
+                // Füllstand der Zisterne bei Statusänderung
+                if (adapter.config.actualValueLevel && (id === adapter.config.actualValueLevel)) {
+                    fillLevelCistern = state.val;
+                    setActualPump();
                 }
             } else {
                 // The state was deleted
                 adapter.log.info(`state ${id} deleted`);
             }
-        },
+        }
 
         // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
         // Über das Meldungsfeld wurde eine Nachricht an die Adapterinstanz gesendet. Verwendung per E-Mail, Pushover, Text2Speech, ...
@@ -363,6 +375,7 @@ const ObjThread = {
         ObjThread.updateList();
 	
     }, // End delList
+
     /* switch off all devices, when close the adapter => Beim Beenden des adapters alles ausschalten */
     clearEntireList: () => {
         // let bValveFound = false;	// Ventil gefunden
@@ -486,7 +499,7 @@ const ObjThread = {
     }, // End boostKill
 
     updateList : () => {
-        let curFlow = adapter.config.triggerMainPumpPower;
+        let curFlow = currentPumpUse.pumpPower; /* adapter.config.triggerMainPumpPower; */
         let parallel = 0;
         const maxParallel = adapter.config.maximumParallelValves;
 
@@ -634,17 +647,21 @@ const ObjThread = {
         }
 		
         // Pumpe ein/aus
-        if (adapter.config.triggerMainPump !== '') {
-            adapter.getForeignState(adapter.config.triggerMainPump, (err, state) => {
+        if (currentPumpUse.pumpName !== '') {
+            adapter.getForeignState(currentPumpUse.pumpName, (err, state) => {
                 if (state) {
                     if (parallel > 0) {
                         if (state.val === false) {
-                            adapter.setForeignState(adapter.config.triggerMainPump, {val: true, ack: false});
+                            adapter.setForeignState(currentPumpUse.pumpName, {
+                                val: true,
+                                ack: false});
                             adapter.log.info('Hauptpumpe eingeschaltet');
                         }
                     } else {
                         if (state.val !== false) {
-                            adapter.setForeignState(adapter.config.triggerMainPump, {val: false, ack: false});
+                            adapter.setForeignState(currentPumpUse.pumpName, {
+                                val: false,
+                                ack: false});
                             adapter.log.info('Hauptpumpe ausgeschaltet');
                         }
                     }				
@@ -657,6 +674,61 @@ const ObjThread = {
     } // End updateList
 	
 }; // End ObjThread
+
+/**
+ * +++++++++++++++++ Festlegen der aktuellen Pumpe zur Bewässerung ++++++++++++++++++++
+ */
+function setActualPump() {
+    if (adapter.config.cisternSettings === true) {
+        /* Zisternen-Bewässerung (2.Pumpe) aktiv */
+        if (currentPumpUse.enable === true) {
+            /* Bewässerungspumpen aktiv */
+            if (currentPumpUse.pumpCistern === true) {
+                /* ZisternenPumpe läuft */
+                adapter.setForeignState(currentPumpUse.pumpName, {
+                    val: false,
+                    ack: false
+                });
+                currentPumpUse.pumpCistern = false;
+                currentPumpUse.pumpName = adapter.config.triggerMainPump || '';
+                currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+                adapter.setForeignState(currentPumpUse.pumpName, {
+                    val: true,
+                    ack: false
+                });
+                adapter.log.info('Pumpenwechsel (Zisterne leer) Zisternen-Pumpe aus => Hauptpumpe ein');
+            }
+        } else {
+            /* Bewässerungspumpen inaktiv */
+            if ((fillLevelCistern > adapter.config.triggerMinCisternLevel) && (adapter.config.triggerCisternPump) && (adapter.config.triggerCisternPumpPower)) {
+                /* Zisterne voll && triggerCisternPump && triggerCisternPumpPower vorhanden*/
+                adapter.setState('info.cisternState', {
+                    val: 'Cistern filled: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
+                    ack: true
+                });
+                currentPumpUse.pumpCistern = true;
+                currentPumpUse.pumpName = adapter.config.triggerCisternPump || '';
+                currentPumpUse.pumpPower = adapter.config.triggerCisternPumpPower;
+            } else {
+                adapter.setState('info.cisternState', {
+                    val: 'Cistern empty: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
+                    ack: true
+                });
+                currentPumpUse.pumpCistern = false;
+                currentPumpUse.pumpName = adapter.config.triggerMainPump || '';
+                currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+            }
+        }
+    } else {
+        /* Zisternen-Bewässerung nicht aktiv */
+        if (adapter.config.triggerCisternPump) {
+            adapter.setState('info.cisternState', {
+                val: 'Cistern settings not aktive, Level sensor: ' + fillLevelCistern + adapter.config.cisternSettings ? (' %  (' + adapter.config.triggerMinCisternLevel + ')') : (''),
+                ack: true
+            });
+        }
+    }
+}
 
 // +++++++++++++++++ Get longitude an latitude from system config ++++++++++++++++++++
 function GetSystemData() {
@@ -736,6 +808,7 @@ function calcEvaporation (timeDifference) {
 
     applyEvaporation (curETp);
 }
+
 // apply Evaporation => Verdunstung anwenden auf die einzelnen Sprenger kreise
 function applyEvaporation (eTP){
 
@@ -758,6 +831,7 @@ function applyEvaporation (eTP){
         }
     }		
 }
+
 // func addTime (02:12:24 + 00:15) || (807) = 02:12:39
 function addTime(time1, time2){
     const wert = string2seconds(time1) + string2seconds(time2);
@@ -903,7 +977,8 @@ function checkStates() {
     // akt. Tag ermitteln für history ETpYesterday
     // dayNum = new Date().getDay;
 }
-//	aktuelle States checken nach 2000 ms
+
+//	aktuelle States checken nach dem Start (2000 ms)
 function checkActualStates () {
     /**
      * switch Holiday
@@ -915,6 +990,7 @@ function checkActualStates () {
             holidayStr = state.val;
         }
     });
+
     /**
      * switch autoOnOff
      * @param {any} err
@@ -925,6 +1001,7 @@ function checkActualStates () {
             autoOnOffStr = state.val;
         }
     });
+
     //
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance !== 'none' || adapter.config.publicHolInstance !== '')) {
         /**
@@ -948,6 +1025,7 @@ function checkActualStates () {
             }
         });
     }
+
     if (adapter.config.weatherForecast === true && (adapter.config.weatherForInstance !== 'none' || adapter.config.weatherForInstance !== '')) {
         /**
          * Niederschlagsmenge HEUTE in mm
@@ -975,7 +1053,10 @@ function checkActualStates () {
         adapter.getForeignState(adapter.config.weatherForInstance, (err, state) => {
             if (state) {
                 weatherForecastTomorrowNum = state.val;
-                adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
+                adapter.setState('info.rainTomorrow', {
+                    val: weatherForecastTomorrowNum,
+                    ack: true
+                });
             }
         });
         /**
@@ -983,32 +1064,14 @@ function checkActualStates () {
          * @param {string|null} err
          * @param {ioBroker.State|null|undefined} state
          */
-        adapter.getForeignState(adapter.config.actualValueLevel + '.NextDaysDetailed.Location_1.Day_2.rain_value', (err, state) => {
+        adapter.getForeignState(adapter.config.actualValueLevel, (err, state) => {
             if (state) {
                 fillLevelCistern = state.val;
-                if (adapter.config.cisternSettings === true) {
-                    if (fillLevelCistern > adapter.config.triggerMinCisternLevel) {
-                        currentPumpUse.enable = false;
-                        currentPumpUse.pumpCistern = true;
-                        currentPumpUse.pumpName = adapter.config.triggerCisternPump;
-                        currentPumpUse.pumpPower = adapter.config.triggerCisternPumpPower;
-                        adapter.setState('info.cisternState', {val: 'Cistern filled: ' + fillLevelCistern + ' %  ('+ adapter.config.cisternSettings + ')', ack: true});
-                    } else {
-                        currentPumpUse.enable = false;
-                        currentPumpUse.pumpCistern = false;
-                        currentPumpUse.pumpName = adapter.config.triggerMainPump;
-                        currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
-                        adapter.setState('info.cisternState', {val: 'Cistern empty: ' + fillLevelCistern + ' %  ('+ adapter.config.cisternSettings + ')', ack: true});
-                    }
-                } else {
-                    currentPumpUse.enable = false;
-                    currentPumpUse.pumpCistern = false;
-                    currentPumpUse.pumpName = adapter.config.triggerMainPump;
-                    currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
-                }
+                setActualPump();
             }
         });
     }
+
     //
     adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel', /**
         * @param {any} err
@@ -1075,6 +1138,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     },1000);
     
 });
+
 // Berechnung mittels sunCalc
 function sunPos() {
     // get today's sunlight times => Holen Sie sich die heutige Sonnenlicht Zeit	
@@ -1093,6 +1157,7 @@ function sunPos() {
     goldenHourEnd = ('0' + times.goldenHourEnd.getHours()).slice(-2) + ':' + ('0' + times.goldenHourEnd.getMinutes()).slice(-2);
 	
 }
+
 // Determination of the irrigation time => Bestimmung der Bewässerungszeit
 function startTimeSprinkle() {
     let startTimeSplit = [];
@@ -1575,7 +1640,7 @@ function main() {
     if (adapter.config.actualValueLevel !== '') {
         adapter.subscribeForeignStates(adapter.config.actualValueLevel);
     } else {
-        adapter.setState('info.cisternState', { val: 'Cistern not specified', ack: true });
+        adapter.setState('info.cisternState', { val: 'The level sensor of the water cistern is not specified', ack: true });
     }
     //
     // Report a change in the status of the trigger IDs (.runningTime) => Melden einer Änderung des Status der Trigger-IDs
@@ -1584,24 +1649,24 @@ function main() {
         for(const i in result) {
             const objectName = result[i].sprinkleName.replace(/[.;, ]/g, '_');
             const newEntry = {
-                'enabled': result[i].enabled,
-                'booster': result[i].booster,
-                'endIrrigation': result[i].endIrrigation,
-                'autoOnOff': true,
-                'objectName': objectName,		// z.B. Rasenumrandung
-                'objectID': adapter.namespace + '.sprinkle.' + objectName + '.runningTime',		// sprinklecontrol.0.sprinkle.Rasenumrandung.runningTime
-                'idState': result[i].name,      // "hm-rpc.0.MEQ1234567.3.STATE"
-                'sprinkleID': resConfigChange.length,		// Array[0...]
-                'wateringTime': parseInt(result[i].wateringTime),		// ...min
-                'wateringAdd': parseInt(result[i].wateringAdd),		// 0 ... 200%
-                'wateringInterval': ((60 * parseInt(result[i].wateringInterval)) || 0),		// 5,10,15min
-                'pipeFlow': parseInt(result[i].pipeFlow),
+                /** boolean */ 'enabled': result[i].enabled,
+                /** boolean */ 'booster': result[i].booster,
+                /** number */ 'endIrrigation': result[i].endIrrigation,
+                /** boolean */ 'autoOnOff': true,
+                /** string */ 'objectName': objectName,		// z.B. Rasenumrandung
+                /** string */ 'objectID': adapter.namespace + '.sprinkle.' + objectName + '.runningTime',		// sprinklecontrol.0.sprinkle.Rasenumrandung.runningTime
+                /** string */ 'idState': result[i].name,      // "hm-rpc.0.MEQ1234567.3.STATE"
+                /** number */ 'sprinkleID': resConfigChange.length,		// Array[0...]
+                /** number */ 'wateringTime': parseInt(result[i].wateringTime),		// ...min
+                /** number */ 'wateringAdd': parseInt(result[i].wateringAdd),		// 0 ... 200%
+                /** number */ 'wateringInterval': ((60 * parseInt(result[i].wateringInterval)) || 0),		// 5,10,15min
+                /** number */ 'pipeFlow': parseInt(result[i].pipeFlow),
                 'soilMoisture': {
-                    'val': parseInt(result[i].maxSoilMoistureIrrigation) / 2,		// (zB. 5 mm)
-                    'min': parseInt(result[i].maxSoilMoistureIrrigation) / 100,		// (zB. 0,02 mm)
-                    'maxIrrigation': parseInt(result[i].maxSoilMoistureIrrigation),		// (zB. 10 mm)
-                    'maxRain': parseInt(result[i].maxSoilMoistureRain),		// (zB. 12 mm)
-                    'triggersIrrigation': parseInt(result[i].maxSoilMoistureIrrigation) * parseInt(result[i].triggersIrrigation) / 100		// (zB. 50 % ==> 5 mm)
+                    /** number */ 'val': parseInt(result[i].maxSoilMoistureIrrigation) / 2,		// (zB. 5 mm)
+                    /** number */ 'min': parseInt(result[i].maxSoilMoistureIrrigation) / 100,		// (zB. 0,02 mm)
+                    /** number */ 'maxIrrigation': parseInt(result[i].maxSoilMoistureIrrigation),		// (zB. 10 mm)
+                    /** number */ 'maxRain': parseInt(result[i].maxSoilMoistureRain),		// (zB. 12 mm)
+                    /** number */ 'triggersIrrigation': parseInt(result[i].maxSoilMoistureIrrigation) * parseInt(result[i].triggersIrrigation) / 100		// (zB. 50 % ==> 5 mm)
                 }
             };
             resConfigChange.push(newEntry);
