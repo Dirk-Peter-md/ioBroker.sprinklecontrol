@@ -74,8 +74,8 @@ let fillLevelCistern = 0;
 const currentPumpUse = {
     /** boolean */ enable: false,
     /** boolean */ pumpCistern: false,
-    /** string | null */  pumpName: '',
-    /** number */  pumpPower: 0
+    /** string */  pumpName: '',
+    /** number */  pumpPower: 0,
 };
 /* memo */
 /** @type {any[]} */
@@ -303,7 +303,13 @@ function startAdapter(options) {
 //
 const ObjThread = {
     threadList: [],
-    /* Sprinkle hinzufügen*/
+
+    /**
+     * Sprinkle hinzufügen
+     * @param sprinkleID {number} Position der Daten im Array resConfigChange[sprinkleID]
+     * @param wateringTime {number} Bewässerungszeit in min
+     * @param autoOn {boolean} Automatik oder Handbetrieb
+     */
     addList : function (sprinkleID, wateringTime, autoOn) {
         const sprinkleName = resConfigChange[sprinkleID].objectName;
         let addDone = false;
@@ -317,7 +323,10 @@ const ObjThread = {
                     }
                     entry.wateringTime = parseInt(wateringTime);
                     entry.autoOn = autoOn;      // autoOn: = true autostart; = false Handbetrieb
-                    adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {val: addTime(wateringTime), ack: false});
+                    adapter.setState('sprinkle.' + sprinkleName + '.runningTime', {
+                        val: addTime(wateringTime),
+                        ack: false
+                    });
                     addDone = true;		// Sprinkle found
                     if (debug) {adapter.log.info('addList (' + entry.sprinkleName + ') addDone time geändert: ' + addTime(wateringTime));}
                     break;
@@ -506,13 +515,22 @@ const ObjThread = {
         // während des Boost eines Kreises ist ein zuschalten von Sprengern nicht möglich
         if (boostOn) {return;}
 
-        // Sortierfunktion mySort absteigende Sortierung
+        /**
+         * Sortierfunktion mySort absteigende Sortierung
+         * @param a
+         * @param b
+         * @returns {number}
+         */
         function mySort(a, b) {
             return a.pipeFlow > b.pipeFlow ? -1 :
                 a.pipeFlow < b.pipeFlow ? 1 :
                     0;
         }
-        // Handling von Ventilen, Zeiten, Verbrauchsmengen im 1s Takt
+
+        /**
+         * Handling von Ventilen, Zeiten, Verbrauchsmengen im 1s Takt
+         * @param entry
+         */
         function countSprinkleTime(entry) {
             if (boostOn && !(resConfigChange[entry.sprinkleID].booster)){return;}
             entry.count ++;
@@ -520,13 +538,19 @@ const ObjThread = {
                 && ((resConfigChange[entry.sprinkleID].soilMoisture.val < resConfigChange[entry.sprinkleID].soilMoisture.maxIrrigation)		// Bodenfeuchte erreicht? (z.B. beim Regen)
                     || !entry.autoOn)	// Vergleich nur bei Automatik
             ) {     /* zeit läuft */
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: addTime(entry.wateringTime - entry.count), ack: true});
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', {
+                    val: addTime(entry.wateringTime - entry.count),
+                    ack: true
+                });
                 /* Alle 15s die Bodenfeuchte anpassen */
                 if (!(entry.count % 15)) {	// alle 15s ausführen
                     resConfigChange[entry.sprinkleID].soilMoisture.val += entry.soilMoisture15s;
                     const mySoilMoisture = Math.round(1000 * resConfigChange[entry.sprinkleID].soilMoisture.val
                         / resConfigChange[entry.sprinkleID].soilMoisture.maxIrrigation) / 10;	// Berechnung in %
-                    adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: mySoilMoisture, ack: true});
+                    adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', {
+                        val: mySoilMoisture,
+                        ack: true
+                    });
                 }
                 /* Intervall-Beregnung wenn angegeben (onOffTime > 0) */
                 if ((entry.onOffTime > 0) && !(entry.count % entry.onOffTime)) {
@@ -545,23 +569,48 @@ const ObjThread = {
                     },1000 * entry.onOffTime);
                 }
             } else {    /* zeit abgelaufen => Ventil ausschalten */
-                adapter.setForeignState(entry.idState, {val: false, ack: false});
+                adapter.setForeignState(entry.idState, {
+                    val: false,
+                    ack: false
+                });
                 /* Zustand des Ventils im Thread <<< 0 >>> off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 0, ack: true});
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.runningTime', { val: 0, ack: true});
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', { val: 0, ack: true});
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
+                    val: 0,
+                    ack: true
+                });
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.runningTime', {
+                    val: 0, ack: true});
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', {
+                    val: 0,
+                    ack: true
+                });
                 /* wenn in config endIrrigation =true bei auto => Bodenfeuchte auf 100% setzen*/
                 if (entry.autoOn && resConfigChange[entry.sprinkleID].endIrrigation) {
                     resConfigChange[entry.sprinkleID].soilMoisture.val = resConfigChange[entry.sprinkleID].soilMoisture.maxIrrigation;
-                    adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', { val: 100, ack: true});
+                    adapter.setState('sprinkle.' + entry.sprinkleName + '.actualSoilMoisture', {
+                        val: 100,
+                        ack: true
+                    });
                 }
                 /* Verbrauchswerte erfassen */
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastConsumed', { val: Math.round(entry.litersPerSecond * entry.count), ack: true});
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastRunningTime', { val: addTime(entry.count), ack: true});
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastOn', { val: formatTime(entry.startTime, 'dd.mm. hh:mm'), ack: true});
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastConsumed', {
+                    val: Math.round(entry.litersPerSecond * entry.count),
+                    ack: true
+                });
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastRunningTime', {
+                    val: addTime(entry.count),
+                    ack: true
+                });
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.history.lastOn', {
+                    val: formatTime(entry.startTime, 'dd.mm. hh:mm'),
+                    ack: true
+                });
                 adapter.getState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekConsumed', (err, state) => {
                     if (state) {
-                        adapter.setState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekConsumed', { val: (state.val) + Math.round(entry.litersPerSecond * entry.count), ack: false});
+                        adapter.setState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekConsumed', {
+                            val: (state.val) + Math.round(entry.litersPerSecond * entry.count),
+                            ack: false
+                        });
                     }
                 });
                 adapter.getState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekRunningTime', (err, state) => {
@@ -612,14 +661,36 @@ const ObjThread = {
                 curFlow -= entry.pipeFlow;	// ermitteln der RestFörderkapazität
                 parallel ++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
                 /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 2, ack: true });
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
+                    val: 2,
+                    ack: true
+                });
                 /* Ventil einschalten */
-                adapter.setForeignState(entry.idState, {val: true, ack: false});
+                adapter.setForeignState(entry.idState, {
+                    val: true,
+                    ack: false
+                });
                 adapter.log.info('Ventil "' + entry.sprinkleName + '" eingeschaltet für ' + addTime(entry.wateringTime));
                 /* countdown starten */
                 if (!entry.startTime) {entry.startTime = new Date();}
                 entry.countdown = setInterval(() => {countSprinkleTime(entry);}, 1000);	// 1000 = 1s
 
+            } else if (     /* - wenn beim Umschalten der Pumpen die Förderleistung zu gering ist Ventile deaktivieren - */
+                (adapter.config.cisternSettings)                                    // Zisterne verwenden
+                && (entry.enabled)                                                  // eingeschaltet
+                && (curFlow < entry.pipeFlow)                                       // Förderleistung der Pumpe zu gering
+            ) {
+                entry.enabled = false;
+                /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
+                adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
+                    val: 1,
+                    ack: true
+                });
+                /* Ventil einschalten */
+                adapter.setForeignState(entry.idState, {
+                    val: false,
+                    ack: false
+                });
             }
         }
 		
@@ -631,12 +702,18 @@ const ObjThread = {
                 if (state) {
                     if (parallel > 0) {
                         if (state.val === false) {
-                            adapter.setForeignState(adapter.config.triggerControlVoltage, {val: true, ack: false});
+                            adapter.setForeignState(adapter.config.triggerControlVoltage, {
+                                val: true,
+                                ack: false
+                            });
                             adapter.log.info('Versorgungsspannung der Ventile eingeschaltet');
                         }
                     } else {
                         if (state.val !== false) {
-                            adapter.setForeignState(adapter.config.triggerControlVoltage, {val: false , ack: false});
+                            adapter.setForeignState(adapter.config.triggerControlVoltage, {
+                                val: false ,
+                                ack: false
+                            });
                             adapter.log.info('Versorgungsspannung der Ventile ausgeschaltet');
                         }
                     }
@@ -655,6 +732,7 @@ const ObjThread = {
                             adapter.setForeignState(currentPumpUse.pumpName, {
                                 val: true,
                                 ack: false});
+                            currentPumpUse.enable = true;
                             adapter.log.info('Hauptpumpe eingeschaltet');
                         }
                     } else {
@@ -662,6 +740,7 @@ const ObjThread = {
                             adapter.setForeignState(currentPumpUse.pumpName, {
                                 val: false,
                                 ack: false});
+                            currentPumpUse.enable = false;
                             adapter.log.info('Hauptpumpe ausgeschaltet');
                         }
                     }				
@@ -697,7 +776,12 @@ function setActualPump() {
                     ack: false
                 });
                 adapter.log.info('Pumpenwechsel (Zisterne leer) Zisternen-Pumpe aus => Hauptpumpe ein');
+                ObjThread.updateList();
             }
+            adapter.setState('info.cisternState', {
+                val: 'Cistern empty: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
+                ack: true
+            });
         } else {
             /* Bewässerungspumpen inaktiv */
             if ((fillLevelCistern > adapter.config.triggerMinCisternLevel) && (adapter.config.triggerCisternPump) && (adapter.config.triggerCisternPumpPower)) {
@@ -974,8 +1058,11 @@ function checkStates() {
     // akt. kW ermitteln für history last week
     kwStr = formatTime('','kW');
     adapter.log.info('checkStates akt-KW: ' + kwStr);
-    // akt. Tag ermitteln für history ETpYesterday
-    // dayNum = new Date().getDay;
+
+    // Hauptpumpe zur Bewässerung setzen
+    currentPumpUse.pumpCistern = false;
+    currentPumpUse.pumpName = adapter.config.triggerMainPump;
+    currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
 }
 
 //	aktuelle States checken nach dem Start (2000 ms)
