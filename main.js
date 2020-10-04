@@ -337,23 +337,23 @@ const ObjThread = {
         if (!addDone) {
             if (parseInt(wateringTime) <= 0) return;
             const newThread = {};
-            newThread.sprinkleID = sprinkleID;	// Array[0...]
-            newThread.sprinkleName = sprinkleName;	// z.B "Blumenbeet"
-            newThread.idState = resConfigChange[sprinkleID].idState;	// z.B. "hm-rpc.0.MEQ1810129.1.STATE"
-            newThread.wateringTime = wateringTime;  // Bewässerungszeit
-            newThread.pipeFlow = resConfigChange[sprinkleID].pipeFlow;  // Wasserverbrauch
-            newThread.count = 0;
-            newThread.enabled = false;
-            newThread.myBreak = false;
-            newThread.litersPerSecond = resConfigChange[sprinkleID].pipeFlow / 3600;    // Wasserverbrauchsmenge pro Sekunde
-            newThread.onOffTime = resConfigChange[sprinkleID].wateringInterval;
-            newThread.autoOn = autoOn;
-            newThread.soilMoisture15s = 15 * (resConfigChange[sprinkleID].soilMoisture.maxIrrigation - resConfigChange[sprinkleID].soilMoisture.triggersIrrigation)
+            /** @type {number} */   newThread.sprinkleID = sprinkleID;	// Array[0...]
+            /** @type {string} */   newThread.sprinkleName = sprinkleName;	// z.B "Blumenbeet"
+            /** @type {string} */   newThread.idState = resConfigChange[sprinkleID].idState;	// z.B. "hm-rpc.0.MEQ1810129.1.STATE"
+            /** @type {number} */   newThread.wateringTime = wateringTime;  // Bewässerungszeit
+            /** @type {number} */   newThread.pipeFlow = resConfigChange[sprinkleID].pipeFlow;  // Wasserverbrauch
+            /** @type {number} */   newThread.count = 0;
+            /** @type {boolean} */  newThread.enabled = false;
+            /** @type {boolean} */  newThread.myBreak = false;
+            /** @type {number} */   newThread.litersPerSecond = resConfigChange[sprinkleID].pipeFlow / 3600;    // Wasserverbrauchsmenge pro Sekunde
+            /** @type {number} */   newThread.onOffTime = resConfigChange[sprinkleID].wateringInterval;
+            /** @type {boolean} */  newThread.autoOn = autoOn;
+            /** @type {number} */   newThread.soilMoisture15s = 15 * (resConfigChange[sprinkleID].soilMoisture.maxIrrigation - resConfigChange[sprinkleID].soilMoisture.triggersIrrigation)
                                         / (60 * resConfigChange[sprinkleID].wateringTime);
-            newThread.times = [];       // hinterlegen der verschiedenen Zeiten von timeout für gezieltes späteres löschen
-            newThread.times.boostTime1 = null;  // boost start
-            newThread.times.boostTime2 = null;  // boost ende
-            newThread.id = ObjThread.threadList.length || 0;			
+            /** @type {any} */      newThread.times = [];       // hinterlegen der verschiedenen Zeiten von timeout für gezieltes späteres löschen
+            /** @type {any} */      newThread.times.boostTime1 = null;  // boost start
+            /** @type {any} */      newThread.times.boostTime2 = null;  // boost ende
+            /** @type {number} */   newThread.id = ObjThread.threadList.length || 0;
             ObjThread.threadList.push(newThread);
             /* Zustand des Ventils im Thread < 0 > off, <<< 1 >>> wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
             adapter.setState('sprinkle.' + sprinkleName + '.sprinklerState', {val: 1, ack: false });
@@ -508,34 +508,59 @@ const ObjThread = {
     }, // End boostKill
 
     updateList : () => {
-        let curFlow = currentPumpUse.pumpPower; /* adapter.config.triggerMainPumpPower; */
-        let parallel = 0;
-        const maxParallel = adapter.config.maximumParallelValves;
-
-        // während des Boost eines Kreises ist ein zuschalten von Sprengern nicht möglich
+        /* während des Boost eines Kreises ist ein zuschalten von Sprengern nicht möglich */
         if (boostOn) {return;}
 
         /**
-         * Sortierfunktion mySort absteigende Sortierung
+         * aktuelle Rest-Pumpenleistung
+         * @type {number}
+         */
+        let curFlow = parseInt(currentPumpUse.pumpPower); /* adapter.config.triggerMainPumpPower; */
+        /**
+         * aktuelle Anzahl der eingeschalteten Ventile
+         * @type {number}
+         */
+        let parallel = 0;
+        /**
+         * maximal zulässige Anzahl der eingeschalteten Ventile
+         * @type {number}
+         */
+        const maxParallel = parseInt(adapter.config.maximumParallelValves);
+        /**
+         * Sortierfunktion mySortDescending absteigende Sortierung
          * @param a
          * @param b
          * @returns {number}
          */
-        function mySort(a, b) {
+        function mySortDescending(a, b) {
             return a.pipeFlow > b.pipeFlow ? -1 :
                 a.pipeFlow < b.pipeFlow ? 1 :
                     0;
         }
-
+        /**
+         * Sortierfunktion mySortAscending aufsteigende Sortierung
+         * @param a
+         * @param b
+         * @returns {number}
+         */
+        function mySortAscending(a, b) {
+            return a.pipeFlow < b.pipeFlow ? -1 :
+                a.pipeFlow > b.pipeFlow ? 1 :
+                    0;
+        }
         /**
          * Handling von Ventilen, Zeiten, Verbrauchsmengen im 1s Takt
-         * @param entry
+         * @param {any} entry
          */
         function countSprinkleTime(entry) {
-            if (boostOn && !(resConfigChange[entry.sprinkleID].booster)){return;}
+            /* --- function beenden wenn ---*/
+            if (boostOn && !(resConfigChange[entry.sprinkleID].booster)   // boost-On && kein aktuelles Boost-Ventil
+            ) {
+                return;
+            }
             entry.count ++;
-            if ((entry.count < entry.wateringTime)	// Zeit abgelaufen?
-                && ((resConfigChange[entry.sprinkleID].soilMoisture.val < resConfigChange[entry.sprinkleID].soilMoisture.maxIrrigation)		// Bodenfeuchte erreicht? (z.B. beim Regen)
+            if ((entry.count < entry.wateringTime)	// Zeit noch nicht abgelaufen?
+                && ((resConfigChange[entry.sprinkleID].soilMoisture.val < resConfigChange[entry.sprinkleID].soilMoisture.maxIrrigation)		// Bodenfeuchte noch nicht erreicht? (z.B. beim Regen)
                     || !entry.autoOn)	// Vergleich nur bei Automatik
             ) {     /* zeit läuft */
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', {
@@ -557,14 +582,23 @@ const ObjThread = {
                     entry.enabled = false;
                     entry.myBreak = true;
                     /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, <<< 3 >>> break, < 4 > Boost(on), < 5 > off(Boost) */
-                    adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 3, ack: true});
-                    adapter.setForeignState(entry.idState, {val: false, ack: false});	// Ventil ausschalten
+                    adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
+                        val: 3,
+                        ack: true
+                    });
+                    adapter.setForeignState(entry.idState, {	// Ventil ausschalten
+                        val: false,
+                        ack: false
+                    });
                     ObjThread.updateList();
                     clearInterval(entry.countdown);
                     entry.onOffTimeoutOff = setTimeout(()=>{
                         entry.myBreak = false;
                         /* Zustand des Ventils im Thread < 0 > off, <<< 1 >>> wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
-                        adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', { val: 1, ack: true});
+                        adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
+                            val: 1,
+                            ack: true
+                        });
                         ObjThread.updateList();
                     },1000 * entry.onOffTime);
                 }
@@ -579,7 +613,9 @@ const ObjThread = {
                     ack: true
                 });
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.runningTime', {
-                    val: 0, ack: true});
+                    val: 0,
+                    ack: true
+                });
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.countdown', {
                     val: 0,
                     ack: true
@@ -615,7 +651,10 @@ const ObjThread = {
                 });
                 adapter.getState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekRunningTime', (err, state) => {
                     if (state) {
-                        adapter.setState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekRunningTime', { val: addTime(state.val,entry.count), ack: true});
+                        adapter.setState('sprinkle.' + entry.sprinkleName + '.history.curCalWeekRunningTime', {
+                            val: addTime(state.val,entry.count),
+                            ack: true
+                        });
                     }
                 });
                 /* Booster zurücksetzen */
@@ -641,25 +680,61 @@ const ObjThread = {
             }
         }
 
-        // sortieren nach der Verbrauchsmenge
-        ObjThread.threadList.sort(mySort);
-		
+        adapter.log.info('(683) ermitteln von curPipe: ' + curFlow + ' (' + currentPumpUse.pumpPower + ')' + 'if (curFlow < 0): ' + (curFlow < 0));
+
+        if (curFlow < 0) {
+            /* - wenn beim Umschalten der Pumpen die Förderleistung zu gering ist Ventile deaktivieren - */
+            // aufsteigend sortieren nach der Verbrauchsmenge
+            ObjThread.threadList.sort(mySortAscending);
+
+            for(const entry of ObjThread.threadList) {
+                if ((entry.enabled)                           // eingeschaltet
+                    && (curFlow < 0)) {        // Förderleistung der Pumpe zu gering
+                    entry.enabled = false;      // ausgeschaltet merken
+                    clearInterval(entry.countdown); // Zähler für Countdown, Verbrauchsmengen, usw. löschen
+                    curFlow += entry.pipeFlow;	// ermitteln der RestFörderkapazität
+                    parallel--;	// Anzahl der Bewässerungsstellen um 1 verringern
+                    adapter.log.info('(697) Förderleistung Verbraucher löschen: Name ' + entry.sprinkleName + ' curFlow ' + curFlow + ' parallel: ' + parallel);
+                    /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
+                    adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
+                        val: 1,
+                        ack: true
+                    });
+                    /* Ventil ausschalten */
+                    adapter.setForeignState(entry.idState, {
+                        val: false,
+                        ack: false
+                    });
+                }
+            }
+        }
+
+        adapter.log.info('(712) ermitteln von curPipe: ' + curFlow + ' (' + currentPumpUse.pumpPower + ')');
+
+        // absteigend sortieren nach der Verbrauchsmenge
+        ObjThread.threadList.sort(mySortDescending);
+
         // einschalten der Bewässerungsventile nach Verbrauchsmenge und maximaler Anzahl
         for(const entry of ObjThread.threadList) {
             if (!entry.enabled                                                      // ausgeschaltet
-				&& !entry.myBreak                                                   // nicht mehr in der Pause
-				&& (curFlow >= entry.pipeFlow)                                      // noch genügend Förderleistung der Pumpe
-				&& (parallel < maxParallel)                                         // maxParallel noch nicht erreicht
-				&& ((boostReady) || !(resConfigChange[entry.sprinkleID].booster))   // nur einer mit boostFunction darf aktive sein
+                && !entry.myBreak                                                   // nicht mehr in der Pause
+                && (curFlow >= entry.pipeFlow)                                      // noch genügend Förderleistung der Pumpe
+                && (parallel < maxParallel)                                         // maxParallel noch nicht erreicht
+                && ((boostReady) || !(resConfigChange[entry.sprinkleID].booster))   // nur einer mit boostFunction darf aktive sein
             ) {
                 entry.enabled = true;	// einschalten merken
                 if (resConfigChange[entry.sprinkleID].booster) {
                     boostReady = false;
-                    if (debug) {adapter.log.info('UpdateList sprinkle On: sprinkleID: ' + entry.sprinkleID + ', boostReady = ' + boostReady);}
-                    setTimeout(() => {ObjThread.boostList(entry.sprinkleID);},50);
+                    if (debug) {
+                        adapter.log.info('UpdateList sprinkle On: sprinkleID: ' + entry.sprinkleID + ', boostReady = ' + boostReady);
+                    }
+                    setTimeout(() => {
+                        ObjThread.boostList(entry.sprinkleID);
+                    }, 50);
                 }
                 curFlow -= entry.pipeFlow;	// ermitteln der RestFörderkapazität
-                parallel ++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
+                parallel++;	// Anzahl der Bewässerungsstellen um 1 erhöhen
+                adapter.log.info('(737) Förderleistung Verbraucher hinzufügen: Name ' + entry.sprinkleName + ' curFlow ' + curFlow + ' parallel: ' + parallel);
                 /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
                 adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
                     val: 2,
@@ -672,30 +747,26 @@ const ObjThread = {
                 });
                 adapter.log.info('Ventil "' + entry.sprinkleName + '" eingeschaltet für ' + addTime(entry.wateringTime));
                 /* countdown starten */
-                if (!entry.startTime) {entry.startTime = new Date();}
-                entry.countdown = setInterval(() => {countSprinkleTime(entry);}, 1000);	// 1000 = 1s
+                if (!entry.startTime) {
+                    entry.startTime = new Date();
+                }
+                entry.countdown = setInterval(() => {
+                    countSprinkleTime(entry);
+                }, 1000);	// 1000 = 1s
 
-            } else if (     /* - wenn beim Umschalten der Pumpen die Förderleistung zu gering ist Ventile deaktivieren - */
-                (adapter.config.cisternSettings)                                    // Zisterne verwenden
-                && (entry.enabled)                                                  // eingeschaltet
-                && (curFlow < entry.pipeFlow)                                       // Förderleistung der Pumpe zu gering
-            ) {
-                entry.enabled = false;
-                /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, <<< 2 >>> on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost) */
-                adapter.setState('sprinkle.' + entry.sprinkleName + '.sprinklerState', {
-                    val: 1,
-                    ack: true
-                });
-                /* Ventil einschalten */
-                adapter.setForeignState(entry.idState, {
-                    val: false,
-                    ack: false
-                });
             }
         }
-		
-        adapter.setState('control.parallelOfMax', {val: parallel + ' : ' + maxParallel, ack: true});
-        adapter.setState('control.restFlow', {val: curFlow, ack: true});
+
+        adapter.log.info('(760) ermitteln von curPipe: ' + curFlow + ' (' + currentPumpUse.pumpPower + ')');
+
+        adapter.setState('control.parallelOfMax', {
+            val: parallel + ' : ' + maxParallel,
+            ack: true
+        });
+        adapter.setState('control.restFlow', {
+            val: '' + curFlow + ' (' + currentPumpUse.pumpPower + ' ' + (currentPumpUse.pumpCistern ? 'Zisterne' : 'Grundwasser')  + ')',
+            ack: true
+        });
         // Steuerspannung ein/aus
         if (adapter.config.triggerControlVoltage !== '') {
             adapter.getForeignState(adapter.config.triggerControlVoltage, (err, state) => {
@@ -759,7 +830,7 @@ const ObjThread = {
  */
 function setActualPump() {
     if (adapter.config.cisternSettings === true) {
-        /* Zisternen-Bewässerung (2.Pumpe) aktiv */
+        /* Zisternen-Bewässerung-Einstellung (2.Pumpe) aktiviert */
         if (currentPumpUse.enable === true) {
             /* Bewässerungspumpen aktiv */
             if (currentPumpUse.pumpCistern === true) {
@@ -793,6 +864,10 @@ function setActualPump() {
                 currentPumpUse.pumpCistern = true;
                 currentPumpUse.pumpName = adapter.config.triggerCisternPump || '';
                 currentPumpUse.pumpPower = adapter.config.triggerCisternPumpPower;
+                adapter.setState('control.restFlow', {
+                    val: currentPumpUse.pumpPower + ' (' + currentPumpUse.pumpPower + ' Zisterne)',
+                    ack: true
+                });
             } else {
                 adapter.setState('info.cisternState', {
                     val: 'Cistern empty: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
@@ -801,6 +876,10 @@ function setActualPump() {
                 currentPumpUse.pumpCistern = false;
                 currentPumpUse.pumpName = adapter.config.triggerMainPump || '';
                 currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+                adapter.setState('control.restFlow', {
+                    val: currentPumpUse.pumpPower + ' (' + currentPumpUse.pumpPower + ' Grundwasser)',
+                    ack: true
+                });
             }
         }
     } else {
@@ -824,8 +903,8 @@ function GetSystemData() {
      * Ändern Sie nicht, wenn wir bereits einen gültigen Wert haben
      * Daher können wir bei Bedarf andere Einstellungen als das System verwenden
      */
-    if (typeof adapter.config.longitude === undefined || adapter.config.longitude === null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
-        || typeof adapter.config.latitude === undefined || adapter.config.latitude === null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
+    if (typeof adapter.config.longitude === undefined || adapter.config.longitude == null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
+        || typeof adapter.config.latitude === undefined || adapter.config.latitude == null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
 
         adapter.log.debug('longitude/longitude not set, get data from system ' + typeof adapter.config.longitude + ' ' + adapter.config.longitude + '/' + typeof adapter.config.latitude + ' ' + adapter.config.latitude);
 
@@ -952,9 +1031,13 @@ function addTime(time1, time2){
 
 }   // end - function addTime
 
-/* func Format Time => hier wird der übergebene Zeitstempel, myDate, in das angegebene Format, timeFormat, umgewandelt.
-*   Ist myDate nicht angegeben, so wird die aktuelle Zeit verwendet.
-*/
+/**
+ * func Format Time => hier wird der übergebene Zeitstempel, myDate, in das angegebene Format, timeFormat, umgewandelt.
+ *   Ist myDate nicht angegeben, so wird die aktuelle Zeit verwendet.
+ * @param myDate
+ * @param timeFormat {string} 'kW': Rückgabe der KW; 'dd.mm. hh:mm': Rückgabe Datum und Zeit
+ * @returns {string|number}
+ */
 function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm' 
     function zweiStellen (s) {
         while (s.toString().length < 2) {s = '0' + s;}
@@ -997,7 +1080,7 @@ function checkStates() {
      * @param {ioBroker.State|null|undefined} state
      */
     adapter.getState('control.Holiday', (err, state) => {
-        if (state && (state.val === null)) {
+        if (state && (state.val == null)) {
             adapter.setState('control.Holiday', {val: false, ack: true});
         }
     });
@@ -1007,13 +1090,13 @@ function checkStates() {
      * @param {ioBroker.State|null|undefined} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
-        if (state && (state.val === null)) {
+        if (state && (state.val == null)) {
             autoOnOffStr = true;
             adapter.setState('control.autoOnOff', {val: autoOnOffStr, ack: true});
         }
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
-        if (state && (state.val === null)) {
+        if (state && (state.val == null)) {
             ETpTodayNum = 0;
             //            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
@@ -1023,7 +1106,7 @@ function checkStates() {
         }
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
-        if (state && (state.val === null || state.val === false)) {
+        if (state && (state.val == null || state.val === false)) {
             adapter.setState('evaporation.ETpYesterday', {val: '0', ack: true});
         }
     });
@@ -1063,6 +1146,15 @@ function checkStates() {
     currentPumpUse.pumpCistern = false;
     currentPumpUse.pumpName = adapter.config.triggerMainPump;
     currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+
+    adapter.setState('control.parallelOfMax', {
+        val: 0 + ' : ' + adapter.config.maximumParallelValves,
+        ack: true
+    });
+    adapter.setState('control.restFlow', {
+        val: currentPumpUse.pumpPower + ' (' + currentPumpUse.pumpPower + ' ' + (currentPumpUse.pumpCistern ? 'Zisterne' : 'Grundwasser')  + ')',
+        ack: true
+    });
 }
 
 //	aktuelle States checken nach dem Start (2000 ms)
@@ -1541,7 +1633,7 @@ function createSprinklers() {
             setTimeout(() => {
                 adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
 
-                    if (state === null || state.val === null || state.val === true || state.val === 0) {
+                    if (state == null || state.val == null || state.val === true || state.val === 0) {
                         adapter.setState(objPfad + '.actualSoilMoisture', {val: 50 , ack: true});
                     } else {
                         // num Wert der Bodenfeuchte berechnen und speichern im Array
