@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "news": {
+      "0.0.12": {
+          "en": "Irrigation via a second pump (cistern with priority control) depending on the level.",
+          "de": "Bewässerung über eine zweite Pumpe (Zisterne mit Prioritätsregelung) je nach Füllstand.",
+          "ru": "Орошение через второй насос (цистерна с приоритетным управлением) в зависимости от уровня.",
+          "pt": "Irrigação por segunda bomba (cisterna com controle prioritário) em função do nível.",
+          "nl": "Irrigatie via een tweede pomp (stortbak met prioriteitsregeling) afhankelijk van het niveau.",
+          "fr": "Irrigation via une deuxième pompe (citerne avec commande prioritaire) en fonction du niveau.",
+          "it": "Irrigazione tramite una seconda pompa (cisterna con comando prioritario) a seconda del livello.",
+          "es": "Riego mediante segunda bomba (cisterna con control prioritario) en función del nivel.",
+          "pl": "Nawadnianie przez drugą pompę (cysterna z priorytetem sterowania) w zależności od poziomu.",
+          "zh-cn": "根据液位，通过第二个泵（带优先控制的水箱）进行灌溉。"
+      },
       "0.0.11": {
         "en": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
         "de": "Fehler bei der Lösung der Regenvorhersage vom Adapter \"Das Wetter\"",

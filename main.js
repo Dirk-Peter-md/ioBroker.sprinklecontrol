@@ -964,8 +964,9 @@ function calcEvaporation (timeDifference) {
     // Verdunstung des heutigen Tages
     const curETp = (eTp * timeDifference) - curAmountOfRain;
     curAmountOfRain = 0;	// auf 0 setzen damit nicht doppelt abgezogen wird.
-    ETpTodayNum += curETp;
-
+    if (curETp < 2) {       // um Fehler in der Auswertung beim Neustart zu löschen
+        ETpTodayNum += curETp;
+    }
     if (debug) {adapter.log.info('ETpTodayNum = ' + ETpTodayNum + ' ( ' + curETp + ' )');}
     adapter.setState('evaporation.ETpToday', { val: Math.round(ETpTodayNum * 10000) / 10000, ack: true });
 

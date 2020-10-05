@@ -122,11 +122,13 @@ Hier werden die Einstellung der Hauptpumpe und der Spannungsversorgung der Regel
     * **maximale Pumpenleistung der Hauptpumpe in  l/h:** - hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
         * **Achtung:** - Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z.B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben.  
 
-* **Zisternenpumpe als Prioritätspumpe hinzufügen:** - (noch nicht programmiert, aber in Planung)
-    * **Zisternenpumpe:** - (noch nicht programmiert, aber in Planung)
-    * **maximale Pumpenleistung der Zisterne in l / h** - (noch nicht programmiert, aber in Planung)
-    * **Höhe der Zisterne** - (noch nicht programmiert, aber in Planung)
-    * **Mindestfüllstand der Zysten in%** - (noch nicht programmiert, aber in Planung)
+* **Zisternenpumpe als Prioritätspumpe hinzufügen:**
+    * **Zisternenpumpe:** - Hier wird die Pumpe der Zisterne eingetragen. Diese wird deaktiviert, so wie der Füllstand der Zisterne zu gering ist.
+    * **maximale Pumpenleistung der Zisterne in l / h**  - Hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
+        * **Achtung:** - Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z.B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben. 
+    * **Füllhöhe der Zisterne** - Angabe des Füllstandsensors für die Ermittlung der Füllhöhe in %.
+        * **eingebaut** - Hm-Sen-Wa-Od Kapazitiver Füllstandsmesser von Homematic.
+    * **Mindestfüllstand der Zysten in%** - Schaltpunkt, bei dessen Unterschreitung wird auf die Hauptpumpe umgeschaltet und bei laufender Bewässerung die Ventile je Verbrauchsmenge angepasst.
 
 ---
 ---
