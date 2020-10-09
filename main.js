@@ -187,6 +187,7 @@ function startAdapter(options) {
                                     found.sprinkleID,
                                     Math.round(60 * state.val),
                                     false);
+                                setActualPump();
                                 setTimeout(() => {
                                     ObjThread.updateList();
                                 }, 50);
@@ -264,16 +265,23 @@ function startAdapter(options) {
                             weatherForecastTodayNum = 0;
                             console.log.info('StateChange => Wettervorhersage state.val ( ' + state.val + '; ' + typeof state.val + ' ) kann nicht als Number verarbeitet werden');
                         }
-                        adapter.setState('info.rainToday', {val: weatherForecastTodayNum, ack: true});
+                        adapter.setState('info.rainToday', {
+                            val: weatherForecastTodayNum,
+                            ack: true
+                        });
                     }
                     if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value') {
                         weatherForecastTomorrowNum = state.val;
-                        adapter.setState('info.rainTomorrow', {val: weatherForecastTomorrowNum, ack: true});
+                        adapter.setState('info.rainTomorrow', {
+                            val: weatherForecastTomorrowNum,
+                            ack: true
+                        });
                     }
                 }
                 // Füllstand der Zisterne bei Statusänderung
                 if (adapter.config.actualValueLevel && (id === adapter.config.actualValueLevel)) {
-                    fillLevelCistern = state.val || 0;
+                    fillLevelCistern = parseFloat(state.val);
+                    //fillLevelCistern = state.val || 0;
                     setActualPump();
                 }
             } else {
@@ -830,11 +838,11 @@ const ObjThread = {
  */
 function setActualPump() {
     if (adapter.config.cisternSettings === true) {
-        /* Zisternen-Bewässerung-Einstellung (2.Pumpe) aktiviert */
+        /* Zisternen-Bewässerung Einstellung in der config (2.Pumpe) aktiviert */
         if (currentPumpUse.enable === true) {
             /* Bewässerungspumpen aktiv */
-            if (currentPumpUse.pumpCistern === true) {
-                /* ZisternenPumpe läuft */
+            if ((fillLevelCistern < parseFloat(adapter.config.triggerMinCisternLevel)) && (currentPumpUse.pumpCistern === true)) {
+                /* (Zisterne unter Minimum) && (ZisternenPumpe läuft) */
                 adapter.setForeignState(currentPumpUse.pumpName, {
                     val: false,
                     ack: false
@@ -849,13 +857,20 @@ function setActualPump() {
                 adapter.log.info('Pumpenwechsel (Zisterne leer) Zisternen-Pumpe aus => Hauptpumpe ein');
                 ObjThread.updateList();
             }
-            adapter.setState('info.cisternState', {
-                val: 'Cistern empty: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
-                ack: true
-            });
+            if (fillLevelCistern < parseFloat(adapter.config.triggerMinCisternLevel)) {
+                adapter.setState('info.cisternState', {
+                    val: 'Cistern empty: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
+                    ack: true
+                });
+            } else {
+                adapter.setState('info.cisternState', {
+                    val: 'Cistern filled: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
+                    ack: true
+                });
+            }
         } else {
             /* Bewässerungspumpen inaktiv */
-            if ((fillLevelCistern > adapter.config.triggerMinCisternLevel) && (adapter.config.triggerCisternPump) && (adapter.config.triggerCisternPumpPower)) {
+            if ((fillLevelCistern > parseFloat(adapter.config.triggerMinCisternLevel)) && (adapter.config.triggerCisternPump) && (adapter.config.triggerCisternPumpPower)) {
                 /* Zisterne voll && triggerCisternPump && triggerCisternPumpPower vorhanden*/
                 adapter.setState('info.cisternState', {
                     val: 'Cistern filled: ' + fillLevelCistern + ' %  (' + adapter.config.triggerMinCisternLevel + ' %)',
@@ -996,7 +1011,12 @@ function applyEvaporation (eTP){
     }		
 }
 
-// func addTime (02:12:24 + 00:15) || (807) = 02:12:39
+/**
+ * func addTime (02:12:24 + 00:15) || (807) = 02:12:39
+ * @param time1 {string|number} time 1
+ * @param time2 {string|number} time 2
+ * @returns {string}
+ */
 function addTime(time1, time2){
     const wert = string2seconds(time1) + string2seconds(time2);
     return seconds2string(wert);
@@ -1173,7 +1193,7 @@ function checkActualStates () {
 
     /**
      * switch autoOnOff
-     * @param {any} err
+     * @param {string|null} err
      * @param {ioBroker.State|null|undefined} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
@@ -1186,7 +1206,7 @@ function checkActualStates () {
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance !== 'none' || adapter.config.publicHolInstance !== '')) {
         /**
          * Feiertag HEUTE
-         * @param {any} err
+         * @param {string|null} err
          * @param {ioBroker.State|null|undefined} state
          */
         adapter.getForeignState(adapter.config.publicHolInstance + '.heute.boolean', (err, state) => {
@@ -1196,7 +1216,7 @@ function checkActualStates () {
         });
         /**
          * Feiertag MORGEN
-         * @param {any} err
+         * @param {string|null} err
          * @param {ioBroker.State|null|undefined} state
          */
         adapter.getForeignState(adapter.config.publicHolInstance + '.morgen.boolean', (err, state) => {
@@ -1245,8 +1265,8 @@ function checkActualStates () {
          * @param {ioBroker.State|null|undefined} state
          */
         adapter.getForeignState(adapter.config.actualValueLevel, (err, state) => {
-            if (state) {
-                fillLevelCistern = state.val || 0;
+            if (typeof state !== undefined && state != null) {
+                fillLevelCistern = parseFloat(state.val);
                 setActualPump();
             }
         });
@@ -1413,6 +1433,10 @@ function startTimeSprinkle() {
     startTimeSplit = startTimeStr.split(':');
 
     const scheduleStartTime = schedule.scheduleJob('sprinkleStartTime', startTimeSplit[1] + ' ' + startTimeSplit[0] + ' * * *', function() {
+        // Wenn aktiviert "Einstellung Zisterne" Pumpe je Füllstand der Zisterne auswählen
+        if (adapter.config.cisternSettings) {
+            setActualPump();
+        }
         // Filter enabled
         const result = resConfigChange.filter(d => d.enabled === true);
         if (result) {	
