@@ -688,8 +688,6 @@ const ObjThread = {
             }
         }
 
-        adapter.log.info('(683) ermitteln von curPipe: ' + curFlow + ' (' + currentPumpUse.pumpPower + ')' + 'if (curFlow < 0): ' + (curFlow < 0));
-
         if (curFlow < 0) {
             /* - wenn beim Umschalten der Pumpen die Förderleistung zu gering ist Ventile deaktivieren - */
             // aufsteigend sortieren nach der Verbrauchsmenge
@@ -716,8 +714,6 @@ const ObjThread = {
                 }
             }
         }
-
-        adapter.log.info('(712) ermitteln von curPipe: ' + curFlow + ' (' + currentPumpUse.pumpPower + ')');
 
         // absteigend sortieren nach der Verbrauchsmenge
         ObjThread.threadList.sort(mySortDescending);
@@ -764,8 +760,6 @@ const ObjThread = {
 
             }
         }
-
-        adapter.log.info('(760) ermitteln von curPipe: ' + curFlow + ' (' + currentPumpUse.pumpPower + ')');
 
         adapter.setState('control.parallelOfMax', {
             val: parallel + ' : ' + maxParallel,

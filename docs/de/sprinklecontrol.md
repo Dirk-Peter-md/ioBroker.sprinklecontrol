@@ -234,6 +234,6 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
         - 5:off(Boost) => Beregnungskreis für 30 s unterbrochen, da eine Boostfunktion aktive ist
 # Was ist für die Zukunft geplant
 * **Restfehler beseitigen (ESLint)**
-* **Steuerung einer 2. Wasserquelle hinzufügen mit automatischer Umschaltung, wenn Zisterne leer wird**
+* **Rückmeldung der Bewässerung (Bewässerungskreis aktive, Dauer, Bodenfeuchte, verschobene Bewässerung wegen Regenvorhersage) über Telegram, Whatsapp**
 * **integration von Bodenfeuchtesensoren**
 * **Visualisierung**
