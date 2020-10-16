@@ -1,6 +1,19 @@
-## Sprinklercontrol ist ein Adapter zur automatischen Steuerung der Gartenbewässerung.
-# Grundlegendes
+![Logo](img/sprinklecontrol.png)
+# Sprinklecontrol - Adapter zur automatischen Steuerung der Gartenbewässerung.
 
+---
+<a id="inhaltsverzeichnis"></a>
+# Inhaltsverzeichnis
+* [Grundlegendes](#grundlegendes)
+* [Installation](#installation)
+* [Konfiguration - Haupteinstellungen](#konfiguration---haupteinstellungen)
+* [Konfiguration - Pumpen-Einstellungen](#konfiguration---pumpen-einstellungen)
+* [Konfiguration - Zeit-Einstellungen](#konfiguration---zeit-einstellungen)
+* [Konfiguration - Zusätzliche-Einstellungen](#konfiguration---zusätzliche-einstellungen)
+
+
+<a id="grundlegendes"></a>
+## Grundlegendes
 
 In Sprinklecontroll werden die Umweltdaten (Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit, Regenmenge) ausgewertet.
 Die so ermittelte Verdunstung dient der Ermittlung der theoretischen Bodenfeuchte, der einzelnen Bewässerungskreise.
@@ -15,9 +28,7 @@ Beides ist individuell anpassbar.
 
 Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und **wurde nur mit diesem** getestet.
 
-
-
-
+<a id="installation"></a>
 ## Installation
 Der Adapter befindet sich im "latest" Verwahrungsort von ioBroker. Von hier kann er heruntergeladen werden. 
 Um ihn installieren zu können muss man in den Adapter von ioBroker gehen und dort "VON GITHUB" anklicken. 
@@ -27,6 +38,7 @@ Spätestens nach Refresh der Adapterliste steht der Adapter **Sprinklecontrol** 
 
 Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des Adapters vom Repository geladen:
 
+<a id="konfiguration---Haupteinstellungen"></a>
 # Konfiguration - Haupteinstellungen
 Sollte in dem Installationsfenster die Checkbox "***schließen, wenn fertig***" nicht angehakt sein muss man dieses natürlich noch schließen.
 
@@ -103,9 +115,10 @@ Auch diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** 
     * **Tipp:** - Meine Pumpe liefert max. 1800 l/h und meine Rasensprenger benötigen 1400 l/h, aber den vollen Druck zum herausfahren. Mit der Boosterfunktion kann ich nebenbei noch die Koniferen bewässern die nur 300 l/h benötigen. 
     * **Achtung:** - Mit dieser Funktion sollte man sehr sparsam umgehen, da immer nur ein Bewässerungskreis mit aktiven Booster bewässern kann.    
 
+> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-
+<a id="konfiguration---pumpen-einstellungen"></a>
 # Konfiguration - Pumpen-Einstellungen
 Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Zisterne) und der Spannungsversorgung der Regelkreise vorgenommen.
 
@@ -130,9 +143,10 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
         * **eingebaut** - Hm-Sen-Wa-Od Kapazitiver Füllstandsmesser von Homematic.
     * **Mindestfüllstand der Zysten in%** - Schaltpunkt, bei dessen Unterschreitung wird auf die Hauptpumpe umgeschaltet und bei laufender Bewässerung die Ventile je Verbrauchsmenge angepasst.
 
+> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-
+<a id="konfiguration---zeit-einstellungen"></a>
 # Konfiguration - Zeit-Einstellungen
 In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
 
@@ -152,9 +166,10 @@ In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
     * **Startzeit der Feiertage wie am Wochenende:** - Wenn an Feiertagen auch wie am Wochenende die Bewässerung starten soll, so kann es hier aktiviert werden.
         * **Feiertage Instanz:** - Hier muss dann aber noch die externe Feiertagsinstanz ausgewählt werden. (z.B. der Adapter "Deutsche Feiertage")
 
+> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-
+<a id="konfiguration---zusätzliche-einstellungen"></a>
 # Konfiguration - Zusätzliche-Einstellungen
 
 In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei der Berechnung der Verdunstung unerlässlich sind.
@@ -237,3 +252,5 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 * **Rückmeldung der Bewässerung (Bewässerungskreis aktive, Dauer, Bodenfeuchte, verschobene Bewässerung wegen Regenvorhersage) über Telegram, Whatsapp**
 * **integration von Bodenfeuchtesensoren**
 * **Visualisierung**
+
+> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)

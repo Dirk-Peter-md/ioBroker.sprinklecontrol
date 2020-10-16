@@ -895,7 +895,7 @@ function setActualPump() {
         /* Zisternen-Bewässerung nicht aktiv */
         if (adapter.config.triggerCisternPump) {
             adapter.setState('info.cisternState', {
-                val: 'Cistern settings not aktive, Level sensor: ' + fillLevelCistern + adapter.config.cisternSettings ? (' %  (' + adapter.config.triggerMinCisternLevel + ')') : (''),
+                val: 'Cistern settings not aktive!' + ((fillLevelCistern > 0)?(' level sensor: ' + fillLevelCistern + '%' + ((adapter.config.triggerMinCisternLevel !== '')?('  (' + adapter.config.triggerMinCisternLevel + '%)'):(''))):('')),
                 ack: true
             });
         }
@@ -1007,8 +1007,8 @@ function applyEvaporation (eTP){
 
 /**
  * func addTime (02:12:24 + 00:15) || (807) = 02:12:39
- * @param time1 {string|number} time 1
- * @param time2 {string|number} time 2
+ * @param time1 {string|number} z.B. 02:12:24 || 807 => 02:12:39
+ * @param time2 {string|number} z.B. 02:12:24 || 807 => 02:12:39 || undef.
  * @returns {string}
  */
 function addTime(time1, time2){
