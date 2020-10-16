@@ -139,7 +139,42 @@
 
     <script type="text/javascript">
 
-    
+        let $dialogCommand = null;
+        let $output = null;
+        let $dialogCommandProgress;
+
+        function initDialog() {
+            $dialogCommand = $('#dialog-command');
+            $output = $dialogCommand.find('#stdout');
+            $dialogCommandProgress = $dialogCommand.find('.progress div');
+            $dialogCommand.find('.progress-dont-close input').on('change', function () {
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('sprinkleControl-close-on-ready', $(this).prop('checked') ? '1' : '0');
+                }
+            });
+            if (typeof localStorage !== 'undefined') {
+                if (localStorage.getItem('sprinkleControl-close-on-ready') === '0'){
+                    $dialogCommand.find('.progress-dont-close input').prop('checked', false);
+                } else {
+                    $dialogCommand.find('.progress-dont-close input').prop('checked', true);
+                }
+            }
+            $dialogCommand.modal({
+                dismissible: false
+            });
+            // workaround for materialize checkbox problem
+            $dialogCommand.find('input[type="checkbox"]+span').off('click').on('click', function () {
+                let $input = $(this).prev();
+                // ignore switch
+                if ($input.parent().parent().hasClass('switch')) return;
+                if (!$input.prop('disabled')) {
+                    $input.prop('checked', !$input.prop('checked')).trigger('change');
+                }
+            });
+            $dialogCommand.find('.btn').on('click', function () {
+                $dialogCommand.modal('close');
+            });
+        }
 
         // This will be called by the admin adapter when the settings page loads
         // Dies wird vom Adapter Administrator aufgerufen, wenn die Einstellungsseite geladen wird
@@ -339,6 +374,8 @@
             sendTo(null, 'getTelegramUser', null, function (obj) {
                 fillTelegramUser(settings['telegramUser'], obj)
             });
+
+            initDialog();
 
         }
 
