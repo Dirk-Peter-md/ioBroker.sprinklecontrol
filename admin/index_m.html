@@ -341,8 +341,8 @@
         }
 
         function fillTelegramUser(id, str) {
-            let user = str.replace(/[{}"\\]/g,"").split(',');
-            let $sel = $('#telegramUser');
+            var user = str.replace(/[{}"\\]/g,"").split(',');
+            var $sel = $('#telegramUser');
             $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
 
             user.forEach(function(val){
