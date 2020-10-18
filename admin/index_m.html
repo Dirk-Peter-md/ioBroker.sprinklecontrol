@@ -500,11 +500,21 @@
 
             // Telegramm Adapter
 
-            if ($('#telegramEnabled').prop('checked')) {
-                $('.telegram_inst').show();
+            // if ($('#telegramEnabled').prop('checked')) {
+            //     $('.telegram_inst').show();
+            // } else {
+            //     $('.telegram_inst').hide();
+            // }
+
+            // Benachrichtigung Karte Ein / Aus
+
+            if ($('#notificationEnabled').prop('checked')) {
+                $('.tab-notification').show();
             } else {
-                $('.telegram_inst').hide();
+                $('.tab-notification').hide();
             }
+
+            // Benachrichtigung - Typ auswahl
 
             $('#notificationsType').on('change', function () {
                 if ($(this).val() === 'Telegram') {
@@ -530,11 +540,7 @@
                 }
             }).trigger('change');
 
-            if ($('#notificationEnabled').prop('checked')) {
-                $('.tab-notification').show();
-            } else {
-                $('.tab-notification').hide();
-            }
+
 
         }
 
@@ -811,19 +817,19 @@
                 <!-- Tab Extra -->
                 <div id="tab-extra" class="col s12 page">
                     <!-- Astro Einstellungen -->
-                    <div class="col s6">
+                    <div class="col s4">
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s4">
                                 <h6 class="translate sub-title">Astro settings</h6>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s6 l2 input-field">
+                            <div class="col s4 l2 input-field">
                                 <input type="text" class="value" id="latitude" />
                                 <label for="latitude" class="translate"></label>
                                 <span class="translate">latitude</span>
                             </div>
-                            <div class="col s6 l2 input-field">
+                            <div class="col s4 l2 input-field">
                                 <input type="text" class="value" id="longitude" />
                                 <label for="longitude" class="translate"></label>
                                 <span class="translate">longitude</span>
@@ -831,28 +837,28 @@
                         </div>
                     </div>
                     <!-- Debug Einstellungen -->
-                    <div class="col s6">
+                    <div class="col s4">
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s4">
                                 <h6 class="translate sub-title">Debug settings</h6>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s6 input-field">
+                            <div class="col s4 input-field">
                                 <input type="checkbox" class="value" id="debug" />
                                 <span for="debug" class="translate">debug</span>
                             </div>
                         </div>
                     </div>
                     <!-- notifications on/off -->
-                    <div class="col s6">
+                    <div class="col s4">
                         <div class="row">
-                            <div class="col s6">
+                            <div class="col s4">
                                 <h6 class="translate sub-title">Additional notifications setting</h6>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s6 input-field">
+                            <div class="col s4 input-field">
                                 <input type="checkbox" class="value" id="notificationEnabled" />
                                 <span for="notificationEnabled" class="translate">Enable / Disable Notifications</span>
                             </div>
