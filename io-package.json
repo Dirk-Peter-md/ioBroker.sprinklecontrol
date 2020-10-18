@@ -355,7 +355,7 @@
         "name": "rest Flow of Pump",
         "type": "number",
         "read": true,
-        "write": true,
+        "write": false,
         "def": false
       },
       "native": {}
