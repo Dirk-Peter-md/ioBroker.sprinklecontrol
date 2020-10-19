@@ -335,9 +335,8 @@
             });
 
             sendTo(null, 'getTelegramUser', null, function (obj) {
-                fillTelegramUser(settings['telegramUser'], obj)
+                fillTelegramUser(settings['telegramUser'], obj);
             });
-
         }
 
         function fillTelegramUser(id, str) {
@@ -498,14 +497,6 @@
                 $('.weatherFor').hide();
             }
 
-            // Telegramm Adapter
-
-            // if ($('#telegramEnabled').prop('checked')) {
-            //     $('.telegram_inst').show();
-            // } else {
-            //     $('.telegram_inst').hide();
-            // }
-
             // Benachrichtigung Karte Ein / Aus
 
             if ($('#notificationEnabled').prop('checked')) {
@@ -539,9 +530,6 @@
                     $('.pushover').hide();
                 }
             }).trigger('change');
-
-
-
         }
 
         let selectId;

@@ -210,7 +210,7 @@
     "notificationsType": "Telegram",
     "telegramInstance": "telegram.0",
     "telegramNoticeType": "longTelegramNotice",
-    "telegramUser": "All Receiver",
+    "telegramUser": "",
     "telegramSilentNotice": false,
     "telegramOnlyError": false,
     "telegramWaitToSend": 0,
