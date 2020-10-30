@@ -1460,7 +1460,7 @@ function startTimeSprinkle() {
         const result = resConfigChange.filter(d => d.enabled === true);
         if (result) {	
             for(const i in result) {
-                messageText += '<B><U>' + result[i].objectName + '</U></B>' +  '\n';
+                messageText += '<b><u>' + result[i].objectName + '</u></b>' +  '\n';
                 // Test Bodenfeuchte
                 if (debug) {adapter.log.info('Bodenfeuchte: ' + result[i].soilMoisture.val + ' <= ' + result[i].soilMoisture.triggersIrrigation + ' AutoOnOff: ' + result[i].autoOnOff);}
                 // Bodenfeuchte zu gering && Ventil auf Automatik
