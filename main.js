@@ -1488,7 +1488,8 @@ function startTimeSprinkle() {
                 }
             }
         }
-        sendMessageText(adapter, messageText);
+        ObjMessage.messageText = messageText;
+        sendMessageText(adapter, ObjMessage);
         messageText = '';
         setTimeout (() => {
             ObjThread.updateList();
@@ -1504,55 +1505,59 @@ function initConfigMessage() {
     switch (adapter.config.notificationsType) {
         case 'Telegram':
             ObjMessage = {
-                /** @type {boolean} */ enabled: adapter.config.notificationEnabled || false,
-                /** @type {string} */  notificationsType: adapter.config.notificationsType,
-                /** @type {string} */  type: 'message',
-                /** @type {string} */  instance: adapter.config.telegramInstance,
-                /** @type {boolean} */ silentNotice: adapter.config.telegramSilentNotice,
-                /** @type {string} */  noticeType: adapter.config.telegramNoticeType,
-                /** @type {string} */  user: adapter.config.telegramUser,
-                /** @type {boolean} */ onlyError: adapter.config.telegramOnlyError,
-                /** @type {number} */  waiting: parseInt(adapter.config.telegramWaitToSend) * 1000
+                /** @type {string} */   messageText: '',
+                /** @type {boolean} */  enabled: adapter.config.notificationEnabled || false,
+                /** @type {string} */   notificationsType: adapter.config.notificationsType,
+                /** @type {string} */   type: 'message',
+                /** @type {string} */   instance: adapter.config.telegramInstance,
+                /** @type {boolean} */  silentNotice: adapter.config.telegramSilentNotice,
+                /** @type {string} */   noticeType: adapter.config.telegramNoticeType,
+                /** @type {string} */   user: adapter.config.telegramUser,
+                /** @type {boolean} */  onlyError: adapter.config.telegramOnlyError,
+                /** @type {number} */   waiting: parseInt(adapter.config.telegramWaitToSend) * 1000
             };
             break;
 
         case 'E-Mail':
             ObjMessage = {
-                /** @type {boolean} */ enabled: adapter.config.notificationEnabled || false,
-                /** @type {string} */  notificationsType: adapter.config.notificationsType,
-                /** @type {string} */  type: 'message',
-                /** @type {string} */  instance: adapter.config.emailInstance,
-                /** @type {string} */  noticeType: adapter.config.emailNoticeType,
-                /** @type {string} */  emailReceiver: adapter.config.emailReceiver,
-                /** @type {string} */  emailSender: adapter.config.emailSender,
-                /** @type {boolean} */ onlyError: adapter.config.emailOnlyError,
-                /** @type {number} */  waiting: parseInt(adapter.config.emailWaitToSend) * 1000
+                /** @type {string} */   messageText: '',
+                /** @type {boolean} */  enabled: adapter.config.notificationEnabled || false,
+                /** @type {string} */   notificationsType: adapter.config.notificationsType,
+                /** @type {string} */   type: 'message',
+                /** @type {string} */   instance: adapter.config.emailInstance,
+                /** @type {string} */   noticeType: adapter.config.emailNoticeType,
+                /** @type {string} */   emailReceiver: adapter.config.emailReceiver,
+                /** @type {string} */   emailSender: adapter.config.emailSender,
+                /** @type {boolean} */  onlyError: adapter.config.emailOnlyError,
+                /** @type {number} */   waiting: parseInt(adapter.config.emailWaitToSend) * 1000
             };
             break;
 
         case 'Pushover':
             ObjMessage = {
-                /** @type {boolean} */ enabled: adapter.config.notificationEnabled || false,
-                /** @type {string} */  notificationsType: adapter.config.notificationsType,
-                /** @type {string} */  type: 'message',
-                /** @type {string} */  instance: adapter.config.pushoverInstance,
-                /** @type {boolean} */ silentNotice: adapter.config.pushoverSilentNotice,
-                /** @type {string} */  noticeType: adapter.config.pushoverNoticeType,
-                /** @type {string} */  deviceID: adapter.config.pushoverDeviceID,
-                /** @type {boolean} */ onlyError: adapter.config.pushoverOnlyError,
-                /** @type {number} */  waiting: parseInt(adapter.config.pushoverWaitToSend) * 1000
+                /** @type {string} */   messageText: '',
+                /** @type {boolean} */  enabled: adapter.config.notificationEnabled || false,
+                /** @type {string} */   notificationsType: adapter.config.notificationsType,
+                /** @type {string} */   type: 'message',
+                /** @type {string} */   instance: adapter.config.pushoverInstance,
+                /** @type {boolean} */  silentNotice: adapter.config.pushoverSilentNotice,
+                /** @type {string} */   noticeType: adapter.config.pushoverNoticeType,
+                /** @type {string} */   deviceID: adapter.config.pushoverDeviceID,
+                /** @type {boolean} */  onlyError: adapter.config.pushoverOnlyError,
+                /** @type {number} */   waiting: parseInt(adapter.config.pushoverWaitToSend) * 1000
             };
             break;
 
         case 'WhatsApp':
             ObjMessage = {
-                /** @type {boolean} */ enabled: adapter.config.notificationEnabled || false,
-                /** @type {string} */  notificationsType: adapter.config.notificationsType,
-                /** @type {string} */  type: 'message',
-                /** @type {string} */  instance: adapter.config.whatsappInstance,
-                /** @type {string} */  noticeType: adapter.config.whatsappNoticeType,
-                /** @type {boolean} */ onlyError: adapter.config.whatsappOnlyError,
-                /** @type {number} */  waiting: parseInt(adapter.config.whatsappWaitToSend) * 1000
+                /** @type {string} */   messageText: '',
+                /** @type {boolean} */  enabled: adapter.config.notificationEnabled || false,
+                /** @type {string} */   notificationsType: adapter.config.notificationsType,
+                /** @type {string} */   type: 'message',
+                /** @type {string} */   instance: adapter.config.whatsappInstance,
+                /** @type {string} */   noticeType: adapter.config.whatsappNoticeType,
+                /** @type {boolean} */  onlyError: adapter.config.whatsappOnlyError,
+                /** @type {number} */   waiting: parseInt(adapter.config.whatsappWaitToSend) * 1000
             };
             break;
     }
