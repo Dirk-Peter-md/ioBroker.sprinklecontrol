@@ -1460,7 +1460,7 @@ function startTimeSprinkle() {
         const result = resConfigChange.filter(d => d.enabled === true);
         if (result) {	
             for(const i in result) {
-                messageText += '<b><u>' + result[i].objectName + '</u></b>' +  '\n';
+                messageText += '<b>' + result[i].objectName + '</b>' + ' ' + result[i].soilMoisture.pct + '% (' + result[i].soilMoisture.pctTriggerIrrigation + '%)' + '\n';
                 // Test Bodenfeuchte
                 if (debug) {adapter.log.info('Bodenfeuchte: ' + result[i].soilMoisture.val + ' <= ' + result[i].soilMoisture.triggersIrrigation + ' AutoOnOff: ' + result[i].autoOnOff);}
                 // Bodenfeuchte zu gering && Ventil auf Automatik
@@ -1482,9 +1482,11 @@ function startTimeSprinkle() {
                         messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
                     } else {
                         /* Bewässerung unterdrückt da ausreichende regenvorhersage */
-                        messageText += '<i>' + '   Start verschoben, da ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                        messageText += '<i>' + '   Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
                         adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + resMoisture + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
                     }
+                } else if (!result[i].autoOnOff) {
+                    messageText += '<i>' + 'Ventil auf Handbetrieb' + '</i>' + '\n';
                 }
             }
         }
@@ -1970,7 +1972,8 @@ function main(adapter) {
                     /** @type {number} */ 'min': parseInt(result[i].maxSoilMoistureIrrigation) / 100,		    // (zB. 0,02 mm)
                     /** @type {number} */ 'maxIrrigation': parseInt(result[i].maxSoilMoistureIrrigation),		// (zB. 10 mm)
                     /** @type {number} */ 'maxRain': parseInt(result[i].maxSoilMoistureRain),		            // (zB. 12 mm)
-                    /** @type {number} */ 'triggersIrrigation': parseInt(result[i].maxSoilMoistureIrrigation) * parseInt(result[i].triggersIrrigation) / 100		// (zB. 50 % ==> 5 mm)
+                    /** @type {number} */ 'triggersIrrigation': parseInt(result[i].maxSoilMoistureIrrigation) * parseInt(result[i].triggersIrrigation) / 100,		// (zB. 50 % ==> 5 mm)
+                    /** @type {number} */ 'pctTriggerIrrigation': parseInt(result[i].triggersIrrigation),       // (zB. 50%)
                 }
             };
             resConfigChange.push(newEntry);
