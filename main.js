@@ -1443,8 +1443,24 @@ function startTimeSprinkle() {
         } while ((newStartTime <= myTime) && (run === 1));
 
         const newStartTimeLong = myWeekdayStr[myWeekday] + ' ' + newStartTime;
-        adapter.setState('info.nextAutoStart', { val: newStartTimeLong, ack: true });
-        adapter.log.info(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
+        /**
+         * next Auto-Start
+         * @param {string|null} err
+         * qparam {{string} val} state
+         */
+        adapter.getState('info.nextAutoStart', (err, state) =>{
+            if (state) {
+                if (state.val !== newStartTimeLong) {
+                    adapter.setState('info.nextAutoStart', {
+                        val: newStartTimeLong,
+                        ack: true
+                    });
+                    ObjMessage.messageText = infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime;
+                    sendMessageText(adapter, ObjMessage);
+                    adapter.log.info(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
+                }
+            }
+        });
         return newStartTime;
     }
     //
@@ -1482,17 +1498,16 @@ function startTimeSprinkle() {
                         messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
                     } else {
                         /* Bewässerung unterdrückt da ausreichende regenvorhersage */
-                        messageText += '<i>' + '   Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                        messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
                         adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + resMoisture + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
                     }
                 } else if (!result[i].autoOnOff) {
-                    messageText += '<i>' + 'Ventil auf Handbetrieb' + '</i>' + '\n';
+                    messageText += '   ' + '<i>' + 'Ventil auf Handbetrieb' + '</i>' + '\n';
                 }
             }
         }
         ObjMessage.messageText = messageText;
         sendMessageText(adapter, ObjMessage);
-        messageText = '';
         setTimeout (() => {
             ObjThread.updateList();
             setTimeout(()=>{
@@ -1513,7 +1528,7 @@ function initConfigMessage() {
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.telegramInstance,
                 /** @type {boolean} */  silentNotice: adapter.config.telegramSilentNotice,
-                /** @type {string} */   noticeType: adapter.config.telegramNoticeType,
+                /** @type {boolean} */  noticeType: (adapter.config.telegramNoticeType === 'longTelegramNotice'),
                 /** @type {string} */   user: adapter.config.telegramUser,
                 /** @type {boolean} */  onlyError: adapter.config.telegramOnlyError,
                 /** @type {number} */   waiting: parseInt(adapter.config.telegramWaitToSend) * 1000
@@ -1527,7 +1542,7 @@ function initConfigMessage() {
                 /** @type {string} */   notificationsType: adapter.config.notificationsType,
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.emailInstance,
-                /** @type {string} */   noticeType: adapter.config.emailNoticeType,
+                /** @type {boolean} */  noticeType: (adapter.config.emailNoticeType === 'longTelegramNotice'),
                 /** @type {string} */   emailReceiver: adapter.config.emailReceiver,
                 /** @type {string} */   emailSender: adapter.config.emailSender,
                 /** @type {boolean} */  onlyError: adapter.config.emailOnlyError,
@@ -1543,7 +1558,7 @@ function initConfigMessage() {
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.pushoverInstance,
                 /** @type {boolean} */  silentNotice: adapter.config.pushoverSilentNotice,
-                /** @type {string} */   noticeType: adapter.config.pushoverNoticeType,
+                /** @type {boolean} */  noticeType: (adapter.config.pushoverNoticeType === 'longTelegramNotice'),
                 /** @type {string} */   deviceID: adapter.config.pushoverDeviceID,
                 /** @type {boolean} */  onlyError: adapter.config.pushoverOnlyError,
                 /** @type {number} */   waiting: parseInt(adapter.config.pushoverWaitToSend) * 1000
@@ -1557,7 +1572,7 @@ function initConfigMessage() {
                 /** @type {string} */   notificationsType: adapter.config.notificationsType,
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.whatsappInstance,
-                /** @type {string} */   noticeType: adapter.config.whatsappNoticeType,
+                /** @type {boolean} */   noticeType: (adapter.config.whatsappNoticeType === 'longTelegramNotice'),
                 /** @type {boolean} */  onlyError: adapter.config.whatsappOnlyError,
                 /** @type {number} */   waiting: parseInt(adapter.config.whatsappWaitToSend) * 1000
             };
