@@ -31,6 +31,9 @@ Weather-dependent automatic control of garden irrigation
 
 ## Changelog
 
+### 0.1.1 (??.11.2020)
+* (Dirk-Peter-md) Information über Telegram, E-Mail, Pushover und WhatsApp jetzt möglich
+
 ### 0.0.12 (10.10.2020)
 * (Dirk-Peter-md) Bewässerung über eine 2. Pumpe (Zisterne mit Vorrangschaltung) in abhängigkeit vom Füllstand hinzugefügt.
 

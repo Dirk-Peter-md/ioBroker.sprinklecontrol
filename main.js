@@ -1556,6 +1556,7 @@ function initConfigMessage() {
                 /** @type {boolean} */  enabled: adapter.config.notificationEnabled || false,
                 /** @type {string} */   notificationsType: adapter.config.notificationsType,
                 /** @type {string} */   type: 'message',
+                /** @type {string} */   sound: adapter.config.pushoverSound,
                 /** @type {string} */   instance: adapter.config.pushoverInstance,
                 /** @type {boolean} */  silentNotice: adapter.config.pushoverSilentNotice,
                 /** @type {boolean} */  noticeType: (adapter.config.pushoverNoticeType === 'longTelegramNotice'),

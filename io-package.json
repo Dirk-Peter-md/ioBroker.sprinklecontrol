@@ -221,6 +221,7 @@
     "pushoverInstance": "pushover.0",
     "pushoverNoticeType": "longPushoverNotice",
     "pushoverSilentNotice": false,
+    "pushoverSound": "",
     "pushoverDeviceID": "",
     "pushoverOnlyError": false,
     "pushoverWaitToSend": 0,
