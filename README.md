@@ -31,7 +31,7 @@ Weather-dependent automatic control of garden irrigation
 
 ## Changelog
 
-### 0.1.1 (??.11.2020)
+### 0.1.1 (08.11.2020)
 * (Dirk-Peter-md) Integration von Nachrichten per Telegramm, E-Mail, Pushover und WhatsApp
 
 ### 0.0.12 (10.10.2020)
