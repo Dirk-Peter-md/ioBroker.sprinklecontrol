@@ -574,7 +574,7 @@ const ObjThread = {
         }
         /**
          * Handling von Ventilen, Zeiten, Verbrauchsmengen im 1s Takt
-         * @param {any} entry
+         * @param {object} entry
          */
         function countSprinkleTime(entry) {
             /* --- function beenden wenn ---*/
@@ -947,7 +947,12 @@ function GetSystemData() {
     }
 }
 
-// evaporation calculation => Berechnung der Verdunstung
+//
+/**
+ * evaporation calculation
+ * => Berechnung der Verdunstung
+ * @param {number} timeDifference
+ */
 function calcEvaporation (timeDifference) {
     if (debug) {adapter.log.info('calcEvaporation => gestartet TimeDifferenz: ' + timeDifference);}
     //	Sonnenscheindauer in %
@@ -999,7 +1004,12 @@ function calcEvaporation (timeDifference) {
     applyEvaporation (curETp);
 }
 
-// apply Evaporation => Verdunstung anwenden auf die einzelnen Sprenger kreise
+
+/**
+ * apply Evaporation
+ * => Verdunstung anwenden auf die einzelnen Sprenger kreise
+ * @param {number} eTP
+ */
 function applyEvaporation (eTP){
 
     const result = resConfigChange; // resEnabled;
@@ -1024,6 +1034,7 @@ function applyEvaporation (eTP){
         }
     }		
 }
+
 
 /**
  * func addTime (02:12:24 + 00:15) || (807) => 02:12:39
@@ -1066,8 +1077,10 @@ function addTime(time1, time2){
 
 }   // end - function addTime
 
+
 /**
- * func Format Time => hier wird der übergebene Zeitstempel, myDate, in das angegebene Format, timeFormat, umgewandelt.
+ * func Format Time
+ * => hier wird der übergebene Zeitstempel, myDate, in das angegebene Format, timeFormat, umgewandelt.
  *   Ist myDate nicht angegeben, so wird die aktuelle Zeit verwendet.
  * @param {date} myDate
  * @param {string} timeFormat 'kW': Rückgabe der KW; 'dd.mm. hh:mm': Rückgabe Datum und Zeit
@@ -1106,7 +1119,11 @@ function formatTime(myDate, timeFormat) {	// 'kW' 'dd.mm. hh:mm'
     }
 }
 
-// Sets the status at start to a defined value => Setzt den Status beim Start auf einen definierten Wert
+//
+/**
+ * Sets the status at start to a defined value
+ * => Setzt den Status beim Start auf einen definierten Wert
+ */
 function checkStates() {
     //
     /**
@@ -1309,8 +1326,12 @@ function checkActualStates () {
 	
 }
 
-/* at 0:05 start of StartTimeSprinkle => um 0:05 start von StartTimeSprinkle
-* (..., '(s )m h d m wd') */
+
+/**
+ * at 0:05 start of StartTimeSprinkle
+ * => um 0:05 start von StartTimeSprinkle
+ * (..., '(s )m h d m wd')
+ */
 const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Berechnungen mittels SunCalc
     sunPos();
@@ -1387,6 +1408,11 @@ function startTimeSprinkle() {
         return;
     }
 
+    /**
+     * next start time (automatic)
+     * => Berechnung des nächsten Starts (Automatik)
+     * @returns {string}
+     */
     function nextStartTime () {
         let newStartTime;
         let run = 0;

@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.0.12",
+    "version": "0.1.1",
     "news": {
+      "0.1.1": {
+          "en": "Integration of messages via telegram, e-mail, pushover and WhatsApp",
+          "de": "Integration von Nachrichten per Telegramm, E-Mail, Pushover und WhatsApp",
+          "ru": "Интеграция сообщений через Telegram, e-mail, pushover и WhatsApp",
+          "pt": "Integração de mensagens via telegrama, e-mail, pushover e WhatsApp",
+          "nl": "Integratie van berichten via telegram, e-mail, pushover en WhatsApp",
+          "fr": "Intégration de messages via télégramme, e-mail, pushover et WhatsApp",
+          "it": "Integrazione di messaggi tramite telegramma, e-mail, pushover e WhatsApp",
+          "es": "Integración de mensajes vía telegrama, correo electrónico, pushover y WhatsApp",
+          "pl": "Integracja wiadomości przez telegram, e-mail, pushover i WhatsApp",
+          "zh-cn": "通过电报，电子邮件，推送和WhatsApp集成消息"
+      },
       "0.0.12": {
           "en": "Irrigation via a second pump (cistern with priority control) depending on the level.",
           "de": "Bewässerung über eine zweite Pumpe (Zisterne mit Prioritätsregelung) je nach Füllstand.",
@@ -16,16 +28,16 @@
           "zh-cn": "根据液位，通过第二个泵（带优先控制的水箱）进行灌溉。"
       },
       "0.0.11": {
-        "en": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "de": "Fehler bei der Lösung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "ru": "Fehler bei der Verarbeitung der Regenvorhersage vom Адаптер \"Das Wetter\"",
-        "pt": "Fehler bei der Verarbeitung der Regenvorhersage vom Adaptador \"Das Wetter\"",
-        "nl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "fr": "Adaptateur pour Fehler bei der Verarbeitung der Regenvorhersage vom \"Das Wetter\"",
-        "it": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "es": "Adaptador \"Das Wetter\" Fehler bei der Verarbeitung der Regenvorhersage vom",
-        "pl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter „Das Wetter”",
-        "zh-cn": "Fehler bei der Verarbeitung der Regenvorhersage vom适配器“ Das Wetter”"
+          "en": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+          "de": "Fehler bei der Lösung der Regenvorhersage vom Adapter \"Das Wetter\"",
+          "ru": "Fehler bei der Verarbeitung der Regenvorhersage vom Адаптер \"Das Wetter\"",
+          "pt": "Fehler bei der Verarbeitung der Regenvorhersage vom Adaptador \"Das Wetter\"",
+          "nl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+          "fr": "Adaptateur pour Fehler bei der Verarbeitung der Regenvorhersage vom \"Das Wetter\"",
+          "it": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
+          "es": "Adaptador \"Das Wetter\" Fehler bei der Verarbeitung der Regenvorhersage vom",
+          "pl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter „Das Wetter”",
+          "zh-cn": "Fehler bei der Verarbeitung der Regenvorhersage vom适配器“ Das Wetter”"
       },
       "0.0.10": {
           "en": "Error processing rain forecast from adapter \"Das Wetter\"",

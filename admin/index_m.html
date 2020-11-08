@@ -41,7 +41,7 @@
             width: calc(100% - 100px);
         }
         #dialog-command .title {
-            background: #187ef2;
+            background: #63b5f6;
             color: #FFF;
             padding: 0.5rem;
         }
@@ -77,9 +77,22 @@
         }
         #dialog-sprinkle-edit .title {
             width: 100% !important;
-            background: #187ef2;
+            background: #63b5f6;
             color: #FFF;
             padding: 0.3rem;
+        }
+        h6 {
+            width: 100% !important;
+            background: #63b5f6;
+            color: #FFF;
+            padding: 0.3rem;
+        }
+        hr {
+            width: 100%  !important;
+            height: 5px;
+            margin: 0 auto;
+            color: #FFF;
+            background: #63b5f6;
         }
         .modal .page {
             width: calc(100% - 20px)!important;
@@ -681,15 +694,15 @@
 						</div>
 					</div>
                     <div class="row">					
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m5 l5 input-field">
                             <input type="text" class="value" id="triggerControlVoltage" />
                             <label for="triggerControlVoltage" class="translate"></label>
                             <span class="translate">Control voltage of the valves</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m1 l1">
                             <a id="triggerControlVoltageDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
-						<div class="col s6 l2 input-field">
+						<div class="col s12 m4 l3 input-field">
 							<input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
 							<label for="maximumParallelValves" class="translate"></label>
 							<span class="translate">Maximum parallel operation of the valves</span>
@@ -701,52 +714,52 @@
                         </div>
                     </div>
                     <div class="row">					
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m5 l5 input-field">
                             <input type="text" class="value" id="triggerMainPump" />
                             <label for="triggerMainPump" class="translate"></label>
                             <span class="translate">Main pump</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m1 l1">
                             <a id="triggerMainPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
-						<div class="col s6 l2 input-field">
+						<div class="col s12 m4 l3 input-field">
 							<input type="number" class="value" id="triggerMainPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
 							<label for="triggerMainPumpPower" class="translate"></label>
 							<span class="translate">maximum pump output of the main pump in l/h</span>
 						</div>
 					</div>
 					<div class="row">
-						<div class="col s6 l2 input-field">
+						<div class="col s12 input-field">
                             <input type="checkbox" class="value" id="cisternSettings" />
                             <span for="cisternSettings" class="translate">Add cistern pump as priority pump</span>
                         </div>
 					</div>
 					<div class="row col s12 cisternObjekt">
 						<div class="row">
-							<div class="input-field col s5 l4">
+							<div class="input-field col s10 m5 l5">
 								<input type="text" class="value" id="triggerCisternPump" />
 								<label for="triggerCisternPump" class="translate"></label>
 								<span class="translate">cistern pump</span>
 							</div>
-							<div class="col s1 l2">
+							<div class="col s2 m1 l1">
 								<a id="triggerCisternPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
 							</div>
-							<div class="col s6 l2 input-field">
+							<div class="col s6 m4 l3 input-field">
 								<input type="number" class="value" id="triggerCisternPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
 								<label for="triggerCisternPumpPower" class="translate"></label>
 								<span class="translate">maximum pump capacity of the cistern in l/h</span>
 							</div>
 						</div>
 						<div class="row">
-							<div class="input-field col s5 l4">
+							<div class="input-field col s10 m5 l5">
 								<input type="text" class="value" id="actualValueLevel" />
 								<label for="actualValueLevel" class="translate"></label>
 								<span class="translate">Level of the cistern</span>
 							</div>
-							<div class="col s1 l2">
+							<div class="col s2 m1 l1">
 								<a id="actualValueLevelDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
 							</div>
-							<div class="col s6 l2 input-field">
+							<div class="col s6 m4 l3 input-field">
 								<input type="number" class="value" id="triggerMinCisternLevel" min=0 max=100 placeholder="0-100" step="5" />
 								<label for="triggerMinCisternLevel" class="translate"></label>
 								<span class="translate">Minimum fill level of the cysts in %</span>
@@ -779,6 +792,7 @@
                             <span class="translate">Start time in the week</span>
                         </div>
                     </div>
+                    <hr/>
 					<div class="row">
 						<div class="input-field col s6 l2">
                             <input type="checkbox" class="value" id="publicWeekend" />
@@ -790,6 +804,7 @@
                             <span class="translate">Start time at the weekend</span>
                         </div>						
 					</div>
+                    <hr/>
 					<div class="row">
 						<div class="input-field col s6 l2 publicWeekHol">
                             <input type="checkbox" class="value" id="publicHolidays" />
@@ -805,19 +820,19 @@
                 <!-- Tab Extra -->
                 <div id="tab-extra" class="col s12 page">
                     <!-- Astro Einstellungen -->
-                    <div class="col s4">
+                    <div class="col s12 m6 l4">
                         <div class="row">
-                            <div class="col s4">
+                            <div class="col s12">
                                 <h6 class="translate sub-title">Astro settings</h6>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col s4 l2 input-field">
+                            <div class="col s12 l6 input-field">
                                 <input type="text" class="value" id="latitude" />
                                 <label for="latitude" class="translate"></label>
                                 <span class="translate">latitude</span>
                             </div>
-                            <div class="col s4 l2 input-field">
+                            <div class="col s12 l6 input-field">
                                 <input type="text" class="value" id="longitude" />
                                 <label for="longitude" class="translate"></label>
                                 <span class="translate">longitude</span>
@@ -825,9 +840,9 @@
                         </div>
                     </div>
                     <!-- Debug Einstellungen -->
-                    <div class="col s4">
+                    <div class="col s12 m6 l4">
                         <div class="row">
-                            <div class="col s4">
+                            <div class="col s12">
                                 <h6 class="translate sub-title">Debug settings</h6>
                             </div>
                         </div>
@@ -839,9 +854,9 @@
                         </div>
                     </div>
                     <!-- notifications on/off -->
-                    <div class="col s4">
+                    <div class="col s12 m6 l4">
                         <div class="row">
-                            <div class="col s8">
+                            <div class="col s12">
                                 <h6 class="translate sub-title">Additional notifications setting</h6>
                             </div>
                         </div>
@@ -859,68 +874,66 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m4 l4 input-field">
                             <input type="text" class="value" id="sensorOutsideTemperature" />
                             <label for="sensorOutsideTemperature" class="translate"></label>
                             <span class="translate">Temperature sensor</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m2 l2">
                             <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>						
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m4 l4 input-field">
                             <input type="text" class="value" id="sensorOutsideHumidity" />
                             <label for="sensorOutsideHumidity" class="translate"></label>
                             <span class="translate">Humidity sensor</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m2 l2">
                             <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m4 l4 input-field">
                             <input type="text" class="value" id="sensorWindSpeed" />
                             <label for="sensorWindSpeed" class="translate"></label>
                             <span class="translate">Wind speed sensor</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m2 l2">
                             <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m4 l4 input-field">
                             <input type="text" class="value" id="sensorBrightness" />
                             <label for="sensorBrightness" class="translate"></label>
                             <span class="translate">Brightness sensor</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m2 l2">
                             <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
-                        <div class="col s6 l3 input-field">
+                        <div class="col s10 m4 l4 input-field">
                             <input type="text" class="value" id="sensorRainfall" />
                             <label for="sensorRainfall" class="translate"></label>
                             <span class="translate">rain sensor</span>
                         </div>
-                        <div class="col s1 m2 l2">
+                        <div class="col s2 m2 l2">
                             <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>						
                     </div>
                     <!-- Wettervorhersage -->
-                    <div class="col s6">
-                        <div class="row">
-                            <div class="col s6">
-                                <h6 class="translate sub-title">Weather forecast</h6>
-                            </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Weather forecast</h6>
                         </div>
-                        <div class="row">
-                            <div class="input-field col s6 l2 weatherForecast">
-                                <input type="checkbox" class="value" id="weatherForecast" />
-                                <span for="weatherForecast" class="translate">Use weather forecast</span>
-                            </div>
-                            <div class="input-field col s12 m6 l2 weatherFor">
-                                <select id="weatherForInstance" class="value"></select>
-                                <label for="weatherForInstance" class="translate"></label>
-                                <span class="translate">Select the weather forecast instance</span>
-                            </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l2 weatherForecast">
+                            <input type="checkbox" class="value" id="weatherForecast" />
+                            <span for="weatherForecast" class="translate">Use weather forecast</span>
+                        </div>
+                        <div class="input-field col s12 m6 l2 weatherFor">
+                            <select id="weatherForInstance" class="value"></select>
+                            <label for="weatherForInstance" class="translate"></label>
+                            <span class="translate">Select the weather forecast instance</span>
                         </div>
                     </div>
                 </div>
