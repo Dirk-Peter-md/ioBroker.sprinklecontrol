@@ -35,13 +35,13 @@
             height: 48px;
         }
         .m .page {
-            height: calc(100% - 118px);
+            height: calc(100% - 160px);
         }
         #dialog-command {
             width: calc(100% - 100px);
         }
         #dialog-command .title {
-            background: #63b5f6;
+            background: #174475;
             color: #FFF;
             padding: 0.5rem;
         }
@@ -77,13 +77,13 @@
         }
         #dialog-sprinkle-edit .title {
             width: 100% !important;
-            background: #63b5f6;
+            background: #174475;
             color: #FFF;
             padding: 0.3rem;
         }
         h6 {
             width: 100% !important;
-            background: #63b5f6;
+            background: #174475;
             color: #FFF;
             padding: 0.3rem;
         }
@@ -92,7 +92,7 @@
             height: 5px;
             margin: 0 auto;
             color: #FFF;
-            background: #63b5f6;
+            background: #174475;
         }
         .modal .page {
             width: calc(100% - 20px)!important;
@@ -103,11 +103,14 @@
             
         }
         #dialog-sprinkle-edit .tabs {
-            width: calc(100% - 20px) !important;
+            width: calc(100% - 0px) !important;
+            margin-top: -25px;
+            height: auto !important;
         }
         #dialog-sprinkle-edit .page {
             width: calc(100% - 10px) !important;
-            
+            padding-left: 20px;
+            height: calc(100% - 100px);
         }
         #dialog-sprinkle-edit .btn {
             margin-right: 1.5rem;
@@ -321,7 +324,11 @@
             onChange(false);
             // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
             // Initialisieren Sie alle Materialise-Beschriftungen auf der Seite neu, wenn Sie dynamisch Eingaben hinzufügen:
-            
+
+            $('.timepicker').timepicker({
+                "twelveHour": false
+            });
+
             if (M) M.updateTextFields();
             
             getAdapterInstances('feiertage', function (instances) {
@@ -352,6 +359,31 @@
                 fillTelegramUser(settings['telegramUser'], obj);
             });
         }
+        /*
+        {"1312509684":{"firstName":"Dirk","userName":"Dirk_Peter"}}
+        */
+        function fillTelegramUser(id, obj) {
+            /*let user = str.replace(/[{}"\\]/g,"").split(',');*/
+            /*obj = {"1312509684":{"firstName":"Dirk","userName":"Dirk_Peter"}};*/
+            let $sel = $('#telegramUser');
+            $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
+            for(let key in obj){
+                if (obj.hasOwnProperty (key)) {
+                    let names = [];
+                    let userName;
+                    obj[key].userName && names.push(obj[key].userName);
+                    obj[key].firstName && names.push(obj[key].firstName);
+                    if (obj[key].userName) {
+                        userName = obj[key].userName;
+                    } else {
+                        userName = obj[key].firstName
+                    }
+                    $('#telegramUser').append('<option value="' + userName + '"' + (id === userName ? ' selected' : '') + '>' + names.join(' / ') +'</option>');
+                }
+            }
+            $sel.select();
+        }
+        /*
 
         function fillTelegramUser(id, str) {
             let user = str.replace(/[{}"\\]/g,"").split(',');
@@ -363,6 +395,22 @@
             });
             $sel.select();
         }
+
+        function fillTelegramUser(id, obj) {
+            let $sel = $('#telegramUser');
+            $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    let names = [];
+                    obj[key].userName && names.push(obj[key].userName);
+                    obj[key].firstName && names.push(obj[key].firstName);
+                    // $('#telegramUser').append('<option value="' + key + '">' + names.join(' / ') +'</option>');
+                    $('#telegramUser').append('<option value="' + key + '"' + (id === key ? ' selected' : '') + '>' + names.join(' / ') +'</option>');
+                }
+            }
+            $sel.select();
+        }
+*/
 
         function fillInstances(id, arr, val) {
             let $sel = $('#' + id);
@@ -627,9 +675,19 @@
 <body>
 
     <div class="m adapter-container">
+        <div id="header-area" class="row" >
+            <div id="header-logo-title" class="col s6" >
+                <img class="logo" src="sprinklecontrol.png" >
+                <p>
+                    <span class="translate h-title">Sprinkler control</span><br />
+                    <span class="translate h-sub-title">Controlling your Sprinkler …</span>
+                </p>
+            </div>
+        </div>
+
         <div class="row">
-            <div class="col s12">
-                <ul class="tabs">
+            <div class="col s12" id="tab-area">
+                <ul class="tabs blue lighten-4" width="4%">
                     <li class="tab col s6 l2"><a href="#tab-settings" class="translate active">main settings</a></li>
                     <li class="tab col s6 l2 tab-pump"><a href="#tab-pump" class="translate">Pump Settings</a></li>
                     <li class="tab col s6 l2 tab-time"><a href="#tab-time" class="translate">Time Settings</a></li>
@@ -641,13 +699,8 @@
                 <!-- main settings -->
                 <div id="tab-settings" class="col s12 page">
                     <div class="row">
-                        <div class="col s12 m4 l2">
-                            <img src="sprinklecontrol.png" class="logo">
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col s12">
-                            <h6 class="translate sub-title">Sprinkler control</h6>
+                            <h6 class="translate title" style="background-color:#174475;">Sprinkler control</h6>
                         </div>
                     </div>
                     <div class="row">
@@ -661,13 +714,13 @@
                                 <table class="table-values">
                                     <thead>
                                     <tr>
-                                        <th data-name="_index" style="width: 80px; background: #64b5f6; text-align: center" data-style="text-align: center">Nr</th>
-                                        <th data-name="enabled"  style="width: 70px; background: #64b5f6" data-style="width: 70px" data-type="checkbox" class="translate"></th>
-                                        <th data-name="sprinkleName" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Name</th>
-                                        <th data-name="name" data-type="text" style="width: 40%; background: #64b5f6" class="translate">Object-ID sprinkler</th>
-                                        <th data-buttons="edit2" style="width: 150px; background: #64b5f6; height: 40px" data-style="width: 150px; text-align: left" ></th>
+                                        <th data-name="_index" style="width: 80px; background: #174475; text-align: center" data-style="text-align: center">Nr</th>
+                                        <th data-name="enabled"  style="width: 70px; background: #174475" data-style="width: 70px" data-type="checkbox" class="translate"></th>
+                                        <th data-name="sprinkleName" data-type="text" style="width: 40%; background: #174475" class="translate">Name</th>
+                                        <th data-name="name" data-type="text" style="width: 40%; background: #174475" class="translate">Object-ID sprinkler</th>
+                                        <th data-buttons="edit2" style="width: 150px; background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
                                         <!-- ********************** only for temp states ********************** -->
-                                        <th data-name="triggerID" data-type="text" style="width: 30%; background: #64b5f6" class="translate"></th>
+                                        <th data-name="triggerID" data-type="text" style="width: 30%; background: #174475" class="translate"></th>
                                         <th data-name="wateringTime" data-type="number" style="width: 0px" class="translate"></th>
 										<th data-name="wateringAdd" data-type="number" style="width: 0px" class="translate"></th>
 										<th data-name="wateringInterval" data-type="number" style="width: 0px" class="translate"></th>
@@ -678,7 +731,7 @@
                                         <th data-name="booster" data-type="checkbox" style="width: 0px" class="translate"></th>
                                         <th data-name="endIrrigation" data-type="checkbox" style="..." class="translate"></th>
                                         <!-- ****************************************************************** -->
-                                        <th data-buttons="edit up down delete" style="width: 100px; background: #64b5f6"></th>
+                                        <th data-buttons="edit up down delete" style="width: 100px; background: #174475"></th>
                                     </tr>
                                     </thead>
                                 </table>
@@ -770,6 +823,11 @@
                 <!-- time settings -->
                 <div id="tab-time" class="col s12 page">
                     <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for start time</h6>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="input-field col s12 m4">
                             <select type="combobox" class="value" id="wateringStartTime">
                                 <option value="livingTime" class="translate">start with a fixed start time</option>
@@ -787,24 +845,32 @@
                     </div>
                     <div class="row">
                         <div class="input-field col s6 l2 visWeekLiving">
-                            <input type="time" class="value" id="weekLiving" />
+                            <input type="time" class="timepicker value" id="weekLiving" />
                             <label for="weekLiving" class="translate"></label>
                             <span class="translate">Start time in the week</span>
                         </div>
                     </div>
-                    <hr/>
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for start time on weekends</h6>
+                        </div>
+                    </div>
 					<div class="row">
 						<div class="input-field col s6 l2">
                             <input type="checkbox" class="value" id="publicWeekend" />
                             <span for="publicWeekend" class="translate">different start time on weekends</span>
 						</div>
                         <div class="input-field col s12 m6 l2 publicWeek">
-                            <input type="time" class="value" id="weekEndLiving" />
+                            <input type="time" class="timepicker value" id="weekEndLiving" />
                             <label for="weekEndLiving" class="translate"></label>
                             <span class="translate">Start time at the weekend</span>
                         </div>						
 					</div>
-                    <hr/>
+                    <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for the start time on public holidays</h6>
+                        </div>
+                    </div>
 					<div class="row">
 						<div class="input-field col s6 l2 publicWeekHol">
                             <input type="checkbox" class="value" id="publicHolidays" />
@@ -940,6 +1006,11 @@
                 <!-- notifications -->
                 <div id="tab-notification" class="col s12 page">
                     <div class="row">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Selection of notification</h6>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="input-field col s12 m4">
                             <select class="value" id="notificationsType">
                                 <option value="Telegram" class="translate">Telegram</option>
@@ -947,18 +1018,26 @@
                                 <option value="Pushover" class="translate">Pushover</option>
                                 <option value="WhatsApp" class="translate">WhatsApp</option>
                             </select>
-                            <label for="notificationsType" class="translate">notifications type</label>
+                            <label for="notificationsType" class="translate"></label>
+                            <span class="translate">notifications type</span>
                         </div>
                     </div>
                     <!-- Telegram -->
                     <div class="row telegram">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for telegram</h6>
+                        </div>
+                    </div>
+                    <div class="row telegram">
                         <div class="input-field col s12 m6 l3 telegram">
                             <select id="telegramInstance" class="value"></select>
-                            <label for="telegramInstance" class="translate">Telegram instance</label>
+                            <label for="telegramInstance" class="translate"></label>
+                            <span class="translate">Telegram instance</span>
                         </div>
                         <div class="input-field col s12 m6 l3 telegram">
                             <select id="telegramUser" class="value"></select>
-                            <label for="telegramUser" class="translate">Telegram Receiver</label>
+                            <label for="telegramUser" class="translate"></label>
+                            <span class="translate">Telegram Receiver</span>
                         </div>
                     </div>
                     <div class="row telegram">
@@ -967,11 +1046,13 @@
                                 <option value="longTelegramNotice" class="translate">Long Notifications</option>
                                 <option value="shortTelegramNotice" class="translate">Short Notifications</option>
                             </select>
-                            <label class="translate" for="telegramNoticeType">Notification Style</label>
+                            <label class="translate" for="telegramNoticeType"></label>
+                            <span class="translate">Notification Style</span>
                         </div>
                         <div class="input-field col s12 m6 l3 telegram">
                             <input type="number" class="value" id="telegramWaitToSend" min="0" max="20"/>
-                            <label for="telegramWaitToSend" class="translate">Waiting for the send (seconds)</label>
+                            <label for="telegramWaitToSend" class="translate"></label>
+                            <span class="translate">Waiting for the send (seconds)</span>
                         </div>
                     </div>
                     <div class="row telegram">
@@ -987,22 +1068,30 @@
 
                     <!-- WhatsApp -->
                     <div class="row whatsapp">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for WhatsApp</h6>
+                        </div>
+                    </div>
+                    <div class="row whatsapp">
                         <div class="input-field col s12 m6 l3 whatsapp">
                             <select id="whatsappInstance" class="value"></select>
-                            <label for="whatsappInstance" class="translate">WhatsApp instance</label>
+                            <label for="whatsappInstance" class="translate"></label>
+                            <span class="translate">WhatsApp instance</span>
                         </div>
                         <div class="input-field col s12 m6 l3 whatsapp">
                             <select class="value" id="whatsappNoticeType">
                                 <option value="longWhatsappNotice" class="translate">Long Notifications</option>
                                 <option value="shortWhatsappNotice" class="translate">Short Notifications</option>
                             </select>
-                            <label class="translate" for="whatsappNoticeType">Notification Style</label>
+                            <label class="translate" for="whatsappNoticeType"></label>
+                            <span class="translate">Notification Style</span>
                         </div>
                     </div>
                     <div class="row whatsapp">
                         <div class="input-field col s12 m6 l3 whatsapp">
                             <input type="number" class="value" id="whatsappWaitToSend" min="0" max="20"/>
-                            <label for="whatsappWaitToSend" class="translate">Waiting for the send (seconds)</label>
+                            <label for="whatsappWaitToSend" class="translate"></label>
+                            <span class="translate">Waiting for the send (seconds)</span>
                         </div>
                     </div>
                     <div class="row whatsapp">
@@ -1013,26 +1102,35 @@
                     </div>
                     <!-- Pushover -->
                     <div class="row pushover">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for Pushover</h6>
+                        </div>
+                    </div>
+                    <div class="row pushover">
                         <div class="input-field col s12 m6 l3 pushover">
                             <select id="pushoverInstance" class="value"></select>
-                            <label for="pushoverInstance" class="translate">Pushover instance</label>
+                            <label for="pushoverInstance" class="translate"></label>
+                            <span class="translate">Pushover instance</span>
                         </div>
                         <div class="input-field col s12 m6 l3 pushover">
                             <select class="value" id="pushoverNoticeType">
                                 <option value="longPushoverNotice" class="translate">Long Notifications</option>
                                 <option value="shortPushoverNotice" class="translate">Short Notifications</option>
                             </select>
-                            <label class="translate" for="pushoverNoticeType">Notification Style</label>
+                            <label class="translate" for="pushoverNoticeType"></label>
+                            <span class="translate">Notification Style</span>
                         </div>
                     </div>
                     <div class="row pushover">
                         <div class="input-field col s12 m6 l3 pushover">
                             <input type="number" class="value" id="pushoverWaitToSend" min="0" max="20"/>
-                            <label for="pushoverWaitToSend" class="translate">Waiting for the send (seconds)</label>
+                            <label for="pushoverWaitToSend" class="translate"></label>
+                            <span class="translate">Waiting for the send (seconds)</span>
                         </div>
                         <div class="input-field col s12 m6 l3 pushover">
                             <input class="value" id="pushoverDeviceID" type="text">
-                            <label for="pushoverDeviceID" class="translate">device ID (optional)</label>
+                            <label for="pushoverDeviceID" class="translate"></label>
+                            <span class="translate">device ID (optional)</span>
                         </div>
                     </div>
 
@@ -1063,7 +1161,8 @@
                                 <option value="updown">        updown </option>
                                 <option value="none">          none</option>
                             </select>
-                            <label class="translate" for="pushoverSound">Notification Sound</label>
+                            <label class="translate" for="pushoverSound"></label>
+                            <span class="translate">Notification Sound</span>
                         </div>
                     </div>
 
@@ -1079,34 +1178,42 @@
                     </div>
                     <!-- email -->
                     <div class="row email">
+                        <div class="col s12">
+                            <h6 class="translate sub-title">Settings for E-Mail</h6>
+                        </div>
+                    </div>
+                    <div class="row email">
                         <div class="input-field col s12 m6 l3 email">
                             <input class="value" id="emailReceiver" type="text">
-                            <label for="emailReceiver" class="translate">email receiver</label>
+                            <label for="emailReceiver" class="translate"></label>
                             <span class="translate">email receiver</span>
                         </div>
                         <div class="input-field col s12 m6 l3 email">
                             <input class="value" id="emailSender" type="text">
-                            <label for="emailSender" class="translate">email sender</label>
+                            <label for="emailSender" class="translate"></label>
                             <span class="translate">email sender</span>
                         </div>
                     </div>
                     <div class="row email">
                         <div class="input-field col s12 m6 l3 email">
                             <select id="emailInstance" class="value"></select>
-                            <label for="emailInstance" class="translate">email instance</label>
+                            <label for="emailInstance" class="translate"></label>
+                            <span class="translate">email instance</span>
                         </div>
                         <div class="input-field col s12 m6 l3 email">
                             <select class="value" id="emailNoticeType">
                                 <option value="longEmailNotice" class="translate">Long Notifications</option>
                                 <option value="shortEmailNotice" class="translate">Short Notifications</option>
                             </select>
-                            <label class="translate" for="emailNoticeType">Notification Style</label>
+                            <label class="translate" for="emailNoticeType"></label>
+                            <span class="translate">Notification Style</span>
                         </div>
                     </div>
                     <div class="row email">
                         <div class="input-field col s12 m6 l3 email">
                             <input type="number" class="value" id="emailWaitToSend" min="0" max="20"/>
-                            <label for="emailWaitToSend" class="translate">Waiting for the send (seconds)</label>
+                            <label for="emailWaitToSend" class="translate"></label>
+                            <span class="translate">Waiting for the send (seconds)</span>
                         </div>
                         <div class="input-field col s12 m6 l3 email">
                             <input class="value" id="emailOnlyError" type="checkbox"/>
@@ -1116,6 +1223,7 @@
                 </div>
             </div>
         </div>
+        <!-- Sprinkler - Ventil-Einstellungen -->
         <div class="m material-dialogs">
             <div id="dialog-select-member" class="modal modal-fixed-footer">
                 <div class="modal-content">
@@ -1135,24 +1243,29 @@
             <div id="dialog-sprinkle-edit" class="modal modal-fixed-footer">
                 <div class="row">
                     <div class="modal-content">
-
                         <div class="row">
                             <div class="col s12">
-                                <h6 class="title"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
+                                <h6 class="title" style="background-color:#174475;"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
                             </div>
                         </div>
                         <div class="col s12">
-                            <ul class="tabs">
+                            <ul class="tabs blue lighten-4">
                                 <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
                                 <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
                             </ul>
                         </div>
+                        <!-- Sprinkler - Pump settings -->
                         <div id="tab-pumpPopUp" class="col s12 page">
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">Sprinkler consumption</h6>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
                                     <label for="pipeFlow" class="translate"></label>
-                                    <span class="translate">Flow amount</span>
+                                    <span class="translate">Flow amount in l/h</span>
                                 </div>
                             </div>
                             <div class="row">
@@ -1162,12 +1275,18 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Sprinkler - Main settings -->
                         <div id="tab-settingsPopUp" class="col s12 page">
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">Irrigation settings</h6>
+                                </div>
+                            </div>
                             <div class="row">
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
                                     <label for="wateringTime" class="translate"></label>
-                                    <span class="translate">Watering duration</span>
+                                    <span class="translate">Watering time in min</span>
                                 </div>
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
@@ -1177,14 +1296,19 @@
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
                                     <label for="wateringInterval" class="translate"></label>
-                                    <span class="translate">Watering interval</span>
+                                    <span class="translate">Watering interval in min</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">Switch-on point for watering</h6>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
                                     <label for="triggersIrrigation" class="translate"></label>
-                                    <span class="translate">lowest percentage soil moisture</span>
+                                    <span class="translate">Switch-on point (soil moisture) of the irrigation valves in %</span>
                                 </div>
                                 <div class="row">
                                     <div class="col s6 l2 input-field">
@@ -1194,15 +1318,20 @@
                                 </div>
                             </div>
                             <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">maximum soil moisture</h6>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
                                     <label for="maxSoilMoistureIrrigation" class="translate"></label>
-                                    <span class="translate">maximum soil moisture after irrigation</span>
+                                    <span class="translate">maximum soil moisture after the irrigation in %</span>
                                 </div>
                                 <div class="col s6 l2 input-field">
                                     <input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
                                     <label for="maxSoilMoistureRain" class="translate"></label>
-                                    <span class="translate">maximum soil moisture after the rain</span>
+                                    <span class="translate">maximum soil moisture after the rain in %</span>
                                 </div>
                             </div>
                         </div>

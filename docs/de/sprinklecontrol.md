@@ -1,5 +1,6 @@
 ![Logo](img/sprinklecontrol.png)
-# Sprinklecontrol - Adapter zur automatischen Steuerung der Gartenbewässerung.
+# Sprinklecontrol
+Der Adapter zur wetterabhängigen automatischen Gartenbewässerung. (mittels Wettersensor HmIP-SWO-PL - plus)
 
 ---
 <a id="inhaltsverzeichnis"></a>
@@ -9,7 +10,8 @@
 * [Konfiguration - Haupteinstellungen](#konfiguration---haupteinstellungen)
 * [Konfiguration - Pumpen-Einstellungen](#konfiguration---pumpen-einstellungen)
 * [Konfiguration - Zeit-Einstellungen](#konfiguration---zeit-einstellungen)
-* [Konfiguration - Zusätzliche-Einstellungen](#konfiguration---zusätzliche-einstellungen)
+* [Konfiguration - Zusätzliche-Einstellungen](#konfiguration---zusaetzliche-einstellungen)
+* [Konfiguration - Benachrichtigungen](#konfiguration---benachrichtigungen)
 
 
 <a id="grundlegendes"></a>
@@ -50,7 +52,7 @@ Das Konfigurationsfenster besteht aus drei Reitern:
 
 Das Konfigurationsfenster öffnet sich automatisch mit den Haupteinstellungen
 
-![main.png](img/main.png)
+![main.png](img/main.jpg)
 
 Auf dieser Seite ist eine Beispiel-ID abgelegt.
 Diese bitte löschen und anschließend die eigenen IDs durch anklicken des (+) links oben über der Tabelle die eigenen Sprinkleraktoren hinzufügen.
@@ -169,7 +171,7 @@ In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
 > [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="konfiguration---zusätzliche-einstellungen"></a>
+<a id="konfiguration---zusaetzliche-einstellungen"></a>
 # Konfiguration - Zusätzliche-Einstellungen
 
 In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei der Berechnung der Verdunstung unerlässlich sind.
@@ -254,3 +256,8 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 * **Visualisierung**
 
 > [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+---
+<a id="konfiguration---benachrichtigungen"></a>
+# Konfiguration - Benachrichtigungen
+![E-Mail.jpg](img/E-Mail.jpg)

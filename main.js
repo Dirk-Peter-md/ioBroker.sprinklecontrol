@@ -135,7 +135,7 @@ function startAdapter(options) {
                         if (state && state.val) {
                             try {
                                 adapter.log.info('getTelegramUser:' + state.val);
-                                adapter.sendTo(obj.from, obj.command, state.val, obj.callback);
+                                adapter.sendTo(obj.from, obj.command, JSON.parse(state.val), obj.callback);
                             } catch (err) {
                                 err && adapter.log.error(err);
                                 adapter.log.error('Cannot parse stored user IDs from Telegram!');
