@@ -383,34 +383,6 @@
             }
             $sel.select();
         }
-        /*
-
-        function fillTelegramUser(id, str) {
-            let user = str.replace(/[{}"\\]/g,"").split(',');
-            let $sel = $('#telegramUser');
-            $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
-            user.forEach(function(val){
-                val = val.split(':');
-                $('#telegramUser').append('<option value="' + val[1] + '"' + (id === val[1] ? ' selected' : '') + '>' + val[1] +'</option>');
-            });
-            $sel.select();
-        }
-
-        function fillTelegramUser(id, obj) {
-            let $sel = $('#telegramUser');
-            $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
-            for (let key in obj) {
-                if (obj.hasOwnProperty(key)) {
-                    let names = [];
-                    obj[key].userName && names.push(obj[key].userName);
-                    obj[key].firstName && names.push(obj[key].firstName);
-                    // $('#telegramUser').append('<option value="' + key + '">' + names.join(' / ') +'</option>');
-                    $('#telegramUser').append('<option value="' + key + '"' + (id === key ? ' selected' : '') + '>' + names.join(' / ') +'</option>');
-                }
-            }
-            $sel.select();
-        }
-*/
 
         function fillInstances(id, arr, val) {
             let $sel = $('#' + id);
@@ -721,14 +693,14 @@
                                         <th data-buttons="edit2" style="width: 150px; background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
                                         <!-- ********************** only for temp states ********************** -->
                                         <th data-name="triggerID" data-type="text" style="width: 30%; background: #174475" class="translate"></th>
-                                        <th data-name="wateringTime" data-type="number" style="width: 0px" class="translate"></th>
-										<th data-name="wateringAdd" data-type="number" style="width: 0px" class="translate"></th>
-										<th data-name="wateringInterval" data-type="number" style="width: 0px" class="translate"></th>
-                                        <th data-name="maxSoilMoistureIrrigation" data-type="number" style="width: 0px" class="translate"></th>
-                                        <th data-name="maxSoilMoistureRain" data-type="number" style="width: 0px" class="translate"></th>
-                                        <th data-name="triggersIrrigation" data-type="number" style="width: 0px" class="translate"></th>
-                                        <th data-name="pipeFlow" data-type="number" style="width: 0px" class="translate"></th>
-                                        <th data-name="booster" data-type="checkbox" style="width: 0px" class="translate"></th>
+                                        <th data-name="wateringTime" data-type="number" style="width: 0" class="translate"></th>
+										<th data-name="wateringAdd" data-type="number" style="width: 0" class="translate"></th>
+										<th data-name="wateringInterval" data-type="number" style="width: 0" class="translate"></th>
+                                        <th data-name="maxSoilMoistureIrrigation" data-type="number" style="width: 0" class="translate"></th>
+                                        <th data-name="maxSoilMoistureRain" data-type="number" style="width: 0" class="translate"></th>
+                                        <th data-name="triggersIrrigation" data-type="number" style="width: 0" class="translate"></th>
+                                        <th data-name="pipeFlow" data-type="number" style="width: 0" class="translate"></th>
+                                        <th data-name="booster" data-type="checkbox" style="width: 0" class="translate"></th>
                                         <th data-name="endIrrigation" data-type="checkbox" style="..." class="translate"></th>
                                         <!-- ****************************************************************** -->
                                         <th data-buttons="edit up down delete" style="width: 100px; background: #174475"></th>
@@ -1262,14 +1234,14 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l6 input-field">
                                     <input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
                                     <label for="pipeFlow" class="translate"></label>
                                     <span class="translate">Flow amount in l/h</span>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l6 input-field">
                                     <input type="checkbox" class="form-control" id="booster" />
                                     <span for="booster" class="translate">Booster</span>
                                 </div>
@@ -1283,17 +1255,17 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l4 input-field">
                                     <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
                                     <label for="wateringTime" class="translate"></label>
                                     <span class="translate">Watering time in min</span>
                                 </div>
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l4 input-field">
                                     <input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
                                     <label for="wateringAdd" class="translate"></label>
                                     <span class="translate">maximum irrigation extension</span>
                                 </div>
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l4 input-field">
                                     <input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
                                     <label for="wateringInterval" class="translate"></label>
                                     <span class="translate">Watering interval in min</span>
@@ -1305,13 +1277,13 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l6 input-field">
                                     <input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
                                     <label for="triggersIrrigation" class="translate"></label>
                                     <span class="translate">Switch-on point (soil moisture) of the irrigation valves in %</span>
                                 </div>
                                 <div class="row">
-                                    <div class="col s6 l2 input-field">
+                                    <div class="col s12 l6 input-field">
                                         <input type="checkbox" class="form-control" id="endIrrigation" />
                                         <span for="endIrrigation" class="translate">after irrigation = 100</span>
                                     </div>
@@ -1323,15 +1295,15 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l6 input-field">
                                     <input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
                                     <label for="maxSoilMoistureIrrigation" class="translate"></label>
-                                    <span class="translate">maximum soil moisture after the irrigation in %</span>
+                                    <span class="translate">maximum soil moisture after the irrigation in (mm)</span>
                                 </div>
-                                <div class="col s6 l2 input-field">
+                                <div class="col s12 l6 input-field">
                                     <input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
                                     <label for="maxSoilMoistureRain" class="translate"></label>
-                                    <span class="translate">maximum soil moisture after the rain in %</span>
+                                    <span class="translate">maximum soil moisture after the rain in (mm)</span>
                                 </div>
                             </div>
                         </div>

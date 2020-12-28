@@ -1568,7 +1568,7 @@ function initConfigMessage() {
                 /** @type {string} */   notificationsType: adapter.config.notificationsType,
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.emailInstance,
-                /** @type {boolean} */  noticeType: (adapter.config.emailNoticeType === 'longTelegramNotice'),
+                /** @type {boolean} */  noticeType: (adapter.config.emailNoticeType === 'longEmailNotice'),
                 /** @type {string} */   emailReceiver: adapter.config.emailReceiver,
                 /** @type {string} */   emailSender: adapter.config.emailSender,
                 /** @type {boolean} */  onlyError: adapter.config.emailOnlyError,
@@ -1585,7 +1585,7 @@ function initConfigMessage() {
                 /** @type {string} */   sound: adapter.config.pushoverSound,
                 /** @type {string} */   instance: adapter.config.pushoverInstance,
                 /** @type {boolean} */  silentNotice: adapter.config.pushoverSilentNotice,
-                /** @type {boolean} */  noticeType: (adapter.config.pushoverNoticeType === 'longTelegramNotice'),
+                /** @type {boolean} */  noticeType: (adapter.config.pushoverNoticeType === 'longPushoverNotice'),
                 /** @type {string} */   deviceID: adapter.config.pushoverDeviceID,
                 /** @type {boolean} */  onlyError: adapter.config.pushoverOnlyError,
                 /** @type {number} */   waiting: parseInt(adapter.config.pushoverWaitToSend) * 1000
@@ -1599,7 +1599,7 @@ function initConfigMessage() {
                 /** @type {string} */   notificationsType: adapter.config.notificationsType,
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.whatsappInstance,
-                /** @type {boolean} */   noticeType: (adapter.config.whatsappNoticeType === 'longTelegramNotice'),
+                /** @type {boolean} */   noticeType: (adapter.config.whatsappNoticeType === 'longWhatsappNotice'),
                 /** @type {boolean} */  onlyError: adapter.config.whatsappOnlyError,
                 /** @type {number} */   waiting: parseInt(adapter.config.whatsappWaitToSend) * 1000
             };

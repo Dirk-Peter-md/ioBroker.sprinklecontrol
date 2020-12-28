@@ -185,6 +185,8 @@
     "materialize": true,
     "messagebox": true,
     "stopBeforeUpdate": true,
+    "connectionType": "local",
+    "dataSource": "assumption",
     "dependencies": [
       {
         "js-controller": ">=1.4.2"
