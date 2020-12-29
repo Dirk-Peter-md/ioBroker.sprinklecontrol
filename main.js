@@ -107,6 +107,10 @@ function startAdapter(options) {
      */
     adapter.on('unload', (callback) => {
         try {
+            if(ObjMessage.noticeType){
+                ObjMessage.messageText = 'SprinkleControl is shutting down';
+                sendMessageText(adapter, ObjMessage);
+            }
             adapter.log.info('cleaned everything up...');
             clearTimeout(timer);
             /*Startzeiten der Timer löschen*/
@@ -1472,7 +1476,7 @@ function startTimeSprinkle() {
         /**
          * next Auto-Start
          * @param {string|null} err
-         * qparam {{string} val} state
+         * @param {State|null|undefined|} state
          */
         adapter.getState('info.nextAutoStart', (err, state) =>{
             if (state) {
@@ -1481,8 +1485,11 @@ function startTimeSprinkle() {
                         val: newStartTimeLong,
                         ack: true
                     });
-                    ObjMessage.messageText = infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime;
-                    sendMessageText(adapter, ObjMessage);
+
+                    if(ObjMessage.noticeType){
+                        ObjMessage.messageText = infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime;
+                        sendMessageText(adapter, ObjMessage);
+                    }
                     adapter.log.info(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
                 }
             }
@@ -1523,7 +1530,7 @@ function startTimeSprinkle() {
                             true);
                         messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
                     } else {
-                        /* Bewässerung unterdrückt da ausreichende regenvorhersage */
+                        /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                         messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
                         adapter.log.info(result[i].objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + result[i].soilMoisture.val + ' (' + resMoisture + ') <= ' + result[i].soilMoisture.triggersIrrigation + ' ]');
                     }

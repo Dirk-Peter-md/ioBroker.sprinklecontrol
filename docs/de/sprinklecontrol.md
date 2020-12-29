@@ -1,6 +1,6 @@
 ![Logo](img/sprinklecontrol.png)
 # Sprinklecontrol
-Der Adapter zur wetterabhängigen automatischen Gartenbewässerung. (mittels Wettersensor HmIP-SWO-PL - plus)
+Der Adapter zur wetterabhängigen automatischen Gartenbewässerung. (mittels Wettersensor HmIP-SWO-PL – plus)
 
 ---
 <a id="inhaltsverzeichnis"></a>
@@ -8,10 +8,18 @@ Der Adapter zur wetterabhängigen automatischen Gartenbewässerung. (mittels Wet
 * [Grundlegendes](#grundlegendes)
 * [Installation](#installation)
 * [Konfiguration - Haupteinstellungen](#konfiguration---haupteinstellungen)
+  * [Aufbau der Tabelle](#tabellenaufbau)
+  * [individuelle Konfiguration eines Bewässerungskreises](#indiv-konfig-bewkreises)
+    * [Haupteinstellungen des Ventils](#ventil-haubteinstellung)
+    * [Pumpeneinstellungen des Ventils](#ventil-pumpeneinstellung)
 * [Konfiguration - Pumpen-Einstellungen](#konfiguration---pumpen-einstellungen)
 * [Konfiguration - Zeit-Einstellungen](#konfiguration---zeit-einstellungen)
 * [Konfiguration - Zusätzliche-Einstellungen](#konfiguration---zusaetzliche-einstellungen)
 * [Konfiguration - Benachrichtigungen](#konfiguration---benachrichtigungen)
+  * [Telegram](#telegram)
+  * [Pushover](#pushover)
+  * [E-Mail](#e-mail)
+  * [WhatsApp](#whatsapp)
 * [Was ist für die Zukunft geplant](#zukunft)
 
 
@@ -33,7 +41,8 @@ Beides ist individuell anpassbar.
 
 Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und **wurde nur mit diesem** getestet.
 
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="installation"></a>
@@ -46,19 +55,20 @@ Spätestens nach Refresh der Adapterliste steht der Adapter **Sprinklecontrol** 
 
 Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des Adapters vom Repository geladen:
 
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="konfiguration---haupteinstellungen"></a>
-# Konfiguration - Haupteinstellungen
+# Konfiguration – Haupteinstellungen
 Sollte in dem Installationsfenster die Checkbox "***schließen, wenn fertig***" nicht angehakt sein muss man dieses natürlich noch schließen.
 
-Das Konfigurationsfenster besteht aus drei Reitern:
-* Haupteinstellungen
-* Pumpeneinstellungen
-* Zeit-Einstellungen
-* Zusätzliche-Einstellungen
-* Benachrichtigungen (nur sichtbar, wenn Benachrichtigungen unter Zusätzliche-Einstellungen aktiviert ist)
+Das Konfigurationsfenster besteht aus den Reitern:
+* [Haupteinstellungen](#konfiguration---haupteinstellungen)
+* [Pumpeneinstellungen](#konfiguration---pumpen-einstellungen)
+* [Zeit-Einstellungen](#konfiguration---zeit-einstellungen)
+* [Zusätzliche-Einstellungen](konfiguration---zusaetzliche-einstellungen)
+* [Benachrichtigungen ](#konfiguration---benachrichtigungen) (nur sichtbar, wenn Benachrichtigungen unter Zusätzliche-Einstellungen aktiviert ist)
 
 Das Konfigurationsfenster öffnet sich automatisch mit den Haupteinstellungen
 
@@ -74,6 +84,8 @@ Dabei bitte die Datenpunkte mit STATE (o.ä.) auswählen. NICHT das Gerät als s
 
 Nach Abschluß der ID-Auswahl ist der Adapter bereits betriebsbereit, aber noch nicht an die eigenen Wünsche angepasst.
 
+---
+<a id="tabellenaufbau"></a>
 ### Aufbau der Tabelle
 
 ![main_tab.jpg](img/main_tab.jpg)
@@ -94,12 +106,13 @@ Nach Abschluß der ID-Auswahl ist der Adapter bereits betriebsbereit, aber noch 
 
 **Mülleimer** – Löschen der ID mit allen konfigurierten Daten!
 
+---
 
+<a id="indiv-konfig-bewkreises"></a>
 ## individuelle Konfiguration eines Bewässerungskreises
 Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und **Pumpeneinstellungen**
 
----
-
+<a id="ventil-haubteinstellung"></a>
 ### Haupteinstellungen des Ventils
 
 ![Vertil-Haupteinstellung.jpg](img/Vertil-Haupteinstellung.jpg)
@@ -120,6 +133,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und *
     
 ---
 
+<a id="ventil-pumpeneinstellung"></a>
 ### Pumpeneinstellungen des Ventils
 
 ![Ventil-Pumpeneinstellung.jpg](img/Ventil-Pumpeneinstellung.jpg)
@@ -130,7 +144,8 @@ Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und *
     * **Tipp** –> Meine Pumpe liefert max. 1800 l/h und meine Rasensprenger benötigen 1400 l/h, aber den vollen Druck zum Herausfahren. Mit der Booster Funktion kann ich nebenbei noch die Koniferen bewässern die nur 300 l/h benötigen.
     * **Achtung** –> Mit dieser Funktion sollte man sehr sparsam umgehen, da immer nur ein Bewässerungskreis mit aktiven Booster bewässern kann.    
 
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="konfiguration---pumpen-einstellungen"></a>
@@ -157,18 +172,18 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
     * **Füllhöhe der Zisterne** – Angabe des Füllstandsensors für die Ermittlung der Füllhöhe in %.
         * **eingebaut** –> Hm-Sen-Wa-Od kapazitiver Füllstandmesser von HomeMatic.
     * **Mindestfüllstand der Zysten in%** – Schaltpunkt, bei dessen Unterschreitung wird auf die Hauptpumpe umgeschaltet und bei laufender Bewässerung die Ventile je Verbrauchsmenge angepasst.
-
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+    
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="konfiguration---zeit-einstellungen"></a>
-# Konfiguration - Zeit-Einstellungen
+# Konfiguration – Zeit-Einstellungen
 In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
 
 ![Zeiteinstellung.jpg](img/Zeiteinstellung.jpg)
 
-## Startzeit für die Bewässerung
-
+## Einstellungen für die Startzeit
 * **Beginnen Sie mit einer festen Startzeit:** Bei dieser Auswahl startet die Bewässerung zu einer festgelegten, unter "Startzeit in der Woche" festgelegten Zeit.
     * **Startzeit in der Woche:** – angabe der Startzeit in der Woche.
 * **Startzeit bei Sonnenaufgang:** – Wenn sie diese Option auswählen, so startet die Bewässerung bei Sonnenaufgang. Diese Zeit kann aber noch unter Zeitverschiebung variiert werden.
@@ -176,12 +191,17 @@ In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
 * **Startzeit am Ende der goldenen Stunde:** – Hier startet die Bewässerung zum Ende der Golden Hour.
 
 ---
+## Einstellungen für die Startzeit am Wochenende
 * **andere Startzeit am Wochenende:** – Soll die Bewässerung am Wochenende zu einer anderen Zeit starten (um z.B. den Nachbarn nicht zu verärgern), so kann man es hier aktivieren.
     * **Startzeit am Wochenende:** – Startzeit für das Wochenende.
-    * **Startzeit der Feiertage wie am Wochenende:** – Wenn an Feiertagen auch wie am Wochenende die Bewässerung starten soll, so kann es hier aktiviert werden.
-        * **Feiertage Instanz:** – Hier muss dann aber noch die externe Feiertagsinstanz ausgewählt werden. (z.B. der Adapter "Deutsche Feiertage")
 
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+## Einstellung für die Startzeit an Feiertagen
+* **Startzeit der Feiertage wie am Wochenende:** – Wenn an Feiertagen auch wie am Wochenende die Bewässerung starten soll, so kann es hier aktiviert werden.
+    * **Feiertage Instanz:** – Hier muss dann aber noch die externe Feiertagsinstanz ausgewählt werden. (z.B. der Adapter "Deutsche Feiertage")
+    
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="konfiguration---zusaetzliche-einstellungen"></a>
@@ -191,6 +211,7 @@ In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei
 
 ![Extraeinstellungen.jpg](img/Extraeinstellungen.jpg)
 
+---
 ## Astro-Einstellungen
 Diese Einstellungen sind eigentlich selbsterklärend: Breiten- und Längengrad des Wohnorts um den Sonnenstand korrekt berechnen zu können.
 
@@ -198,11 +219,12 @@ Diese Einstellungen sind eigentlich selbsterklärend: Breiten- und Längengrad d
 
 * **Längengrad** – Damit nicht alle Rollläden gleichzeitig fahren, kann hier eine Zeit in Sekunden für eine Verzögerung eingestellt werden.
 
-
+---
 ## Debug-Einstellungen
 
 * **debuggen** Durch Aktivierung werden im Log zusätzliche Informationen angezeigt, wodurch Fehler schneller ermittelt werden können.
 
+---
 ## Verdunstungsberechnungssensoren
 
 ![Verdunstung.jpg](img/Verdunstung.jpg)
@@ -215,14 +237,17 @@ Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 * **Helligkeitssensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Helligkeitssensors auswählen.
 * **Regensensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Regensensors in mm auswählen.
 
+---
 ## Wettervorhersage
 
 Beim Aktivieren des Feldes "Wettervorhersage verwenden", erscheint ein Auswahlfeld. In diesem muss die Instanz vom Adapter "Das Wetter" ausgewählt werden.
 Im Adapter "Das Wetter" muss der "Pfad 2: XML-Datei mit 5-Tage-Wettervorhersage und detaillierten Informationen für alle 3 Stunden" ausgefüllt sein, 
 damit SprinkleControl auf das Objekt "daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value" zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zur Entscheidung einer Beregnung verwendet.
 
-***
-
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+---
 # Objekte
 ![control.jpg](img/control.jpg)
 
@@ -265,7 +290,8 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
         - 4: Boost; → Boost-Funktion des aktuellen Beregnungskreises ist aktiv (Configuration, Booster ein)
         - 5: off(Boost) → Beregnungskreis für 30 s unterbrochen, da eine Boost-Funktion aktive ist
 
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="konfiguration---benachrichtigungen"></a>
@@ -275,53 +301,69 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
   * [Telegram](#telegram) 
   * [Pushover](#pushover) 
   * [E-Mail](#e-mail) 
-  * [Whatsapp](#whatsapp) 
-  
+  * [Whatsapp](#whatsapp)
+    
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+--- 
   ### Telegram
   <a id="telegram"></a>
 ![Telegram.jpg](img/Telegram.jpg)
-    * **Telegraminstanz** – Instanz des Telegram-Adapters auswählen
-    * **Telegramempfänger** – Telegram Empfänger auswählen (Der Adapter muss laufen, damit ein Empfänger ausgewählt werden kann.)
-    * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
-        + kurze Benachrichtigung → nur Startvorgänge
-        + Lange Benachrichtigung → umfangreiche Benachrichtigungen
-    * **Warten auf den Versand (Sekunden)** – warten bis zum Versand
-    * **Stille Nachricht** – Benachrichtigungston aus
-    * **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung 
-  ### Pushover
+* **Telegraminstanz** – Instanz des Telegram-Adapters auswählen 
+* **Telegramempfänger** – Telegram Empfänger auswählen (Der Adapter muss laufen, damit ein Empfänger ausgewählt werden kann.)
+* **Benachrichtigungsstil** Umfang des Benachrichtigungstextes 
+    + kurze Benachrichtigung → nur Startvorgänge 
+    + Lange Benachrichtigung → umfangreiche Benachrichtigungen 
+* **Warten auf den Versand (Sekunden)** – warten bis zum Versand 
+* **Stille Nachricht** – Benachrichtigungston aus 
+* **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung  
+
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+### Pushover
   <a id="pushover"></a>
 ![Pushover.jpg](img/Pushover.jpg)
-    * **Pushover-Instanz** – Instanz des Pushover-Adapters auswählen
-    * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
-        + kurze Benachrichtigung → nur Startvorgänge
-        + Lange Benachrichtigung → umfangreiche Benachrichtigungen
-    * **Warten auf den Versand (Sekunden)** – warten bis zum Versand
-    * **Geräte-ID (optional)** Geräte-ID eingeben (optional)
-    * **Benachrichtigungston** – Benachrichtigungston auswählen
-    * **Stille Nachricht** – Benachrichtigungston aus
-    * **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
-    ### E-Mail
+* **Pushover-Instanz** – Instanz des Pushover-Adapters auswählen
+* **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
+    + kurze Benachrichtigung → nur Startvorgänge
+    + Lange Benachrichtigung → umfangreiche Benachrichtigungen
+* **Warten auf den Versand (Sekunden)** – warten bis zum Versand
+* **Geräte-ID (optional)** Geräte-ID eingeben (optional)
+* **Benachrichtigungston** – Benachrichtigungston auswählen
+* **Stille Nachricht** – Benachrichtigungston aus
+* **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
+
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+### E-Mail
   <a id="e-mail"></a>
 ![E-Mail.jpg](img/E-Mail.jpg)
-    * **E-Mail-Empfänger** – Empfänger der E-Mail
-    * **E-Mail-Absender** – Absender der E-Mail
-    * **E-Mail-Instanz** – Instanz des E-Mail-Adapters auswählen
-    * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
-        + kurze Benachrichtigung → nur Startvorgänge
-        + Lange Benachrichtigung → umfangreiche Benachrichtigungen
-    * **Warten auf den Versand (Sekunden)**warten bis zum Versand
-    * **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
-    ### WhatsApp
+* **E-Mail-Empfänger** – Empfänger der E-Mail
+* **E-Mail-Absender** – Absender der E-Mail
+* **E-Mail-Instanz** – Instanz des E-Mail-Adapters auswählen
+* **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
+    + kurze Benachrichtigung → nur Startvorgänge
+    + Lange Benachrichtigung → umfangreiche Benachrichtigungen
+* **Warten auf den Versand (Sekunden)**warten bis zum Versand
+* **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
+
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+### WhatsApp
   <a id="whatsapp"></a>
 ![WhatsApp.jpg](img/WhatsApp.jpg)
-    * **WhatsApp-Instanz** – Instanz des WhatsApp-Adapters auswählen
-    * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
-        + kurze Benachrichtigung → nur Startvorgänge
-        + Lange Benachrichtigung → umfangreiche Benachrichtigungen
-    * **Warten auf den Versand (Sekunden)** – warten bis zum Versand
-    * **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
+* **WhatsApp-Instanz** – Instanz des WhatsApp-Adapters auswählen
+* **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
+    + kurze Benachrichtigung → nur Startvorgänge
+    + Lange Benachrichtigung → umfangreiche Benachrichtigungen
+* **Warten auf den Versand (Sekunden)** – warten bis zum Versand
+* **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
 
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+---
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
 <a id="zukunft"></a>
@@ -329,6 +371,8 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 * **Restfehler beseitigen (ESLint)** → Wird wohl eine Lebensaufgabe da ich blutiger Anfänger bin. :)
 * **integration von Bodenfeuchte Sensoren** → Bin mir noch nicht sicher, welchen Sensor ich verwende und wie ich ihn am besten hardwaremäßig integriere. 
 * **Visualisierung**
-> [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
+---  
+* [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
