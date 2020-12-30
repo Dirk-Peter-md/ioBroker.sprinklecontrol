@@ -365,7 +365,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
     + kurze Benachrichtigung → nur Startvorgänge
     + Lange Benachrichtigung → umfangreiche Benachrichtigungen
-* **Warten auf den Versand (Sekunden)**warten bis zum Versand
+* **Warten auf den Versand (Sekunden)** warten bis zum Versand
 * **Benachrichtigung nur bei Fehlern** – noch nicht in Benutzung
 
 ---
