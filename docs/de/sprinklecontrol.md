@@ -7,20 +7,25 @@ Der Adapter zur wetterabhängigen automatischen Gartenbewässerung. (mittels Wet
 # Inhaltsverzeichnis
 * [Grundlegendes](#grundlegendes)
 * [Installation](#installation)
-* [Konfiguration - Haupteinstellungen](#konfiguration---haupteinstellungen)
-  * [Aufbau der Tabelle](#tabellenaufbau)
-  * [individuelle Konfiguration eines Bewässerungskreises](#indiv-konfig-bewkreises)
-    * [Haupteinstellungen des Ventils](#ventil-haubteinstellung)
-    * [Pumpeneinstellungen des Ventils](#ventil-pumpeneinstellung)
-* [Konfiguration - Pumpen-Einstellungen](#konfiguration---pumpen-einstellungen)
-* [Konfiguration - Zeit-Einstellungen](#konfiguration---zeit-einstellungen)
-* [Konfiguration - Zusätzliche-Einstellungen](#konfiguration---zusaetzliche-einstellungen)
-* [Konfiguration - Benachrichtigungen](#konfiguration---benachrichtigungen)
-  * [Telegram](#telegram)
-  * [Pushover](#pushover)
-  * [E-Mail](#e-mail)
-  * [WhatsApp](#whatsapp)
-* [Was ist für die Zukunft geplant](#zukunft)
+* [Haupteinstellungen](#haupteinstellungen) 
+  * [Aufbau der Tabelle](#aufbau-der-tabelle) 
+  * [individuelle Konfiguration eines Bewässerungskreises](#individuelle-konfiguration-eines-bewsserungskreises) 
+    * [Haupteinstellungen des Ventils](#haupteinstellungen-des-ventils) 
+    * [Pumpeneinstellungen des Ventils](#pumpeneinstellungen-des-ventils) 
+* [Pumpen-Einstellungen](#pumpen-einstellungen) 
+* [Zeit-Einstellungen](#zeit-einstellungen) 
+* [Zusätzliche-Einstellungen](#zustzliche-einstellungen) 
+  * [Astro-Einstellungen](#astro-einstellungen) 
+  * [Debug-Einstellungen](#debug-einstellungen)
+  * [Zusätzliche Benachrichtigungseinstellung](#zustzliche-benachrichtigungseinstellungen) 
+  * [Sensoren zur Berechnung der Verdunstung](#sensoren-zur-berechnung-der-verdunstung) 
+  * [Wettervorhersage](#wettervorhersage) 
+* [Benachrichtigungen](#benachrichtigungen) 
+  * [Telegram](#telegram) 
+  * [Pushover](#pushover) 
+  * [E-Mail](#e-mail) 
+  * [WhatsApp](#whatsapp) 
+* [Was ist für die Zukunft geplant](#was-ist-fr-die-zukunft-geplant) 
 
 
 ---
@@ -59,16 +64,16 @@ Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des 
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="konfiguration---haupteinstellungen"></a>
-# Konfiguration – Haupteinstellungen
+<a id="haupteinstellungen"></a>
+# Haupteinstellungen
 Sollte in dem Installationsfenster die Checkbox "***schließen, wenn fertig***" nicht angehakt sein muss man dieses natürlich noch schließen.
 
 Das Konfigurationsfenster besteht aus den Reitern:
-* [Haupteinstellungen](#konfiguration---haupteinstellungen)
-* [Pumpeneinstellungen](#konfiguration---pumpen-einstellungen)
-* [Zeit-Einstellungen](#konfiguration---zeit-einstellungen)
-* [Zusätzliche-Einstellungen](konfiguration---zusaetzliche-einstellungen)
-* [Benachrichtigungen ](#konfiguration---benachrichtigungen) (nur sichtbar, wenn Benachrichtigungen unter Zusätzliche-Einstellungen aktiviert ist)
+* [Haupteinstellungen](#haupteinstellungen)
+* [Pumpeneinstellungen](#pumpen-einstellungen)
+* [Zeit-Einstellungen](#zeit-einstellungen)
+* [Zusätzliche-Einstellungen](#zustzliche-einstellungen)
+* [Benachrichtigungen ](#benachrichtigungen) (nur sichtbar, wenn Benachrichtigungen unter Zusätzliche-Einstellungen aktiviert ist)
 
 Das Konfigurationsfenster öffnet sich automatisch mit den Haupteinstellungen
 
@@ -77,15 +82,15 @@ Das Konfigurationsfenster öffnet sich automatisch mit den Haupteinstellungen
 Auf dieser Seite ist eine Beispiel-ID abgelegt.
 Diese bitte löschen und anschließend die eigenen IDs durch anklicken des (+) links oben über der Tabelle die eigenen Sprinkleraktoren hinzufügen.
 
-Dabei bitte die Datenpunkte mit STATE (o.ä.) auswählen. NICHT das Gerät als solches.
+Dabei bitte die Datenpunkte mit STATE (o. ä.) auswählen. NICHT das Gerät als solches.
 
 
 ![Select_ID.jpg](img/Select_ID.jpg)
 
-Nach Abschluß der ID-Auswahl ist der Adapter bereits betriebsbereit, aber noch nicht an die eigenen Wünsche angepasst.
+Nach Abschluss der ID-Auswahl ist der Adapter bereits betriebsbereit, aber noch nicht an die eigenen Wünsche angepasst.
 
 ---
-<a id="tabellenaufbau"></a>
+<a id="aufbau-der-tabelle"></a>
 ### Aufbau der Tabelle
 
 ![main_tab.jpg](img/main_tab.jpg)
@@ -108,14 +113,14 @@ Nach Abschluß der ID-Auswahl ist der Adapter bereits betriebsbereit, aber noch 
 
 ---
 
-<a id="indiv-konfig-bewkreises"></a>
+<a id="individuelle-konfiguration-eines-bewsserungskreises"></a>
 ## individuelle Konfiguration eines Bewässerungskreises
 Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und **Pumpeneinstellungen**
 
-<a id="ventil-haubteinstellung"></a>
+<a id="haupteinstellungen-des-ventils"></a>
 ### Haupteinstellungen des Ventils
 
-![Vertil-Haupteinstellung.jpg](img/Vertil-Haupteinstellung.jpg)
+![Ventil-Haupteinstellung.jpg](img/Ventil-Haupteinstellung.jpg)
 
 #### Bewässerungseinstellungen
 * **Bewässerungszeit in min** – Einstellung der Zeit zum Bewässern in Minuten (diese wird verlängert je weiter der Trigger "niedrigster Prozentsatz der Bodenfeuchte" unterschritten wurde) 
@@ -133,7 +138,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und *
     
 ---
 
-<a id="ventil-pumpeneinstellung"></a>
+<a id="pumpeneinstellungen-des-ventils"></a>
 ### Pumpeneinstellungen des Ventils
 
 ![Ventil-Pumpeneinstellung.jpg](img/Ventil-Pumpeneinstellung.jpg)
@@ -148,8 +153,8 @@ Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und *
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="konfiguration---pumpen-einstellungen"></a>
-# Konfiguration – Pumpen-Einstellungen
+<a id="pumpen-einstellungen"></a>
+# Pumpen-Einstellungen
 Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Zisterne) und der Spannungsversorgung der Regelkreise vorgenommen.
 
 ![Pumpeneinstellung.jpg](img/Pumpeneinstellung.jpg)
@@ -158,17 +163,17 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
 
     * **Steuerspannung der Ventile** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das STATE für die Steuerspannung der Ventile auswählen.
     Dieser Ausgang ist aktive, so wie eines der Ventile aktive ist.
-    * **maximaler Parallelbetrieb der Ventile** – Hier kann die Anzahl der aktiven Ventile begrenzt werden. z. B. wenn die Leistung des Steuertrafo nicht ausreicht, mehrere Ventile parallel zu schalten. 
+    * **maximaler Parallelbetrieb der Ventile** – Hier kann die Anzahl der aktiven Ventile begrenzt werden. z. B. wenn die Leistung des Steuertrafos nicht ausreicht, mehrere Ventile parallel zu schalten. 
     
 * **Einstellung der Pumpe**
     * **Hauptpumpe: ** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier wird das STATE der Pumpe hinterlegt, welche für die Wasserversorgung zuständig ist.
     * **maximale Pumpenleistung der Hauptpumpe in l/h: ** – hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
-        * **Achtung: ** – Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z.B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben.  
+        * **Achtung: ** – Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z. B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben.  
 
 * **Zisternenpumpe in Vorrangschaltung hinzufügen**
     * **Zisternenpumpe** – Hier wird die Pumpe der Zisterne eingetragen. Diese wird deaktiviert, so wie der Füllstand der Zisterne zu gering ist. Wobei die Hauptpumpe, in diesem Fall, die Bewässerung fortsetzt.
     * **maximale Pumpenleistung der Zisterne in l / h** – Hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
-        * **Achtung** –> Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z.B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben. 
+        * **Achtung** –> Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z. B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben. 
     * **Füllhöhe der Zisterne** – Angabe des Füllstandsensors für die Ermittlung der Füllhöhe in %.
         * **eingebaut** –> Hm-Sen-Wa-Od kapazitiver Füllstandmesser von HomeMatic.
     * **Mindestfüllstand der Zysten in%** – Schaltpunkt, bei dessen Unterschreitung wird auf die Hauptpumpe umgeschaltet und bei laufender Bewässerung die Ventile je Verbrauchsmenge angepasst.
@@ -177,41 +182,42 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="konfiguration---zeit-einstellungen"></a>
-# Konfiguration – Zeit-Einstellungen
+<a id="zeit-einstellungen"></a>
+# Zeit-Einstellungen
 In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
 
 ![Zeiteinstellung.jpg](img/Zeiteinstellung.jpg)
 
 ## Einstellungen für die Startzeit
-* **Beginnen Sie mit einer festen Startzeit:** Bei dieser Auswahl startet die Bewässerung zu einer festgelegten, unter "Startzeit in der Woche" festgelegten Zeit.
-    * **Startzeit in der Woche:** – angabe der Startzeit in der Woche.
-* **Startzeit bei Sonnenaufgang:** – Wenn sie diese Option auswählen, so startet die Bewässerung bei Sonnenaufgang. Diese Zeit kann aber noch unter Zeitverschiebung variiert werden.
-    * **Zeitverschiebung:** – Eingabe der Zeitverschiebung bei Sonnenaufgang. (+/- 120 min)
-* **Startzeit am Ende der goldenen Stunde:** – Hier startet die Bewässerung zum Ende der Golden Hour.
+* **Beginnen Sie mit einer festen Startzeit** – Bei dieser Auswahl startet die Bewässerung zu einer festgelegten, unter "Startzeit in der Woche" festgelegten Zeit.
+    * **Startzeit in der Woche** – Angabe der Startzeit in der Woche.
+* **Startzeit bei Sonnenaufgang** – Wenn sie diese Option auswählen, so startet die Bewässerung bei Sonnenaufgang. Diese Zeit kann aber noch unter Zeitverschiebung variiert werden.
+    * **Zeitverschiebung** – Eingabe der Zeitverschiebung bei Sonnenaufgang. (+/- 120 min)
+* **Startzeit am Ende der goldenen Stunde** – Hier startet die Bewässerung zum Ende der Golden Hour.
 
 ---
 ## Einstellungen für die Startzeit am Wochenende
-* **andere Startzeit am Wochenende:** – Soll die Bewässerung am Wochenende zu einer anderen Zeit starten (um z.B. den Nachbarn nicht zu verärgern), so kann man es hier aktivieren.
-    * **Startzeit am Wochenende:** – Startzeit für das Wochenende.
+* **andere Startzeit am Wochenende** – Soll die Bewässerung am Wochenende zu einer anderen Zeit starten (um z. B. den Nachbarn nicht zu verärgern), so kann man es hier aktivieren.
+    * **Startzeit am Wochenende** – Startzeit für das Wochenende.
 
 ---
 ## Einstellung für die Startzeit an Feiertagen
-* **Startzeit der Feiertage wie am Wochenende:** – Wenn an Feiertagen auch wie am Wochenende die Bewässerung starten soll, so kann es hier aktiviert werden.
-    * **Feiertage Instanz:** – Hier muss dann aber noch die externe Feiertagsinstanz ausgewählt werden. (z.B. der Adapter "Deutsche Feiertage")
+* **Startzeit der Feiertage wie am Wochenende** – Wenn an Feiertagen auch wie am Wochenende die Bewässerung starten soll, so kann es hier aktiviert werden.
+    * **Feiertage Instanz** – Hier muss dann aber noch die externe Feiertagsinstanz ausgewählt werden. (z. B. der Adapter "Deutsche Feiertage")
     
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="konfiguration---zusaetzliche-einstellungen"></a>
-# Konfiguration – Zusätzliche-Einstellungen
+<a id="zustzliche-einstellungen"></a>
+# Zusätzliche-Einstellungen
 
 In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei der Berechnung der Verdunstung unerlässlich sind.
 
 ![Extraeinstellungen.jpg](img/Extraeinstellungen.jpg)
 
 ---
+<a id="astro-einstellungen"></a>
 ## Astro-Einstellungen
 Diese Einstellungen sind eigentlich selbsterklärend: Breiten- und Längengrad des Wohnorts um den Sonnenstand korrekt berechnen zu können.
 
@@ -220,29 +226,38 @@ Diese Einstellungen sind eigentlich selbsterklärend: Breiten- und Längengrad d
 * **Längengrad** – Damit nicht alle Rollläden gleichzeitig fahren, kann hier eine Zeit in Sekunden für eine Verzögerung eingestellt werden.
 
 ---
+<a id="debug-einstellungen"></a>
 ## Debug-Einstellungen
 
-* **debuggen** Durch Aktivierung werden im Log zusätzliche Informationen angezeigt, wodurch Fehler schneller ermittelt werden können.
+* **debuggen** – Durch Aktivierung werden im Log zusätzliche Informationen angezeigt, wodurch Fehler schneller ermittelt werden können.
 
 ---
-## Verdunstungsberechnungssensoren
+<a id="zustzliche-benachrichtigungseinstellungen"></a>
+## Zusätzliche Benachrichtigungseinstellungen
+
+* **Benachrichtigungen aktivieren / deaktivieren** – Einschalten des Reiters Benachrichtigungen. Hier werden dann die Einstellungen zur Kommunikation vorgenommen. 
+---
+<a id="sensoren-zur-berechnung-der-verdunstung"></a>
+## Sensoren zur Berechnung der Verdunstung
+> **Achtung** das Program ist auf die Sensoren der Homematic HmIP-SWO-PL zur Berechnung der Verdunstung abgestimmt!
 
 ![Verdunstung.jpg](img/Verdunstung.jpg)
 
 Über die Sensoren wird die max. mögliche Verdunstung der pot. Evapotranspiration nach Penman ETp berechnet und zur Steuerung der Bewässerungsanlage genutzt.
 Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 * **Temperatursensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Luftsensors in °C auswählen.
-* **Feuchtigkeitssensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das ID des Feuchtigkeitssensors in % auswählen.
+* **Feuchtigkeitssensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Feuchtigkeitssensors in % auswählen.
 * **Windgeschwindigkeitssensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Windgeschwindigkeitssensors in km/h auswählen.
 * **Helligkeitssensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Helligkeitssensors auswählen.
 * **Regensensor** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie die ID des Regensensors in mm auswählen.
 
 ---
+<a id="wettervorhersage"></a>
 ## Wettervorhersage
 
 Beim Aktivieren des Feldes "Wettervorhersage verwenden", erscheint ein Auswahlfeld. In diesem muss die Instanz vom Adapter "Das Wetter" ausgewählt werden.
 Im Adapter "Das Wetter" muss der "Pfad 2: XML-Datei mit 5-Tage-Wettervorhersage und detaillierten Informationen für alle 3 Stunden" ausgefüllt sein, 
-damit SprinkleControl auf das Objekt "daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value" zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zur Entscheidung einer Beregnung verwendet.
+damit SprinkleControl auf das Objekt **"daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value"** zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zur Entscheidung einer Beregnung verwendet.
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
@@ -294,8 +309,9 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="konfiguration---benachrichtigungen"></a>
-# Konfiguration – Benachrichtigungen
+<a id="benachrichtigungen"></a>
+# Benachrichtigungen
+
 ## Auswahl der Benachrichtigung
 * **Benachrichtigungstyp** → Auswahl des Benachrichtigungsweges
   * [Telegram](#telegram) 
@@ -306,8 +322,9 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 --- 
-  ### Telegram
-  <a id="telegram"></a>
+<a id="telegram"></a>
+### Telegram
+ 
 ![Telegram.jpg](img/Telegram.jpg)
 * **Telegraminstanz** – Instanz des Telegram-Adapters auswählen 
 * **Telegramempfänger** – Telegram Empfänger auswählen (Der Adapter muss laufen, damit ein Empfänger ausgewählt werden kann.)
@@ -321,8 +338,9 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
+<a id="pushover"></a>
 ### Pushover
-  <a id="pushover"></a>
+ 
 ![Pushover.jpg](img/Pushover.jpg)
 * **Pushover-Instanz** – Instanz des Pushover-Adapters auswählen
 * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
@@ -337,8 +355,9 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
+<a id="e-mail"></a>
 ### E-Mail
-  <a id="e-mail"></a>
+ 
 ![E-Mail.jpg](img/E-Mail.jpg)
 * **E-Mail-Empfänger** – Empfänger der E-Mail
 * **E-Mail-Absender** – Absender der E-Mail
@@ -352,8 +371,9 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
+<a id="whatsapp"></a>
 ### WhatsApp
-  <a id="whatsapp"></a>
+ 
 ![WhatsApp.jpg](img/WhatsApp.jpg)
 * **WhatsApp-Instanz** – Instanz des WhatsApp-Adapters auswählen
 * **Benachrichtigungsstil** Umfang des Benachrichtigungstextes
@@ -366,8 +386,9 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
 ---
-<a id="zukunft"></a>
+<a id="was-ist-fr-die-zukunft-geplant"></a>
 # Was ist für die Zukunft geplant
+ 
 * **Restfehler beseitigen (ESLint)** → Wird wohl eine Lebensaufgabe da ich blutiger Anfänger bin. :)
 * **integration von Bodenfeuchte Sensoren** → Bin mir noch nicht sicher, welchen Sensor ich verwende und wie ich ihn am besten hardwaremäßig integriere. 
 * **Visualisierung**

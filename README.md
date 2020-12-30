@@ -30,6 +30,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ## Changelog
 
+### 0.1.2 (30.12.2020)
+* (Dirk-Peter-md) Beschreibung von SprinkleControl überarbeitet
+
 ### 0.1.1 (08.11.2020)
 * (Dirk-Peter-md) Integration von Nachrichten per Telegramm, E-Mail, Pushover und WhatsApp
 

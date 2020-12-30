@@ -107,10 +107,6 @@ function startAdapter(options) {
      */
     adapter.on('unload', (callback) => {
         try {
-            if(ObjMessage.noticeType){
-                ObjMessage.messageText = 'SprinkleControl is shutting down';
-                sendMessageText(adapter, ObjMessage);
-            }
             adapter.log.info('cleaned everything up...');
             clearTimeout(timer);
             /*Startzeiten der Timer löschen*/
@@ -543,7 +539,7 @@ const ObjThread = {
          * aktuelle Rest-Pumpenleistung
          * @type {number}
          */
-        let curFlow = parseInt(currentPumpUse.pumpPower); /* adapter.config.triggerMainPumpPower; */
+        let curFlow = currentPumpUse.pumpPower; /* adapter.config.triggerMainPumpPower; */
         /**
          * aktuelle Anzahl der eingeschalteten Ventile
          * @type {number}
@@ -864,7 +860,7 @@ function setActualPump() {
                 });
                 currentPumpUse.pumpCistern = false;
                 currentPumpUse.pumpName = adapter.config.triggerMainPump || '';
-                currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+                currentPumpUse.pumpPower = parseInt(adapter.config.triggerMainPumpPower);
                 adapter.setForeignState(currentPumpUse.pumpName, {
                     val: true,
                     ack: false
@@ -893,7 +889,7 @@ function setActualPump() {
                 });
                 currentPumpUse.pumpCistern = true;
                 currentPumpUse.pumpName = adapter.config.triggerCisternPump || '';
-                currentPumpUse.pumpPower = adapter.config.triggerCisternPumpPower;
+                currentPumpUse.pumpPower = parseInt(adapter.config.triggerCisternPumpPower);
                 adapter.setState('control.restFlow', {
                     val: currentPumpUse.pumpPower + ' (' + currentPumpUse.pumpPower + ' Zisterne)',
                     ack: true
@@ -905,7 +901,7 @@ function setActualPump() {
                 });
                 currentPumpUse.pumpCistern = false;
                 currentPumpUse.pumpName = adapter.config.triggerMainPump || '';
-                currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+                currentPumpUse.pumpPower = parseInt(adapter.config.triggerMainPumpPower);
                 adapter.setState('control.restFlow', {
                     val: currentPumpUse.pumpPower + ' (' + currentPumpUse.pumpPower + ' Grundwasser)',
                     ack: true
@@ -1201,7 +1197,7 @@ function checkStates() {
     // Hauptpumpe zur Bewässerung setzen
     currentPumpUse.pumpCistern = false;
     currentPumpUse.pumpName = adapter.config.triggerMainPump;
-    currentPumpUse.pumpPower = adapter.config.triggerMainPumpPower;
+    currentPumpUse.pumpPower = parseInt(adapter.config.triggerMainPumpPower);
 
     adapter.setState('control.parallelOfMax', {
         val: 0 + ' : ' + adapter.config.maximumParallelValves,
@@ -1486,7 +1482,7 @@ function startTimeSprinkle() {
                         ack: true
                     });
 
-                    if(ObjMessage.noticeType){
+                    if((adapter.config.notificationEnabled) && (ObjMessage.noticeType)){
                         ObjMessage.messageText = infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime;
                         sendMessageText(adapter, ObjMessage);
                     }
@@ -1539,8 +1535,10 @@ function startTimeSprinkle() {
                 }
             }
         }
-        ObjMessage.messageText = messageText;
-        sendMessageText(adapter, ObjMessage);
+        if(adapter.config.notificationEnabled){
+            ObjMessage.messageText = messageText;
+            sendMessageText(adapter, ObjMessage);
+        }
         setTimeout (() => {
             ObjThread.updateList();
             setTimeout(()=>{
@@ -1606,7 +1604,7 @@ function initConfigMessage() {
                 /** @type {string} */   notificationsType: adapter.config.notificationsType,
                 /** @type {string} */   type: 'message',
                 /** @type {string} */   instance: adapter.config.whatsappInstance,
-                /** @type {boolean} */   noticeType: (adapter.config.whatsappNoticeType === 'longWhatsappNotice'),
+                /** @type {boolean} */  noticeType: (adapter.config.whatsappNoticeType === 'longWhatsappNotice'),
                 /** @type {boolean} */  onlyError: adapter.config.whatsappOnlyError,
                 /** @type {number} */   waiting: parseInt(adapter.config.whatsappWaitToSend) * 1000
             };

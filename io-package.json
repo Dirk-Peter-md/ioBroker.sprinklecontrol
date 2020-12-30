@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "news": {
+      "0.1.2": {
+          "en": "Description of SprinkleControl revised",
+          "de": "Beschreibung von SprinkleControl überarbeitet",
+          "ru": "Описание SprinkleControl изменено.",
+          "pt": "Descrição do SprinkleControl revisada",
+          "nl": "Beschrijving van SprinkleControl herzien",
+          "fr": "Description de SprinkleControl révisée",
+          "it": "Descrizione di SprinkleControl rivista",
+          "es": "Descripción de SprinkleControl revisada",
+          "pl": "Poprawiony opis SprinkleControl",
+          "zh-cn": "SprinkleControl的说明已修订"
+      },
       "0.1.1": {
           "en": "Integration of messages via telegram, e-mail, pushover and WhatsApp",
           "de": "Integration von Nachrichten per Telegramm, E-Mail, Pushover und WhatsApp",
