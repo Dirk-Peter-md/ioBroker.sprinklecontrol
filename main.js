@@ -1144,14 +1144,20 @@ function checkStates() {
     adapter.getState('control.autoOnOff', (err, state) => {
         if (state && (state.val == null)) {
             autoOnOffStr = true;
-            adapter.setState('control.autoOnOff', {val: autoOnOffStr, ack: true});
+            adapter.setState('control.autoOnOff', {
+                val: autoOnOffStr,
+                ack: true
+            });
         }
     });
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state && (state.val == null)) {
             ETpTodayNum = 0;
             //            dayNum = new Date().getDay();
-            adapter.setState('evaporation.ETpToday', {val: '0', ack: true});
+            adapter.setState('evaporation.ETpToday', {
+                val: '0',
+                ack: true
+            });
         } else if (state) {
             ETpTodayNum = state.val;
             //            dayNum = new Date(state.ts).getDay();
@@ -1159,14 +1165,20 @@ function checkStates() {
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
         if (state && (state.val == null || state.val === false)) {
-            adapter.setState('evaporation.ETpYesterday', {val: '0', ack: true});
+            adapter.setState('evaporation.ETpYesterday', {
+                val: '0',
+                ack: true
+            });
         }
     });
     /* Pumpe ausschalter wenn vorhanden */
     if (adapter.config.triggerMainPump !== '') {
         adapter.getState('adapter.config.triggerMainPump', (err, state) => {
             if (state) {
-                adapter.setState(adapter.config.triggerMainPump, {val: false, ack: false});
+                adapter.setState(adapter.config.triggerMainPump, {
+                    val: false,
+                    ack: false
+                });
             }
         });
     }
@@ -1174,7 +1186,10 @@ function checkStates() {
     if (adapter.config.triggerCisternPump !== '') {
         adapter.getState('adapter.config.triggerCisternPump', (err, state) => {
             if (state) {
-                adapter.setState(adapter.config.triggerCisternPump, {val: false, ack: false});
+                adapter.setState(adapter.config.triggerCisternPump, {
+                    val: false,
+                    ack: false
+                });
             }
         });
     }
@@ -1184,7 +1199,10 @@ function checkStates() {
         for(const i in result) {
             adapter.getState(result[i].name, (err, state) => {
                 if (state) {
-                    adapter.setState(result[i].name, {val: false, ack: false});
+                    adapter.setState(result[i].name, {
+                        val: false,
+                        ack: false
+                    });
                 }
             });			
         }

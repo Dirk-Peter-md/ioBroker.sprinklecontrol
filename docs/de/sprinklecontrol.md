@@ -1,10 +1,11 @@
 ![Logo](img/sprinklecontrol.png)
 # Sprinklecontrol
-Der Adapter zur wetterabhängigen automatischen Gartenbewässerung. (mittels Wettersensor HmIP-SWO-PL – plus)
+### *Der Adapter zur wetterabhängigen automatischen Gartenbewässerung.*
+( mittels Wettersensor HmIP-SWO-PL – plus )
 
 ---
 <a id="inhaltsverzeichnis"></a>
-# Inhaltsverzeichnis
+## Inhaltsverzeichnis
 * [Grundlegendes](#grundlegendes)
 * [Installation](#installation)
 * [Haupteinstellungen](#haupteinstellungen) 
