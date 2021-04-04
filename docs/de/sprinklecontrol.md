@@ -1,5 +1,5 @@
 ![Logo](img/sprinklecontrol.png)
-# Sprinklecontrol
+# SprinkleControl
 ### *Der Adapter zur wetterabhängigen automatischen Gartenbewässerung.*
 ( mittels Wettersensor HmIP-SWO-PL – plus )
 
@@ -34,7 +34,7 @@
 <a id="grundlegendes"></a>
 ## Grundlegendes
 
-In Sprinklecontrol werden die Umweltdaten (Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit, Regenmenge) ausgewertet.
+In SprinkleControl werden die Umweltdaten (Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit, Regenmenge) ausgewertet.
 Die so ermittelte Verdunstung dient der Ermittlung der theoretischen Bodenfeuchte, der einzelnen Bewässerungskreise.
 Zu einer unter "Zeit-Einstellungen" festgelegten Zeit, werden die Bewässerungskreise aktiviert die einen festgelegten prozentualen Wert unterschreiten.
 Diese verschiedenen Bewässerungskreise werden dann so angesteuert, das die max. Pumpenleistung (l/h) und die max. Anzahl der Bewässerungskreise nicht überschritten wird.
@@ -55,9 +55,9 @@ Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL)
 ## Installation
 Der Adapter befindet sich im "latest" Verwahrungsort von ioBroker. Von hier kann er heruntergeladen werden. 
 Um ihn installieren zu können muss man in den Adapter von ioBroker gehen und dort "VON GITHUB" anklicken. 
-Unter "Adapter auswählen" wählt man dann "sprinklecontrol [Dirk-Peter-md]" aus und drückt dann installieren.
+Unter "Adapter auswählen" wählt man dann "sprinkleControl [Dirk-Peter-md]" aus und drückt dann installieren.
 
-Spätestens nach Refresh der Adapterliste steht der Adapter **Sprinklecontrol** zur Verfügung.
+Spätestens nach Refresh der Adapterliste steht der Adapter **SprinkleControl** zur Verfügung.
 
 Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des Adapters vom Repository geladen:
 
@@ -185,7 +185,7 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
 ---
 <a id="zeit-einstellungen"></a>
 # Zeit-Einstellungen
-In diesem Abschnitt wird die Startzeiten von Sprinklecontrol festgelegt.
+In diesem Abschnitt wird die Startzeiten von SprinkleControl festgelegt.
 
 ![Zeiteinstellung.jpg](img/Zeiteinstellung.jpg)
 
@@ -220,23 +220,23 @@ In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei
 ---
 <a id="astro-einstellungen"></a>
 ## Astro-Einstellungen
-Diese Einstellungen sind eigentlich selbsterklärend: Breiten- und Längengrad des Wohnorts um den Sonnenstand korrekt berechnen zu können.
-
-* **Breitengrad** – Hier kann ein Offset eingegeben werden um den sich die Rollladenfahrten für hoch bzw. runter von den später ausgewählten Astro-Events verschieben soll.
-
-* **Längengrad** – Damit nicht alle Rollläden gleichzeitig fahren, kann hier eine Zeit in Sekunden für eine Verzögerung eingestellt werden.
+* **Breiten- und Längengrad**  
+  Breiten- und Längengrad übernimmt SprinkleControl aus den ioBroker Systemeinstellungen.
+  SprinkleControl berechnet anhand dieser Werte den Sonnenstand.
 
 ---
 <a id="debug-einstellungen"></a>
 ## Debug-Einstellungen
 
-* **debuggen** – Durch Aktivierung werden im Log zusätzliche Informationen angezeigt, wodurch Fehler schneller ermittelt werden können.
+* **debuggen**  
+  Durch Aktivierung werden im Log zusätzliche Informationen angezeigt, wodurch Fehler schneller ermittelt werden können.
 
 ---
 <a id="zustzliche-benachrichtigungseinstellungen"></a>
 ## Zusätzliche Benachrichtigungseinstellungen
 
-* **Benachrichtigungen aktivieren / deaktivieren** – Einschalten des Reiters Benachrichtigungen. Hier werden dann die Einstellungen zur Kommunikation vorgenommen. 
+* **Benachrichtigungen aktivieren / deaktivieren**  
+  Einschalten des Reiters Benachrichtigungen. Hier werden dann die Einstellungen zur Kommunikation vorgenommen. 
 ---
 <a id="sensoren-zur-berechnung-der-verdunstung"></a>
 ## Sensoren zur Berechnung der Verdunstung
@@ -390,7 +390,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 <a id="was-ist-fr-die-zukunft-geplant"></a>
 # Was ist für die Zukunft geplant
  
-* **Restfehler beseitigen (ESLint)** → Wird wohl eine Lebensaufgabe da ich blutiger Anfänger bin. :)
+* **Restfehler beseitigen (ESLint)** → Wird wohl eine Lebensaufgabe, da ich blutiger Anfänger bin. :)
 * **integration von Bodenfeuchte Sensoren** → Bin mir noch nicht sicher, welchen Sensor ich verwende und wie ich ihn am besten hardwaremäßig integriere. 
 * **Visualisierung**
 
