@@ -213,7 +213,7 @@
     "cisternSettings": false,
     "triggerCisternPump": "",
     "triggerCisternPumpPower": "1800",
-    "actualValueLevel": "",
+    "actualValueLevel": "30",
     "triggerMinCisternLevel": "25",
     "wateringStartTime": "livingGoldenHourEnd",
     "timeShift": "0",

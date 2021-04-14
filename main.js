@@ -1,5 +1,7 @@
 'use strict';
-
+/*
+ info:  log aufbau main.js: #0.*
+ */
 // Load your modules here, e.g.: => // Laden Sie Ihre Module hier, z.B.
 // const fs = require("fs");
 
@@ -184,7 +186,7 @@ function startAdapter(options) {
                                 [{
                                     autoOn: false,
                                     sprinkleID: found.sprinkleID,
-                                    wateringTime: (state.val < 0) ? state.val : Math.round(60 * state.val)
+                                    wateringTime: (state.val <= 0) ? state.val : Math.round(60 * state.val)
                                 }]);
                         }
                     }
@@ -193,12 +195,18 @@ function startAdapter(options) {
             }
             /* wenn sich der Status eines Ventils (Sprenger) ändert("hm-rpc.0.MEQ1234567.3.STATE"),
              so wird eine Rückmeldung an des Sprenger [sprinkleName] zur Fehlerauswertung gegeben */
-            if (myConfig.config && state.ack) {         // config vorhanden && Rückmeldung Aktor
+            if (myConfig.config) {         // config vorhanden && Rückmeldung Aktor && state.ack
                 const found = myConfig.config.find(d => d.idState === id);
                 if (found) {
                     if (id === myConfig.config[found.sprinkleID].idState) {
                         if (typeof state.val === 'boolean') {
-                            myConfig.delValveTimerID(found.sprinkleID, state.val);
+                            adapter.log.info('Test Value state: ' + JSON.stringify(state));
+                            if (state.ack) {  // Bestätigung
+                                myConfig.delValveTimerID(found.sprinkleID, state.val);
+                            } else {    // Auftrag
+                                myConfig.setValveTimerID(found.sprinkleID, state.val);
+                            }
+
                         }
                     }
                 }
@@ -298,7 +306,6 @@ function GetSystemData() {
         adapter.log.debug('longitude/longitude not set, get data from system ' + typeof adapter.config.longitude + ' ' + adapter.config.longitude + '/' + typeof adapter.config.latitude + ' ' + adapter.config.latitude);
 
         adapter.getForeignObject('system.config', (err, state) => {
-
             if (err) {
                 adapter.log.error(err);
             } else {
