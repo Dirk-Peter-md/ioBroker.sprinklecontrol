@@ -106,9 +106,9 @@ Nach Abschluss der ID-Auswahl ist der Adapter bereits betriebsbereit, aber noch 
 
 **(+)** – Hinzufügen/Ändern der ID
 
-**Bleistift** – spezifische Konfiguration des jeweiligen Rollladens
+**Bleistift** – spezifische Konfiguration des jeweiligen Bewässerungskreises
 
-**Pfeile** – verändern der Reihenfolge der verschiedenen Rollläden
+**Pfeile** – verändern der Reihenfolge der verschiedenen Bewässerungskreise in der Tabelle
 
 **Mülleimer** – Löschen der ID mit allen konfigurierten Daten!
 
@@ -165,6 +165,7 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
     * **Steuerspannung der Ventile** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das STATE für die Steuerspannung der Ventile auswählen.
     Dieser Ausgang ist aktive, so wie eines der Ventile aktive ist.
     * **maximaler Parallelbetrieb der Ventile** – Hier kann die Anzahl der aktiven Ventile begrenzt werden. z. B. wenn die Leistung des Steuertrafos nicht ausreicht, mehrere Ventile parallel zu schalten. 
+    * **Schaltabstand zwischen den Ventilen in ms** - Eingabe einer Zeit in Millisekunden. Diese ist die Wartezeit, bis zum Schalten des nächsten Ventils damit nicht z. B. 6 Ausgänge auf einmal schalten.
     
 * **Einstellung der Pumpe**
     * **Hauptpumpe: ** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier wird das STATE der Pumpe hinterlegt, welche für die Wasserversorgung zuständig ist.

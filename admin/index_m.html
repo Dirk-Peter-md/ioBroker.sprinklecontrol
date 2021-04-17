@@ -727,11 +727,16 @@
                         <div class="col s2 m1 l1">
                             <a id="triggerControlVoltageDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
-						<div class="col s12 m4 l3 input-field">
+						<div class="col s12 m6 l2 input-field">
 							<input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
 							<label for="maximumParallelValves" class="translate"></label>
 							<span class="translate">Maximum parallel operation of the valves</span>
-						</div>						
+						</div>
+                        <div class="col s12 m6 l2 input-field">
+                            <input type="number" class="value" id="switchingDistance" min=100 max=1000 placeholder="100-1000" step="100" value="300" />
+                            <label for="switchingDistance" class="translate"></label>
+                            <span class="translate">Switching distance between the valves</span>
+                        </div>
 					</div>
 					<div class="row">
                         <div class="col s12">
@@ -747,7 +752,7 @@
                         <div class="col s2 m1 l1">
                             <a id="triggerMainPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                         </div>
-						<div class="col s12 m4 l3 input-field">
+						<div class="col s12 m4 l2 input-field">
 							<input type="number" class="value" id="triggerMainPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
 							<label for="triggerMainPumpPower" class="translate"></label>
 							<span class="translate">maximum pump output of the main pump in l/h</span>
@@ -769,7 +774,7 @@
 							<div class="col s2 m1 l1">
 								<a id="triggerCisternPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
 							</div>
-							<div class="col s6 m4 l3 input-field">
+							<div class="col s6 m4 l2 input-field">
 								<input type="number" class="value" id="triggerCisternPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
 								<label for="triggerCisternPumpPower" class="translate"></label>
 								<span class="translate">maximum pump capacity of the cistern in l/h</span>
@@ -784,7 +789,7 @@
 							<div class="col s2 m1 l1">
 								<a id="actualValueLevelDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
 							</div>
-							<div class="col s6 m4 l3 input-field">
+							<div class="col s6 m4 l2 input-field">
 								<input type="number" class="value" id="triggerMinCisternLevel" min=0 max=100 placeholder="0-100" step="5" />
 								<label for="triggerMinCisternLevel" class="translate"></label>
 								<span class="translate">Minimum fill level of the cysts in %</span>

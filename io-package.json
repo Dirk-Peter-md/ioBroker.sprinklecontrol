@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "news": {
+      "0.1.3": {
+          "en": "Switching distance built in between the valves, main.js split",
+          "de": "Schaltabstand zwischen den Ventilen eingebaut, main.js aufgeteilt",
+          "ru": "Расстояние переключения между клапанами, main.js split",
+          "pt": "Distância de comutação construída entre as válvulas, divisão main.js",
+          "nl": "Schakelafstand ingebouwd tussen de kleppen, main.js split",
+          "fr": "Distance de commutation intégrée entre les vannes, main.js split",
+          "it": "Distanza di commutazione incorporata tra le valvole, main.js split",
+          "es": "Distancia de conmutación integrada entre las válvulas, main.js split",
+          "pl": "Odległość przełączania wbudowana między zaworami, podział main.js.",
+          "zh-cn": "阀门之间内置的切换距离，main.js已拆分"
+      },
       "0.1.2": {
           "en": "Description of SprinkleControl revised",
           "de": "Beschreibung von SprinkleControl überarbeitet",
@@ -208,6 +220,7 @@
   "native": {
     "triggerControlVoltage": "",
     "maximumParallelValves": "5",
+    "switchingDistance": "300",
     "triggerMainPump": "hm-rpc.0.MEQ1234567.1.STATE",
     "triggerMainPumpPower": "2000",
     "cisternSettings": false,

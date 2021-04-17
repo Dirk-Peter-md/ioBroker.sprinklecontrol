@@ -193,24 +193,6 @@ function startAdapter(options) {
                 }
 
             }
-            /* wenn sich der Status eines Ventils (Sprenger) ändert("hm-rpc.0.MEQ1234567.3.STATE"),
-             so wird eine Rückmeldung an des Sprenger [sprinkleName] zur Fehlerauswertung gegeben */
-            if (myConfig.config) {         // config vorhanden && Rückmeldung Aktor && state.ack
-                const found = myConfig.config.find(d => d.idState === id);
-                if (found) {
-                    if (id === myConfig.config[found.sprinkleID].idState) {
-                        if (typeof state.val === 'boolean') {
-                            adapter.log.info('Test Value state: ' + JSON.stringify(state));
-                            if (state.ack) {  // Bestätigung
-                                myConfig.delValveTimerID(found.sprinkleID, state.val);
-                            } else {    // Auftrag
-                                myConfig.setValveTimerID(found.sprinkleID, state.val);
-                            }
-
-                        }
-                    }
-                }
-            }
             // Change in outside temperature => Änderung der Außentemperatur
             if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
@@ -648,8 +630,8 @@ function startTimeSprinkle() {
                         val: newStartTimeLong,
                         ack: true
                     });
-
-                    if((adapter.config.notificationEnabled) && (adapter.config.notificationsType)){
+                    // next Start Message
+                    if(!sendMessageText.onlySendError){
                         sendMessageText.sendMessage(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
                     }
                     adapter.log.info(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
@@ -704,7 +686,7 @@ function startTimeSprinkle() {
             }
             valveControl.addList(memAddList);
         }
-        if(adapter.config.notificationEnabled){
+        if(!sendMessageText.onlySendError()){
             sendMessageText.sendMessage(messageText);
         }
         setTimeout (() => {
