@@ -668,7 +668,7 @@ function startTimeSprinkle() {
                     if (adapter.config.debug) {
                         adapter.log.info('weatherForecastTodayNum, Typeof: ' + typeof weatherForecastTodayNum + '  Wert: ' + weatherForecastTodayNum + ' soilMoisture, Typeof: ' + typeof res.soilMoisture.val + ' Wert: ' + res.soilMoisture.val + ' Summe: ' + resMoisture + ' Auswertung: ' + (resMoisture <= res.soilMoisture.triggersIrrigation));
                     }
-                    if (resMoisture <= res.soilMoisture.triggersIrrigation) {
+                    if (resMoisture <= res.soilMoisture.triggersIrrigation) {   // Kontrolle ob Regenvorhersage ausreicht
                         let countdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation); // in min
                         // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                         if (countdown > (res.wateringTime * res.wateringAdd / 100)) {

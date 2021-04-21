@@ -5,7 +5,7 @@
     "news": {
       "0.1.4": {
           "en": "Fixed bug with deactivated weather forecast",
-          "de": "Fehler mit deaktivierter Wettervorhersage behoben",
+          "de": "Fehler bei deaktivierter Wettervorhersage behoben",
           "ru": "Исправлена ошибка с отключенным прогнозом погоды.",
           "pt": "Bug corrigido com previsão do tempo desativada",
           "nl": "Bug opgelost met gedeactiveerde weersvoorspelling",
