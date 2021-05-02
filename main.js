@@ -24,10 +24,12 @@ let adapter;
 const adapterName = require('./package.json').name.split('.').pop();
 
 /* ext. Adapter */
+/* Deutsche Feiertage */
 /** @type {any} */
 let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorrowStr;
+/* DasWetter.com */
 /** @type {number} */
 let weatherForecastTodayNum = 0;
 /** @type {number} */
@@ -196,25 +198,33 @@ function startAdapter(options) {
             // Change in outside temperature => Änderung der Außentemperatur
             if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurTemperature(adapter, parseFloat(state.val), state.ts);
+                    evaporation.setCurTemperature(parseFloat(state.val), state.ts);
+                } else {
+                    adapter.log.warn('sensorOutsideTemperature => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
                 }
             }
             // LuftFeuchtigkeit
             if (id === adapter.config.sensorOutsideHumidity) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurHumidity(parseFloat(state.val));
+                    evaporation.setCurHumidity(parseFloat(state.val), state.lc);
+                } else {
+                    adapter.log.warn('sensorOutsideHumidity => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
                 }
             }
             // Helligkeit
             if (id === adapter.config.sensorBrightness) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurIllumination(parseFloat(state.val));
+                    evaporation.setCurIllumination(parseFloat(state.val), state.lc);
+                } else {
+                    adapter.log.warn('sensorBrightness => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
                 }
             }
             // Windgeschwindigkeit
             if (id === adapter.config.sensorWindSpeed) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurWindSpeed(parseFloat(state.val));
+                    evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
+                } else {
+                    adapter.log.warn('sensorWindSpeed => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
                 }
             }
             // Regencontainer
@@ -222,7 +232,9 @@ function startAdapter(options) {
 				* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt. */
             if (id === adapter.config.sensorRainfall) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurAmountOfRain(adapter, parseFloat(state.val))
+                    evaporation.setCurAmountOfRain(parseFloat(state.val))
+                } else {
+                    adapter.log.warn('sensorRainfall => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
                 }
             }
             // Feiertagskalender
@@ -355,7 +367,8 @@ function checkStates() {
     // akt. kW ermitteln für history last week
     kwStr = formatTime(adapter, '','kW');
     adapter.log.info('checkStates akt-KW: ' + kwStr);
-
+    // init evaporation
+    evaporation.initEvaporation(adapter);
     // Hauptpumpe zur Bewässerung setzen
     valveControl.initValveControl(adapter);
 }
@@ -489,6 +502,8 @@ function checkActualStates () {
 const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Berechnungen mittels SunCalc
     sunPos();
+    // Ermittlung der heutigen extraterrestrischen Strahlung
+    evaporation.setExtraTerStr();
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
     if (adapter.config.debug) {adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime(adapter, '','kW') + ' if: ' + (kwStr !== formatTime(adapter, '','kW')));}
@@ -740,7 +755,7 @@ function createSprinklers() {
                     'name':  objectName + ' => actual soil moisture in %',
                     'type':  'number',
                     'min':   0,
-                    'max':   100,
+                    'max':   150,
                     'unit':  '%',					
                     'read':  true,
                     'write': false,
@@ -921,7 +936,7 @@ function createSprinklers() {
                 });
                 adapter.getState(objPfad + '.countdown', (err, state) => {
                     if (state) {
-                        adapter.setState(objPfad + '.countdown', {val: 0, ack: true});
+                        adapter.setState(objPfad + '.countdown', {val: '0', ack: true});
                     }
                 });
                 // history		
@@ -1068,21 +1083,6 @@ function main(adapter) {
     }
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance + '.morgen.*')) {
         adapter.subscribeForeignStates(adapter.config.publicHolInstance + '.morgen.*');
-    }
-    if (adapter.config.sensorBrightness !== '') {
-        adapter.subscribeForeignStates(adapter.config.sensorBrightness);
-    }
-    if (adapter.config.sensorOutsideHumidity !== '') {
-        adapter.subscribeForeignStates(adapter.config.sensorOutsideHumidity);
-    }
-    if (adapter.config.sensorOutsideTemperature !== '') {
-        adapter.subscribeForeignStates(adapter.config.sensorOutsideTemperature);
-    }
-    if (adapter.config.sensorRainfall !== '') {
-        adapter.subscribeForeignStates(adapter.config.sensorRainfall);
-    }
-    if (adapter.config.sensorWindSpeed !== '') {
-        adapter.subscribeForeignStates(adapter.config.sensorWindSpeed);
     }
     if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.*')) {
         adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value');

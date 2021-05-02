@@ -3,6 +3,18 @@
     "name": "sprinklecontrol",
     "version": "0.1.4",
     "news": {
+      "0.1.5": {
+        "en": "Resetting the amount of rain in 24-hour mode added",
+        "de": "Zurücksetzen der Regenmenge im 24-Stunden-Modus hinzugefügt",
+        "ru": "Добавлен сброс количества дождя в 24-часовом режиме",
+        "pt": "Redefinindo a quantidade de chuva no modo de 24 horas adicionado",
+        "nl": "Resetten van de hoeveelheid regen in toegevoegde 24-uurs modus",
+        "fr": "Ajout de la réinitialisation de la quantité de pluie en mode 24 heures",
+        "it": "Aggiunta la reimpostazione della quantità di pioggia nella modalità 24 ore",
+        "es": "Restablecimiento de la cantidad de lluvia en el modo de 24 horas agregado",
+        "pl": "Dodano resetowanie ilości deszczu w trybie 24-godzinnym",
+        "zh-cn": "在24小时模式下重置雨量"
+      },
       "0.1.4": {
           "en": "Fixed bug with deactivated weather forecast",
           "de": "Fehler bei deaktivierter Wettervorhersage behoben",
@@ -405,7 +417,7 @@
       "common": {
         "role": "indicator",
         "name": "rest Flow of Pump",
-        "type": "number",
+        "type": "string",
         "read": true,
         "write": false,
         "def": false
