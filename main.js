@@ -351,7 +351,7 @@ function checkStates() {
                 ack: true
             });
         } else if (state) {
-            evaporation.setETpTodayNum(state.val);
+            evaporation.setETpTodayNum(parseFloat(state.val));
             //            dayNum = new Date(state.ts).getDay();
         }
     });
@@ -367,10 +367,6 @@ function checkStates() {
     // akt. kW ermitteln für history last week
     kwStr = formatTime(adapter, '','kW');
     adapter.log.info('checkStates akt-KW: ' + kwStr);
-    // init evaporation
-    evaporation.initEvaporation(adapter);
-    // Hauptpumpe zur Bewässerung setzen
-    valveControl.initValveControl(adapter);
 }
 
 //	aktuelle States checken nach dem Start (2000 ms)
@@ -1050,11 +1046,17 @@ function main(adapter) {
      */
     adapter.getForeignObject('system.config', (err) => {
         if (!err) {
+            // init createConfig
+            myConfig.createConfig(adapter);
+            // init evaporation
+            evaporation.initEvaporation(adapter);
+            // Hauptpumpe zur Bewässerung setzen
+            valveControl.initValveControl(adapter);
             checkStates();
         }
     });
 
-    myConfig.createConfig(adapter);
+
     GetSystemData();
     sendMessageText.initConfigMessage(adapter);
 
