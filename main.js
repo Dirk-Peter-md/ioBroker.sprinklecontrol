@@ -23,9 +23,8 @@ const formatTime = require('./lib/tools').formatTime;
 let adapter;
 const adapterName = require('./package.json').name.split('.').pop();
 
-/* ext. Adapter */
-/* Deutsche Feiertage */
-/** @type {any} */
+/** ext. Adapter => Deutsche Feiertage
+ *  @type {any} */
 let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorrowStr;
@@ -41,7 +40,9 @@ let startTimeStr;
 let sunriseStr;
 /** @type {string} */
 let goldenHourEnd;
-/** @type {any} */
+/** switch => sprinklecontrol.*.control.Holiday
+ * - Wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
+ * @type {any} */
 let holidayStr;
 /** @type {any} */
 let autoOnOffStr;
@@ -129,18 +130,6 @@ function startAdapter(options) {
      */
     adapter.on('objectChange', (id, obj) => {
         if (obj) {
-            // The object was changed
-            /*if (adapter.config.publicHolidays === true) {
-                if (id === adapter.config.publicHolInstance + '.heute.boolean') {
-                    publicHolidayStr = state.val;
-                    startTimeSprinkle();
-                }
-                if (id === adapter.config.publicHolInstance + '.morgen.boolean') {
-                    publicHolidayTomorrowStr = state.val;
-                    startTimeSprinkle();
-                }
-            }*/
-
             adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
         } else {
             // The object was deleted
@@ -193,14 +182,13 @@ function startAdapter(options) {
                         }
                     }
                 }
-
             }
             // Change in outside temperature => Änderung der Außentemperatur
             if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurTemperature(parseFloat(state.val), state.ts);
                 } else {
-                    adapter.log.warn('sensorOutsideTemperature => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
+                    adapter.log.warn('sensorOutsideTemperature => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
                 }
             }
             // LuftFeuchtigkeit
@@ -208,7 +196,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurHumidity(parseFloat(state.val), state.lc);
                 } else {
-                    adapter.log.warn('sensorOutsideHumidity => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
+                    adapter.log.warn('sensorOutsideHumidity => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
                 }
             }
             // Helligkeit
@@ -216,7 +204,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurIllumination(parseFloat(state.val), state.lc);
                 } else {
-                    adapter.log.warn('sensorBrightness => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
+                    adapter.log.warn('sensorBrightness => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
                 }
             }
             // Windgeschwindigkeit
@@ -224,7 +212,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
                 } else {
-                    adapter.log.warn('sensorWindSpeed => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
+                    adapter.log.warn('sensorWindSpeed => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
                 }
             }
             // Regencontainer
@@ -232,9 +220,9 @@ function startAdapter(options) {
 				* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt. */
             if (id === adapter.config.sensorRainfall) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurAmountOfRain(parseFloat(state.val))
+                    evaporation.setCurAmountOfRain(parseFloat(state.val));
                 } else {
-                    adapter.log.warn('sensorRainfall => Wrong value: '+ state.val + ', Type: ' + typeof state.val)
+                    adapter.log.warn('sensorRainfall => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
                 }
             }
             // Feiertagskalender
@@ -345,20 +333,18 @@ function checkStates() {
     adapter.getState('evaporation.ETpToday', (err, state) => {
         if (state && (state.val == null)) {
             evaporation.setETpTodayNum(0);
-            //            dayNum = new Date().getDay();
             adapter.setState('evaporation.ETpToday', {
-                val: '0',
+                val: 0,
                 ack: true
             });
         } else if (state) {
             evaporation.setETpTodayNum(parseFloat(state.val));
-            //            dayNum = new Date(state.ts).getDay();
         }
     });
     adapter.getState('evaporation.ETpYesterday', (err, state) => {
         if (state && (state.val == null || state.val === false)) {
             adapter.setState('evaporation.ETpYesterday', {
-                val: '0',
+                val: 0,
                 ack: true
             });
         }
@@ -542,12 +528,6 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
 function sunPos() {
     // get today's sunlight times => Holen Sie sich die heutige Sonnenlicht Zeit	
     const times = SunCalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
-	
-    //Sonnenscheindauer in Stunden)
-    evaporation.setMaxSunshine((times.sunset.getTime() - times.sunrise.getTime()) / 3600000);
-	
-    // Berechnung des heutigen Tages
-    // dayNum = times.sunrise.getDay();
 	
     // format sunrise time from the Date object => Formatieren Sie die Sonnenaufgangszeit aus dem Date-Objekt
     sunriseStr = ('0' + times.sunrise.getHours()).slice(-2) + ':' + ('0' + times.sunrise.getMinutes()).slice(-2);

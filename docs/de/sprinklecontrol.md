@@ -269,8 +269,8 @@ damit SprinkleControl auf das Objekt **"daswetter.0.NextDaysDetailed.Location_1.
 ![control.jpg](img/control.jpg)
 
 ## control
-* **Holiday** – Wenn Holiday auf true gesetzt wird, so wird die Bewässerung zu der Zeit gestartet wie am Wochenende. Falls die Wochenendeinstellung aktiviert wurde. Die Verbindung mit einem Kalender wäre hier auch möglich.
-* **autoOnOff** – Bei Einstellung "off" ist der Automatikbetrieb der Bewässerungsanlage deaktiviert.
+* **Holiday** - Wenn Holiday auf true gesetzt wird, so wird die Bewässerung wie am Wochenende gestartet. Falls die Wochenendeinstellung aktiviert wurde. Die Verbindung mit einem Kalender wäre hier auch möglich.
+* **autoOnOff** – Bei Einstellung "off“ ist der Automatikbetrieb der Bewässerungsanlage deaktiviert.
 * **parallelOfMax** – z. B. (3 : 4) Drei Bewässerungskreise sind von vier möglichen aktive. (Dies ist nur eine Anzeige!)
 * **restFlow** – Anzeige der noch möglichen Restfördermenge der Pumpe. (Dies ist nur eine Anzeige!)
 
@@ -391,7 +391,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 <a id="was-ist-fr-die-zukunft-geplant"></a>
 # Was ist für die Zukunft geplant
  
-* **Version 0.1.3 ins stable bringen** → Ich hoffe, das ich an alles gedacht habe!
+* **Version 0.1.? ins stable bringen** → Ich hoffe, das ich an alles gedacht habe!
 * **Restfehler beseitigen (ESLint)** → Wird wohl eine Lebensaufgabe, da ich blutiger Anfänger bin. :)
 * **integration von Bodenfeuchte Sensoren** → Es wird wohl eine Config geben, sodass der Sensortyp egal ist.
 * **Visualisierung**
