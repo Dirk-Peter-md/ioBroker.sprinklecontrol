@@ -170,16 +170,23 @@ function startAdapter(options) {
                 if (found) {
                     if (id === myConfig.config[found.sprinkleID].objectID) {
                         if (!isNaN(state.val)) {
-                            if (adapter.config.debug) {
-                                adapter.log.info('stateChange: (' + found.objectName + ')".runningTime" wurde geändert: JSON: ' + JSON.stringify(found));
-                            }
                             valveControl.addList(
                                 [{
-                                    autoOn: false,
+                                    auto: false,  // Handbetrieb
                                     sprinkleID: found.sprinkleID,
                                     wateringTime: (state.val <= 0) ? state.val : Math.round(60 * state.val)
                                 }]);
                         }
+                    }
+                }
+            }
+            /* wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
+               bei false nicht automatisch gestartet */
+            if (myConfig.config && (typeof state.val === 'boolean')) {
+                const found = myConfig.config.find(d => d.autoOnID === id);
+                if (found) {
+                    if (id === myConfig.config[found.sprinkleID].autoOnID) {
+                        myConfig.config[found.sprinkleID].autoOn = state.val;
                     }
                 }
             }
@@ -484,8 +491,6 @@ function checkActualStates () {
 const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Berechnungen mittels SunCalc
     sunPos();
-    // Ermittlung der heutigen extraterrestrischen Strahlung
-    evaporation.setExtraTerStr();
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
     if (adapter.config.debug) {adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime(adapter, '','kW') + ' if: ' + (kwStr !== formatTime(adapter, '','kW')));}
@@ -504,7 +509,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
                     adapter.getState('sprinkle.' + objectName + '.history.curCalWeekRunningTime', (err, state) => {
                         if (state) {
                             adapter.setState('sprinkle.' + objectName + '.history.lastCalWeekRunningTime', { val: state.val, ack: true });
-                            adapter.setState('sprinkle.' + objectName + '.history.curCalWeekRunningTime', { val: 0, ack: true });
+                            adapter.setState('sprinkle.' + objectName + '.history.curCalWeekRunningTime', { val: '00:00', ack: true });
                         }
                     });
                 }
@@ -515,7 +520,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     }
 
     // ETpToday und ETpYesterday in evaporation aktualisieren da ein neuer Tag
-    evaporation.setNewDay(adapter);
+    evaporation.setNewDay();
 	
     // Startzeit Festlegen => verzögert wegen Daten von SunCalc
     setTimeout(() => {
@@ -645,15 +650,15 @@ function startTimeSprinkle() {
         if (result) {
             /**
              * Array zum flüchtigen Sammeln von Bewässerungsaufgaben
-             * @type {Array.<{autoOn: Boolean, sprinkleID: Number, wateringTime: Number}>}
+             * @type {Array.<{auto: Boolean, sprinkleID: Number, wateringTime: Number}>}
              */
-            let memAddList = [];
+            const memAddList = [];
             for(const res of result) {
                 messageText += '<b>' + res.objectName + '</b>' + ' ' + res.soilMoisture.pct + '% (' + res.soilMoisture.pctTriggerIrrigation + '%)' + '\n';
                 // Test Bodenfeuchte
-                if (adapter.config.debug) {adapter.log.info('Bodenfeuchte: ' + res.soilMoisture.val + ' <= ' + res.soilMoisture.triggersIrrigation + ' AutoOnOff: ' + res.autoOnOff);}
+                if (adapter.config.debug) {adapter.log.info('Bodenfeuchte: ' + res.soilMoisture.val + ' <= ' + res.soilMoisture.triggersIrrigation + ' AutoOn: ' + res.autoOn);}
                 // Bodenfeuchte zu gering && Ventil auf Automatik
-                if ((res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) && (res.autoOnOff)) {
+                if ((res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) && (res.autoOn)) {
                     /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
                     const resMoisture = (adapter.config.weatherForecast)?((+ res.soilMoisture.val) + (+ weatherForecastTodayNum)):(res.soilMoisture.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage
                     if (adapter.config.debug) {
@@ -669,7 +674,7 @@ function startTimeSprinkle() {
                             adapter.log.info('sprinklecontrol: ' + res.objectName + '  wateringTime: ' + countdown + ' (' + res.wateringTime + ', ' + res.soilMoisture.maxIrrigation + ', ' + res.soilMoisture.val + ', ' + res.soilMoisture.triggersIrrigation + ')');
                         }
                         memAddList.push({
-                            autoOn: true,
+                            auto: true,
                             sprinkleID: res.sprinkleID,
                             wateringTime: Math.round(60*countdown)
                         });
@@ -679,7 +684,7 @@ function startTimeSprinkle() {
                         messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
                         adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + res.soilMoisture.val + ' (' + resMoisture + ') <= ' + res.soilMoisture.triggersIrrigation + ' ]');
                     }
-                } else if (!res.autoOnOff) {
+                } else if (!res.autoOn) {
                     messageText += '   ' + '<i>' + 'Ventil auf Handbetrieb' + '</i>' + '\n';
                 }
             }
@@ -779,6 +784,19 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
+                    'def':   false
+                },
+                'native': {},
+            });
+            // autoOn
+            adapter.setObjectNotExists(objPfad + '.autoOn', {
+                'type': 'state',
+                'common': {
+                    'role':  'state',
+                    'name':  objectName + ' => Switch automatic mode on / off',
+                    'type':  'boolean',
+                    'read':  true,
+                    'write': true,
                     'def':   false
                 },
                 'native': {},
@@ -915,6 +933,16 @@ function createSprinklers() {
                         adapter.setState(objPfad + '.countdown', {val: '0', ack: true});
                     }
                 });
+                adapter.getState(objPfad + '.autoOn', (err, state) => {
+                    if (state) {
+                        if (typeof state.val == 'boolean') {
+                            myConfig.config[j].autoOn = state.val;
+                        } else {
+                            adapter.setState(objPfad + '.autoOn', {val: true, ack: true});
+                            myConfig.config[j].autoOn = true;
+                        }
+                    }
+                });
                 // history		
                 adapter.getState(objPfad + '.history.lastRunningTime', (err, state) => {
                     if (state.val === false) {
@@ -985,6 +1013,7 @@ function createSprinklers() {
                     adapter.delObject(resID + '.sprinklerState');	// "sprinklecontrol.0.sprinkle.???.sprinklerState"
                     adapter.delObject(resID + '.runningTime');	//	"sprinklecontrol.0.sprinkle.???.runningTime"
                     adapter.delObject(resID + '.countdown');	//	"sprinklecontrol.0.sprinkle.???.countdown"
+                    adapter.delObject(resID + '.autoOn'); // "sprinklecontrol.0.sprinkle.???.autoOn"
                     adapter.delObject(resID + '.history.lastOn');	//	"sprinklecontrol.0.sprinkle.???..history.lastOn"
                     adapter.delObject(resID + '.history.lastConsumed');	//	"sprinklecontrol.0.sprinkle.???..history.lastConsumed"
                     adapter.delObject(resID + '.history.lastRunningTime');	// "sprinklecontrol.0.sprinkle.???.history.lastRunningTime"
