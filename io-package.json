@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "news": {
+      "0.1.6": {
+        "en": "AutoOn switch added per irrigation circuit, Bug fixed (js-controller), Precipitation counter detached from evaporation",
+        "de": "AutoOn-Schalter pro Bewässerungskreis hinzugefügt, Fehler behoben (js-Controller), Niederschlagszähler von der Verdunstung getrennt",
+        "ru": "Добавлен переключатель AutoOn для каждого контура орошения, исправлена ошибка (js-контроллер), счетчик осадков отключен от испарения",
+        "pt": "Interruptor AutoOn adicionado por circuito de irrigação, bug corrigido (controlador js), contador de precipitação separado da evaporação",
+        "nl": "AutoOn-schakelaar toegevoegd per irrigatiecircuit, Bug opgelost (js-controller), Neerslagteller losgekoppeld van verdamping",
+        "fr": "Commutateur AutoOn ajouté par circuit d'irrigation, bug corrigé (contrôleur js), compteur de précipitations détaché de l'évaporation",
+        "it": "Interruttore AutoOn aggiunto per circuito di irrigazione, Bug risolto (js-controller), Contatore di precipitazioni staccato dall'evaporazione",
+        "es": "Interruptor AutoOn agregado por circuito de riego, error corregido (controlador js), contador de precipitación separado de la evaporación",
+        "pl": "Dodano przełącznik AutoOn dla każdego obwodu irygacyjnego, naprawiono błąd (kontroler js), licznik opadów odłączony od parowania",
+        "zh-cn": "为每个灌溉回路添加了AutoOn开关，已修复错误（js控制器），降水计数器与蒸发分离"
+      },
       "0.1.5": {
         "en": "Resetting the amount of rain in 24-hour mode added",
         "de": "Zurücksetzen der Regenmenge im 24-Stunden-Modus hinzugefügt",
@@ -86,102 +98,6 @@
           "es": "Adaptador \"Das Wetter\" Fehler bei der Verarbeitung der Regenvorhersage vom",
           "pl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter „Das Wetter”",
           "zh-cn": "Fehler bei der Verarbeitung der Regenvorhersage vom适配器“ Das Wetter”"
-      },
-      "0.0.10": {
-          "en": "Error processing rain forecast from adapter \"Das Wetter\"",
-          "de": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-          "ru": "Ошибка при обработке прогноза дождя от адаптера Das Wetter.",
-          "pt": "Erro ao processar previsão de chuva do adaptador \"Das Wetter\"",
-          "nl": "Fout bij het verwerken van regenvoorspelling van adapter \"Das Wetter\"",
-          "fr": "Erreur lors du traitement des prévisions de pluie de l'adaptateur \"Das Wetter\"",
-          "it": "Errore durante l'elaborazione delle previsioni di pioggia dall'adattatore \"Das Wetter\"",
-          "es": "Error al procesar el pronóstico de lluvia del adaptador \"Das Wetter\"",
-          "pl": "Błąd podczas przetwarzania prognozy opadów deszczu z adaptera „Das Wetter”",
-          "zh-cn": "处理适配器“ Das Wetter”的降雨预测时出错"
-      },
-      "0.0.9": {
-          "en": "Integration of the adapter \"Das Wetter\" for rain forecast",
-          "de": "Integration des Adapters \"Das Wetter\" zur Regenvorhersage",
-          "ru": "Интеграция адаптера \"Das Wetter\" для прогноза дождя.",
-          "pt": "Integração do adaptador \"Das Wetter\" para previsão de chuva",
-          "nl": "Integratie van de adapter \"Das Wetter\" voor regenvoorspelling",
-          "fr": "Intégration de l'adaptateur \"Das Wetter\" pour les prévisions de pluie",
-          "it": "Integrazione dell'adattatore \"Das Wetter\" per previsione pioggia",
-          "es": "Integración del adaptador \"Das Wetter\" para pronóstico de lluvia",
-          "pl": "Integracja adaptera „Das Wetter” do prognozy opadów",
-          "zh-cn": "集成适配器“ Das Wetter”以进行降雨预报"
-      },
-      "0.0.8": {
-        "en": "adapter.unload: (setTimeout > 1s) => delete",
-        "de": "adapter.unload: (setTimeout> 1s) => löschen",
-        "ru": "adapter.unload: (setTimeout> 1s) => удалить",
-        "pt": "adapter.unload: (setTimeout> 1s) => excluir",
-        "nl": "adapter.unload: (setTimeout> 1s) => verwijderen",
-        "fr": "adapter.unload: (setTimeout> 1s) => supprimer",
-        "it": "adapter.unload: (setTimeout> 1s) => elimina",
-        "es": "adapter.unload: (setTimeout> 1s) => eliminar",
-        "pl": "adapter.unload: (setTimeout> 1s) => usuń",
-        "zh-cn": "adapter.unload：（setTimeout> 1s）=>删除"
-      },
-      "0.0.7": {
-        "en": "Write history at a fixed time (0:05);\nmain.js cleaned up",
-        "de": "Schreiben der History zu einer festgelegten Zeit (0:05).\nmain.js aufgeräumt",
-        "ru": "Запись истории в определенное время (0:05);\nmain.js убрал",
-        "pt": "Escreva o histórico em um horário fixo (0:05);\nmain.js limpo",
-        "nl": "Schrijf geschiedenis op een vast tijdstip (0:05);\nmain.js opgeruimd",
-        "fr": "Ecrire l'historique à une heure fixe (0:05);\nmain.js nettoyé",
-        "it": "Scrivi la cronologia a un orario fisso (0:05);\nmain.js ripulito",
-        "es": "Escribe el historial a una hora fija (0:05);\nmain.js limpiado",
-        "pl": "Zapisuj historię w ustalonym czasie (0:05);\nWyczyszczono plik main.js",
-        "zh-cn": "在固定时间（0:05）写入历史记录；\nmain.js清理了"
-      },
-      "0.0.6": {
-        "en": "calcPosTimer adjusted; Description edited",
-        "de": "calcPosTimer angepasst; Beschreibung bearbeitet",
-        "ru": "отрегулирован calcPosTimer; Описание отредактировано",
-        "pt": "calcPosTimer ajustado; Descrição editada",
-        "nl": "calcPosTimer aangepast; Beschrijving bewerkt",
-        "fr": "calcPosTimer ajusté; Description modifiée",
-        "it": "calcPosTimer rettificato; Descrizione modificata",
-        "es": "calcPosTimer ajustado; Descripción editada",
-        "pl": "dostosowano calcPosTimer; Edytowano opis",
-        "zh-cn": "calcPosTimer已调整；说明已编辑"
-      },
-      "0.0.5": {
-        "en": ".travis.yml for nodes js 10, 12, 14 adapted to the current ioBroker.template",
-        "de": ".travis.yml für Knoten js 10, 12, 14 angepasst an die aktuelle ioBroker.template",
-        "ru": ".travis.yml для узлов js 10, 12, 14, адаптированных к текущему шаблону ioBroker.template",
-        "pt": ".travis.yml para nós js 10, 12, 14 adaptados ao ioBroker.template atual",
-        "nl": ".travis.yml voor knooppunten js 10, 12, 14 aangepast aan de huidige ioBroker.template",
-        "fr": ".travis.yml pour les nœuds js 10, 12, 14 adaptés au modèle ioBroker.template actuel",
-        "it": ".travis.yml per i nodi js 10, 12, 14 adattato all'attuale ioBroker.template",
-        "es": ".travis.yml para los nodos js 10, 12, 14 adaptados al ioBroker.template actual",
-        "pl": ".travis.yml dla węzłów js 10, 12, 14 dostosowany do bieżącego ioBroker.template",
-        "zh-cn": "适用于当前ioBroker.template的节点js 10、12、14的.travis.yml"
-      },
-      "0.0.4": {
-        "en": "Mistake eliminated, Booster function added",
-        "de": "Fehler beseitigt, Booster-Funktion hinzugefügt",
-        "ru": "Ошибка устранена, добавлена функция Booster",
-        "pt": "Erro eliminado, função Booster adicionada",
-        "nl": "Fout verholpen, Booster-functie toegevoegd",
-        "fr": "Erreur éliminée, fonction Booster ajoutée",
-        "it": "Errore eliminato, aggiunta la funzione Booster",
-        "es": "Error eliminado, función de refuerzo añadida",
-        "pl": "Usunięto błąd, dodano funkcję Booster",
-        "zh-cn": "消除错误，增加了Booster功能"
-      },
-      "0.0.1": {
-        "en": "initial release",
-        "de": "Erstveröffentlichung",
-        "ru": "Начальная версия",
-        "pt": "lançamento inicial",
-        "nl": "Eerste uitgave",
-        "fr": "Première version",
-        "it": "Versione iniziale",
-        "es": "Versión inicial",
-        "pl": "Pierwsze wydanie",
-        "zh-cn": "首次出版"
       }
     },
     "title": "Sprinkle Control",
