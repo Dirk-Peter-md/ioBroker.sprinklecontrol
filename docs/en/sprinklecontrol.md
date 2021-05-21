@@ -5,10 +5,12 @@
 
 Unfortunately my knowledge of English is too small for an adapter description.
 I would be very grateful for any help with the translation.
+
 ---
 ---
 ## Mode of action
 - - -
+
 The ambient data (temperature, humidity, brightness, wind speed, amount of rain) are evaluated in Sprinkle Control.
 The evaporation determined in this way is used to determine the theoretical soil moisture of the individual irrigation areas.
 At a point in time specified under "Time settings", the watering circuits that fall below a certain percentage are activated.
@@ -22,16 +24,20 @@ Both are customizable.
 
 My irrigation works with the Homematic IP weather sensor plus (HmIP-SWO-PL) and **was only tested with this**.
 In the ioBroker forum, however, there are also some tests that are carried out with weather stations via the Sainlogic adapter.
+
 ---
 ---
 ## Installation
-- - - 
+- - -
+
 An instance of the Sprinkle Control Adapter is installed through the ioBroker Admin interface by clicking the plus sign (+).
 Depending on the active repository specified in the Admin adapter, the stable (default) or beta version (latest) will be installed.
+
 ---
 ---
 ## Adapter configuration - MAIN SETTINGS
 - - -
+
 ![screenshot1.jpg](img/screenshot1.jpg)
 
 * 1: Go to the Sprinkle Control page on GitHub
@@ -45,10 +51,13 @@ Depending on the active repository specified in the Admin adapter, the stable (d
 * 9: Open the individual configuration of the respective irrigation circuit
 * 10: Move the line position
 * 11: Delete watering circuit with all configured data!
+
 - - -
 ### Individual configuration of an irrigation circuit
 - - -
+
 Open the individual configuration of the respective irrigation circuit
+
 ![screenshot2.jpg](img/screenshot2.jpg)
 
 **Irrigation settings**
@@ -66,9 +75,11 @@ Open the individual configuration of the respective irrigation circuit
   - **Hint:** Lawn grid: 5; Flowerbed: 10; Lawn area: 14
 - *maximum soil moisture after the rain in (mm):* Maximum theoretical water content in the soil after heavy rain. This value must be greater than after irrigation!
   - **Hint:** Lawn grid: 6; Flowerbed: 15; Lawn area: 19
+  
 - - -
 #### Individual configuration of an irrigation circuit - MAIN SETTINGS
 - - -
+
 ![screenshot3.jpg](img/screenshot3.jpg)
 
 **Sprinkler consumption**
@@ -77,9 +88,11 @@ Open the individual configuration of the respective irrigation circuit
 - *Booster:* Removes all active irrigation circuits from the network for 30 s and then switches them on again
     - **Hint:** My pump delivers a maximum of 1800 l/h, and my lawn sprinklers need 1400 l/h, but full pressure, to start them. With the booster function, I can also water my conifers with a drip line that only needs 300 l / h.
     > - **Danger:** This function should be used very sparingly, as only one irrigation circuit can water with an active booster at a time.
+
 - - -
 #### Individual configuration of an irrigation circuit - PUMP SETTINGS
 - - -
+
 ![screenshot4.jpg](img/screenshot4.jpg)
 
 **Settings for Valve**
@@ -99,12 +112,16 @@ Open the individual configuration of the respective irrigation circuit
     - *Sensor of the level in the cistern:* STATE of the level sensor to determine the level in 0 ... 100%.
       - *built-in:* Hm-Sen-Wa-Od Capacitive level meter from HomeMatic. 
     - *Minimum fill level of the cysts in %:* If this is not reached, the switching point is switched to the main pump and the valves are adjusted according to the amount consumed while the watering is running.
+
 ---
 ---
 ## Adapter configuration - TIME SETTINGS
 - - -
+
 ![screenshot5.jpg](img/screenshot5.jpg)
+
 The start times for the sprinkle control can be set on this tab.
+
 ###Settings for start time
 - *Start time for irrigation:*
   - *Start with a fixed start time:* The **Start time of the week** can be set here.
@@ -118,18 +135,24 @@ The start times for the sprinkle control can be set on this tab.
 ###Settings for the start time on public holidays
 - *Start time of public holidays as on weekends:* If public holidays should be treated like weekends, this can be activated here.
 - *public holidays Instance* The external public holiday instance must then be selected here (for example the adapter "Deutsche Feiertage").
+
 ---
 ---
 ## Adapter configuration - EXTRA SETTINGS
 - - -
+
 ![screenshot6.jpg](img/screenshot6.jpg)
+
 ### Astro settings
 SprinkleControl takes the latitude and longitude from the ioBroker system settings.
 SprinkleControl uses these values to calculate the position of the sun and the extraterrestrial radiation for evaporation.
+
 ### Debug settings
 When activated, additional information is displayed in the log. This allows errors to be analyzed more quickly.
+
 ### Additional notification setting
 Activate the Notifications tab. The communication settings are then made on the new Notifications tab.
+
 ### Sensors "(Homematic HmIP-SWO-PL)" for calculating the evaporation
 > - **Danger:** The program is adapted to the "HomeMatic weather station HmIP-SWO-PL" for calculating the evaporation! Without this data, no irrigation circuits are triggered.
 
@@ -141,16 +164,21 @@ Activate the Notifications tab. The communication settings are then made on the 
 - If you activate the "Use weather forecast" box, a selection box will appear. Here the instance of the adapter "Das Wetter" must be selected.
   "Path 2: XML file with 5-day weather forecast and detailed information for every 3 hours" must be filled out in the "Das Wetter" adapter
   so that SprinkleControl can access the object **"daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value"**. This value is then used to postpone watering when it is supposed to rain.
+
 ---
 ---
 ## Adapter configuration - NOTIFICATIONS
 - - -
+
 ![screenshot7.jpg](img/screenshot7.jpg)
+
 - Once the NOTIFICATIONS tab has been activated, you can choose your notification method and enter your details here.
+
 ---
 ---
 ## Admin => Objekte => sprinklecontrol.0.
 - - -
+
 ![screenshot8.jpg](img/screenshot8.jpg)
 
 ### control
@@ -160,8 +188,15 @@ Activate the Notifications tab. The communication settings are then made on the 
 - **restFlow:** Display of the possible residual flow of the pump. (This is just an ad!)
 
 ### evaporation
+- **ETpCurrent:** This is the current evaporation as a daily value in mm / day.
+- **ETpToday:** The current daily value of evaporation is displayed here. This will be moved to ETpYesterday at 00:05 and then reset to 0.
+- **ETpYesterday:** Yesterday's evaporation is shown here.
 
 ### info
+- **cisternState** If necessary, the status of the cistern and its status are displayed here.
+- **nextAutoStart** Indicates the next start of the irrigation system.
+- **rainToday** The precipitation forecast for today is displayed here. The adapter "the weather" is necessary for this.
+- **rainTomorrow** Precipitation forecast for tomorrow from the adapter "the weather".
 
 ### sprinkle.*.
 - **history**
