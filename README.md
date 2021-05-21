@@ -23,6 +23,8 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 [Deutsche Beschreibung hier](docs/de/sprinklecontrol.md)
 
+[English Description here](docs/en/sprinklecontrol.md)
+
 [Deutsche Beschreibung auf GitHub](https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol/blob/master/docs/de/sprinklecontrol.md)
 
 *************************************************************************************************************************************
@@ -34,6 +36,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### 0.1.7 (22.05.2021)
+* (Dirk-Peter-md) Beschreibung in englischer Sprache hinzugefügt
+* (Dirk-Peter-md) bereit für stable
 
 ### 0.1.6 (18.05.2021)
 * (Dirk-Peter-md) AutoOn-Schalter pro Bewässerungskreis hinzugefügt

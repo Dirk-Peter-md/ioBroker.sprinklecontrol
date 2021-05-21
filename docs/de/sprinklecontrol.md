@@ -45,7 +45,8 @@ Beides ist individuell anpassbar.
 **Beispiel eines Schaltverhaltens an einem Tag (Startzeit aller Ventile: 6:00)**      
 
 
-Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und **wurde nur mit diesem** getestet.
+Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL) und **wurde nur mit dieser** getestet.
+Im ioBroker Forum laufen aber auch einige Tests mit Wetterstationen über den Sainlogic Adapter.
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
@@ -53,11 +54,11 @@ Meine Bewässerung arbeitet mit dem Homematic IP Wettersensor plus (HmIP-SWO-PL)
 ---
 <a id="installation"></a>
 ## Installation
-Der Adapter befindet sich im "latest" Verwahrungsort von ioBroker. Von hier kann er heruntergeladen werden. 
+Der Adapter befindet sich im "stable" Verwahrungsort von ioBroker. Von hier kann er heruntergeladen werden. 
 Um ihn installieren zu können muss man in den Adapter von ioBroker gehen und dort "VON GITHUB" anklicken. 
 Unter "Adapter auswählen" wählt man dann "sprinkleControl [Dirk-Peter-md]" aus und drückt dann installieren.
 
-Spätestens nach Refresh der Adapterliste steht der Adapter **SprinkleControl** zur Verfügung.
+Spätestens nach Refresh der Adapterliste steht der Adapter **Sprinkle Control** zur Verfügung.
 
 Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des Adapters vom Repository geladen:
 
@@ -165,11 +166,11 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
     * **Steuerspannung der Ventile** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier können sie das STATE für die Steuerspannung der Ventile auswählen.
     Dieser Ausgang ist aktive, so wie eines der Ventile aktive ist.
     * **maximaler Parallelbetrieb der Ventile** – Hier kann die Anzahl der aktiven Ventile begrenzt werden. z. B. wenn die Leistung des Steuertrafos nicht ausreicht, mehrere Ventile parallel zu schalten. 
-    * **Schaltabstand zwischen den Ventilen in ms** - Eingabe einer Zeit in Millisekunden. Diese ist die Wartezeit, bis zum Schalten des nächsten Ventils damit nicht z. B. 6 Ausgänge auf einmal schalten.
+    * **Schaltabstand zwischen den Ventilen in ms** – Eingabe einer Zeit in Millisekunden. Diese ist die Wartezeit, bis zum Schalten des nächsten Ventils damit nicht z. B. 6 Ausgänge auf einmal schalten.
     
 * **Einstellung der Pumpe**
     * **Hauptpumpe: ** – Durch anklicken des (+) Symbols öffnet sich das Select-ID State Fenster. Hier wird das STATE der Pumpe hinterlegt, welche für die Wasserversorgung zuständig ist.
-    * **maximale Pumpenleistung der Hauptpumpe in l/h: ** – hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
+    * **maximale Pumpenleistung der Hauptpumpe in l/h: ** – Hier wird die maximale Pumpenleistung hinterlegt. Diese begrenzt dann die Bewässerungskreise, damit noch genügend Druck an den Ventilen ansteht.
         * **Achtung: ** – Hier muss die tatsächliche Pumpenleistung angegeben werden, nicht die vom Typenschild. Ich habe z. B. eine "Gardena 5000/5 LCD" diese schafft aber nur 1800l auf grund der Leitungslänge und nicht 4500l/h, wie auf dem Typenschild angegeben.  
 
 * **Zisternenpumpe in Vorrangschaltung hinzufügen**
@@ -221,7 +222,7 @@ In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei
 ---
 <a id="astro-einstellungen"></a>
 ## Astro-Einstellungen
-* **Breiten- und Längengrad**  
+* **Breiten- und Längengrad**
   Breiten- und Längengrad übernimmt SprinkleControl aus den ioBroker Systemeinstellungen.
   SprinkleControl berechnet anhand dieser Werte den Sonnenstand.
 
@@ -229,14 +230,14 @@ In den Extra-Einstellungen werden verschiedene Einstellungen eingegeben, die bei
 <a id="debug-einstellungen"></a>
 ## Debug-Einstellungen
 
-* **debuggen**  
+* **debuggen**
   Durch Aktivierung werden im Log zusätzliche Informationen angezeigt, wodurch Fehler schneller ermittelt werden können.
 
 ---
 <a id="zustzliche-benachrichtigungseinstellungen"></a>
 ## Zusätzliche Benachrichtigungseinstellungen
 
-* **Benachrichtigungen aktivieren / deaktivieren**  
+* **Benachrichtigungen aktivieren / deaktivieren**
   Einschalten des Reiters Benachrichtigungen. Hier werden dann die Einstellungen zur Kommunikation vorgenommen. 
 ---
 <a id="sensoren-zur-berechnung-der-verdunstung"></a>
@@ -295,6 +296,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
         * **lastOn** – letzter Start des Beregnungskreises (05.07 14:14)
         * **lastRunningTime** – letzte Bewässerungsdauer
     * **actualSoilMoisture** – aktuelle virtuelle Bodenfeuchte in % (max. 100 % nach der Beregnung, >100 % nach einem kräftigen Regen) (hat mit der tatsächlichen nichts zu tun)
+    * **autoOn** - Automatik ein (Hier könnt ihr die automatische Bewässerung dieses Kreises ausschalten, z. B. bei einer Reparatur, wobei manuelles Bewässern jederzeit möglich ist.)
     * **countdown** – Restzeit des Beregnungskreises
     * **runningTime** – Laufzeit des Beregnungskreises
         - wenn hier eine Zahl > 0 eingegeben wird, so startet der Beregnungskreises für die angegebene Zeit in Minuten

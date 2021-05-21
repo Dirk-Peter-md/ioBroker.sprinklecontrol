@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "news": {
+      "0.1.7": {
+        "en": "Description in English added",
+        "de": "Beschreibung in Englisch hinzugefügt",
+        "ru": "Добавлено описание на английском языке",
+        "pt": "Descrição em inglês adicionada",
+        "nl": "Beschrijving in het Engels toegevoegd",
+        "fr": "Description en anglais ajoutée",
+        "it": "Aggiunta descrizione in inglese",
+        "es": "Descripción en inglés agregada",
+        "pl": "Dodano opis w języku angielskim",
+        "zh-cn": "添加英文说明"
+      },
       "0.1.6": {
         "en": "AutoOn switch added per irrigation circuit, Bug fixed (js-controller), Precipitation counter detached from evaporation",
         "de": "AutoOn-Schalter pro Bewässerungskreis hinzugefügt, Fehler behoben (js-Controller), Niederschlagszähler von der Verdunstung getrennt",
@@ -135,6 +147,10 @@
       "Steuerung",
       "ioBroker"
     ],
+    "docs": {
+      "en": "docs/en/sprinklecontrol.md",
+      "de": "docs/de/sprinklecontrol.md"
+    },
     "license": "MIT",
     "platform": "Javascript/Node.js",
     "main": "main.js",
