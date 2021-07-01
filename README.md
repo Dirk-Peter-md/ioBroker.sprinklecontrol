@@ -9,8 +9,7 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
 [![Dependency Status](https://img.shields.io/david/Dirk-Peter-md/iobroker.sprinklecontrol.svg)](https://david-dm.org/Dirk-Peter-md/iobroker.sprinklecontrol)
 [![Known Vulnerabilities](https://snyk.io/test/github/Dirk-Peter-md/ioBroker.sprinklecontrol/badge.svg)](https://snyk.io/test/github/Dirk-Peter-md/ioBroker.sprinklecontrol)
-[![Travis-CI](http://img.shields.io/travis/Dirk-Peter-md/ioBroker.sprinklecontrol/master.svg)](https://travis-ci.org/Dirk-Peter-md/ioBroker.sprinklecontrol)
-
+[![Build Status](https://travis-ci.com/Dirk-Peter-md/ioBroker.sprinklecontrol.svg?branch=master)](https://travis-ci.com/Dirk-Peter-md/ioBroker.sprinklecontrol)
 
 [![NPM](https://nodei.co/npm/iobroker.sprinklecontrol.png?downloads=true)](https://nodei.co/npm/iobroker.sprinklecontrol/)
 
@@ -31,11 +30,14 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 
 ## Changelog
-
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### 0.2.0 (??.??.2021)
+* (Dirk-Peter-md) Bodenfeuchte-Sensor hinzugefügt
+* (Dirk-Peter-md) Schwellwert für Wettervorhersage hinzugefügt
 
 ### 0.1.7 (22.05.2021)
 * (Dirk-Peter-md) Beschreibung in englischer Sprache hinzugefügt

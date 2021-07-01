@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.1.7",
+    "version": "0.2.0",
     "news": {
+      "0.2.0": {
+        "en": "Soil moisture sensor added, Weather forecast threshold added",
+        "de": "Bodenfeuchte-Sensor hinzugefügt, Wettervorhersage Schwellenwert hinzugefügt",
+        "ru": "Добавлен датчик влажности почвы, добавлен порог прогноза погоды",
+        "pt": "Sensor de umidade do solo adicionado, limite de previsão do tempo adicionado",
+        "nl": "Bodemvochtsensor toegevoegd, Weersvoorspellingsdrempel toegevoegd",
+        "fr": "Capteur d'humidité du sol ajouté, Seuil de prévision météo ajouté",
+        "it": "Aggiunto sensore di umidità del suolo, aggiunta soglia per le previsioni del tempo",
+        "es": "Sensor de humedad del suelo agregado, umbral de pronóstico del tiempo agregado",
+        "pl": "Dodano czujnik wilgotności gleby, dodano próg prognozy pogody",
+        "zh-cn": "添加了土壤湿度传感器，添加了天气预报阈值"
+      },
       "0.1.7": {
         "en": "Description in English added",
         "de": "Beschreibung in Englisch hinzugefügt",
