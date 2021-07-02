@@ -696,6 +696,7 @@ function startTimeSprinkle() {
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                 messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' >= 0 ]');
                             }
                         }
                     // --- analog  --  Bodenfeuchte-Sensor im Wertebereich von 0 bis 100% --- //
@@ -717,6 +718,7 @@ function startTimeSprinkle() {
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                 messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' >= 0 ]');
                             }
                         }
                     } else {

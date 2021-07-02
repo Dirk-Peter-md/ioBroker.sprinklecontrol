@@ -129,15 +129,31 @@ Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und *
 * **maximale Bewässerungsverlängerung in %** – Begrenzung der Bewässerungsdauer in Prozent (100 % = Bewässerungsdauer wird nicht verlängert)
 * **Bewässerungsintervall in min** – Die Bewässerungsdauer wird in einem Intervall aufgeteilt. (z. B. 5 min an, mindestens 5 min aus, 5 min an, usw.)
     * **Tipp** –> Bei mir habe ich ein Rasengitter bei der Autoauffahrt. Hier läuft das Wasser beim Bewässern einfach nur die Schräge herunter. Durch die Bewässerung in Intervallen konnte ich dem entgegenwirken. 
-#### Einschaltpunkt zum Gießen
+#### Einschaltpunkt zum Gießen (Berechnung der Verdunstung)
+* **Methode zur Kontrolle der Bodenfeuchtigkeit** → Berechnung der Verdunstung
 * **Einschaltpunkt (Bodenfeuchte) der Bewässerungsventile in %** – Auslösetrigger: Wenn dieser Wert unterschritten wird, so beginnt zum Startzeitpunkt die Bewässerung.
 * **Bodenfeuchte = 100 % nach der Bewässerung** – bei Aktivierung, wird die Bodenfeuchte nach der Bewässerung auf 100 % gesetzt. Ansonsten bleibt sie knapp darunter Aufgrund der Verdunstung während der Bewässerung.
 #### maximale Bodenfeuchtigkeit
-* **maximale Bewässerung nach der Bewässerung in (mm)** – Max. Wassergehalt im Boden nach der Bewässerung.
+* **maximale Bodenfeuchte nach der Bewässerung in (mm)** – Max. Wassergehalt im Boden nach der Bewässerung.
     * **Tipp** –> Rasengitter: 5; Blumenbeet: 10; Rasenfläche: 14
 * **maximale Bodenfeuchte nach einem Regen in (mm)** – Max. Wassergehalt im Boden nach einem kräftigen Regen.
     * **Tipp** –> Rasengitter: 6; Blumenbeet: 15; Rasenfläche: 19
-    
+      
+![bistabil.jpg](img/bistabil.jpg)
+#### Einschaltpunkt zum Gießen (Bodenfeuchte-Sensor → bistabil true(ein), false(aus))
+* **Methode zur Kontrolle der Bodenfeuchtigkeit** → Bodenfeuchte-Sensor bistabil (zwei Schaltzustände) true === Bewässerung EIN
+* **Bodenfeuchte-Sensor** Auswahl des Sensors über das PLUS-Zeichen
+* **Sensor im Gewächshaus** bei true (Auswahl) wird die Regenvorhersage nicht berücksichtigt
+
+![analog.jpg](img/analog.jpg)
+#### Einschaltpunkt zum Gießen (Berechnung der Verdunstung → analog interne Umrechnung in 0 - 100 %)
+* **Methode zur Kontrolle der Bodenfeuchtigkeit** → Bodenfeuchte-Sensor analog
+* **Bodenfeuchte-Sensor** Auswahl des Sensors über das PLUS-Zeichen
+* **Sensor im Gewächshaus** bei true (Auswahl) wird die Regenvorhersage nicht berücksichtigt
+* **Einschaltpunkt (Bodenfeuchte) der Bewässerungsventile in %** – Auslösetrigger: Wenn dieser Wert unterschritten wird, so beginnt zum Startzeitpunkt die Bewässerung.
+#### Konfiguration des analogen Bodenfeuchte-Sensors
+* **analoger Bodenfeuchte-Sensor bei 0 Prozent (Sensor in der Luft)** Wert des Sensors an der Luft hier eingeben! Sollte dieser unterschritten werden erfolgt eine Warnung im Protokoll(Debug)
+* **analoger Bodenfeuchte-Sensor bei 100 Prozent (Sensor im Wasser)** Wert des Sensors im Wasser hier eingeben! Sollte dieser überschritten werden erfolgt eine Warnung im Protokoll(Debug)
 ---
 
 <a id="pumpeneinstellungen-des-ventils"></a>
@@ -261,7 +277,7 @@ Dies geschieht jedes Mal, wenn die Temperatur sich ändert.
 Beim Aktivieren des Feldes "Wettervorhersage verwenden", erscheint ein Auswahlfeld. In diesem muss die Instanz vom Adapter "Das Wetter" ausgewählt werden.
 Im Adapter "Das Wetter“ muss der "Pfad 2: XML-Datei mit 5-Tage-Wettervorhersage und detaillierten Informationen für alle 3 Stunden" ausgefüllt sein, 
 damit SprinkleControl auf das Objekt **"daswetter.0.NextDaysDetailed.Location_1.Day_1.rain_value"** zugreifen kann. Dieser Wert wird dann bei jedem Start im Automatikmodus zur Entscheidung einer Beregnung verwendet.
-
+* **Niederschlags-Schwellwert in mm** Erst wenn dieser Wert von der Regenvorhersage überschritten wird, so wird diese berücksichtigt.
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
 ---
