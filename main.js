@@ -724,8 +724,8 @@ function startTimeSprinkle() {
                             }
                         }
                     } else {
-                        // ---  calculation  --  Berechnung der Bodenfeuchte  --- //
-                        //  --             Bodenfeuchte zu gering             --  //
+                        // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
+                        //  --             Bodenfeuchte zu gering              --  //
                         if (res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) {
                             /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
                             const resMoisture = (adapter.config.weatherForecast)?((+ res.soilMoisture.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.soilMoisture.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage

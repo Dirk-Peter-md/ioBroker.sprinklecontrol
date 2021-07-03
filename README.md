@@ -35,7 +35,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 	### **WORK IN PROGRESS**
 -->
 
-### 0.2.0 (??.??.2021)
+### 0.2.0 (03.07.2021)
 * (Dirk-Peter-md) Bodenfeuchte-Sensor hinzugefügt
 * (Dirk-Peter-md) Schwellwert für Wettervorhersage hinzugefügt
 

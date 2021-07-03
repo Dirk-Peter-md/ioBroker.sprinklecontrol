@@ -50,6 +50,7 @@ Im ioBroker Forum laufen aber auch einige Tests mit Wetterstationen über den Sa
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="installation"></a>
@@ -64,6 +65,7 @@ Nach anklicken des (+) wird eine Instanz angelegt und die notwendigen Daten des 
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="haupteinstellungen"></a>
@@ -169,6 +171,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: **Haupteinstellungen** und *
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="pumpen-einstellungen"></a>
@@ -199,6 +202,7 @@ Hier werden die Einstellung der Hauptpumpe (Grundwasser), einer zweiten Pumpe (Z
     
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="zeit-einstellungen"></a>
@@ -226,6 +230,7 @@ In diesem Abschnitt wird die Startzeiten von SprinkleControl festgelegt.
     
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="zustzliche-einstellungen"></a>
@@ -280,6 +285,7 @@ damit SprinkleControl auf das Objekt **"daswetter.0.NextDaysDetailed.Location_1.
 * **Niederschlags-Schwellwert in mm** Erst wenn dieser Wert von der Regenvorhersage überschritten wird, so wird diese berücksichtigt.
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 # Objekte
@@ -327,6 +333,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="benachrichtigungen"></a>
@@ -341,6 +348,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
     
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 --- 
 <a id="telegram"></a>
 ### Telegram
@@ -357,6 +365,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 <a id="pushover"></a>
 ### Pushover
@@ -374,6 +383,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 <a id="e-mail"></a>
 ### E-Mail
@@ -390,6 +400,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 <a id="whatsapp"></a>
 ### WhatsApp
@@ -404,6 +415,7 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 
 ---
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
 <a id="was-ist-fr-die-zukunft-geplant"></a>
@@ -413,5 +425,6 @@ Ich habe mich zur Berechnung der Verdunstung nach der Formel für die Berechnung
 
 ---  
 * [zurück zum Inhaltsverzeichnis](#inhaltsverzeichnis)
+
 ---
 ---
