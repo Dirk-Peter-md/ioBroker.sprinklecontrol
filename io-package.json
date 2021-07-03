@@ -183,7 +183,8 @@
       {
         "js-controller": ">=1.4.2"
       }
-    ]
+    ],
+    "installedFrom": "C:\\iobroker\\node_entwicklung\\ioBroker.sprinklecontrol"
   },
   "native": {
     "triggerControlVoltage": "",
