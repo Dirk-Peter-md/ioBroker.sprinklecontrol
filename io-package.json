@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "news": {
+      "0.2.1": {
+        "en": "Start on fixed weekdays (without sensors) added, bugs fixed",
+        "de": "Start an festen Wochentagen (ohne Sensoren) hinzugefügt, Fehler behoben",
+        "ru": "Добавлен запуск по фиксированным рабочим дням (без датчиков), исправлены ошибки",
+        "pt": "Comece em dias de semana fixos (sem sensores) adicionado, bugs corrigidos",
+        "nl": "Start op vaste weekdagen (zonder sensoren) toegevoegd, bugs verholpen",
+        "fr": "Démarrage les jours de semaine fixes (sans capteurs) ajoutés, bugs corrigés",
+        "it": "Inizia nei giorni feriali fissi (senza sensori) aggiunti, bug corretti",
+        "es": "Comience en días de semana fijos (sin sensores) agregado, errores corregidos",
+        "pl": "Dodano start w ustalone dni tygodnia (bez czujników), naprawiono błędy",
+        "zh-cn": "添加固定工作日（无传感器），修复错误"
+      },
       "0.2.0": {
         "en": "Soil moisture sensor added, Weather forecast threshold added",
         "de": "Bodenfeuchte-Sensor hinzugefügt, Wettervorhersage Schwellenwert hinzugefügt",
@@ -258,7 +270,15 @@
         "triggerSM": "",
         "inGreenhouse": false,
         "analogZPct": "0",
-        "analogOHPct": "100"
+        "analogOHPct": "100",
+        "startDay": "threeRd",
+        "sun": false,
+        "mon": false,
+        "tue": false,
+        "wed": false,
+        "thur": false,
+        "fri": false,
+        "sat": false
       }
     ]
   },

@@ -67,10 +67,21 @@ function load(settings, onChange) {
             $('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val('50').trigger('change');
             $('#events .values-input[data-name="analogZPct"][data-index="' + id + '"]').val('0').trigger('change');
             $('#events .values-input[data-name="analogOHPct"][data-index="' + id + '"]').val('100').trigger('change');
+            $('#events .values-input[data-name="startDay"][data-index="' + id + '"]').val('threeRd').trigger('change');
+            $('#events .values-input[data-name="startDay"][data-index="' + id + '"]').select().trigger('change');
             // boolean
             $('#events .values-input[data-name="booster"][data-index="' + id + '"]').prop('checked', false);
             $('#events .values-input[data-name="endIrrigation"][data-index="' + id + '"]').prop('checked', true);
             $('#events .values-input[data-name="inGreenhouse"][data-index="' + id + '"]').prop('checked', false);
+
+            $('#events .values-input[data-name="sun"][data-index="' + id + '"]').prop('checked', false);
+            $('#events .values-input[data-name="mon"][data-index="' + id + '"]').prop('checked', false);
+            $('#events .values-input[data-name="tue"][data-index="' + id + '"]').prop('checked', false);
+            $('#events .values-input[data-name="wed"][data-index="' + id + '"]').prop('checked', false);
+            $('#events .values-input[data-name="thur"][data-index="' + id + '"]').prop('checked', false);
+            $('#events .values-input[data-name="fri"][data-index="' + id + '"]').prop('checked', false);
+            $('#events .values-input[data-name="sat"][data-index="' + id + '"]').prop('checked', false);
+
         }, 1000);
 
         initSelectId(function (sid) {
@@ -328,10 +339,19 @@ function tableOnReady() {
         $('#triggerSM').val($('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val());
         $('#analogZPct').val($('#events .values-input[data-name="analogZPct"][data-index="' + id + '"]').val());
         $('#analogOHPct').val($('#events .values-input[data-name="analogOHPct"][data-index="' + id + '"]').val());
+        $('#startDay').val($('#events .values-input[data-name="startDay"][data-index="' + id + '"]').val());
+        $('#startDay').select().trigger('change');
         // boolean
         $('#booster').prop('checked', ($('#events .values-input[data-name="booster"][data-index="' + id + '"]')).prop('checked'));
         $('#endIrrigation').prop('checked', ($('#events .values-input[data-name="endIrrigation"][data-index="' +id + '"]')).prop('checked'));
         $('#inGreenhouse').prop('checked', ($('#events .values-input[data-name="inGreenhouse"][data-index="' +id + '"]')).prop('checked'));
+        $('#sun').prop('checked', ($('#events .values-input[data-name="sun"][data-index="' +id + '"]')).prop('checked'));
+        $('#mon').prop('checked', ($('#events .values-input[data-name="mon"][data-index="' +id + '"]')).prop('checked'));
+        $('#tue').prop('checked', ($('#events .values-input[data-name="tue"][data-index="' +id + '"]')).prop('checked'));
+        $('#wed').prop('checked', ($('#events .values-input[data-name="wed"][data-index="' +id + '"]')).prop('checked'));
+        $('#thur').prop('checked', ($('#events .values-input[data-name="thur"][data-index="' +id + '"]')).prop('checked'));
+        $('#fri').prop('checked', ($('#events .values-input[data-name="fri"][data-index="' +id + '"]')).prop('checked'));
+        $('#sat').prop('checked', ($('#events .values-input[data-name="sat"][data-index="' +id + '"]')).prop('checked'));
 
         $('#dialogDeviceEditSprinkle').html($('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val());
 
@@ -349,10 +369,19 @@ function tableOnReady() {
                 let newTriggerSM = $('#triggerSM').val();
                 let newAnalogZPct = $('#analogZPct').val();
                 let newAnalogOHPct = $('#analogOHPct').val();
+                let newStartDay = $('#startDay').val();
                 // boolean
                 let newBooster = $('#booster').prop('checked');
                 let newEndIrrigation = $('#endIrrigation').prop('checked');
                 let newInGreenhouse = $('#inGreenhouse').prop('checked');
+                let newSun = $('#sun').prop('checked');
+                let newMon = $('#mon').prop('checked');
+                let newTue = $('#tue').prop('checked');
+                let newWed = $('#wed').prop('checked');
+                let newThur = $('#thur').prop('checked');
+                let newFri = $('#fri').prop('checked');
+                let newSat = $('#sat').prop('checked');
+
 
                 $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
                 $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
@@ -366,10 +395,18 @@ function tableOnReady() {
                 $('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val(newTriggerSM).trigger('change');
                 $('#events .values-input[data-name="analogZPct"][data-index="' + id + '"]').val(newAnalogZPct).trigger('change');
                 $('#events .values-input[data-name="analogOHPct"][data-index="' + id + '"]').val(newAnalogOHPct).trigger('change');
+                $('#events .values-input[data-name="startDay"][data-index="' + id + '"]').val(newStartDay).trigger('change');
                 // boolean
                 $('#events .values-input[data-name="booster"][data-index="' + id + '"]').prop('checked',newBooster);
                 $('#events .values-input[data-name="endIrrigation"][data-index="' + id + '"]').prop('checked',newEndIrrigation);
                 $('#events .values-input[data-name="inGreenhouse"][data-index="' + id + '"]').prop('checked',newInGreenhouse);
+                $('#events .values-input[data-name="sun"][data-index="' + id + '"]').prop('checked',newSun);
+                $('#events .values-input[data-name="mon"][data-index="' + id + '"]').prop('checked',newMon);
+                $('#events .values-input[data-name="tue"][data-index="' + id + '"]').prop('checked',newTue);
+                $('#events .values-input[data-name="wed"][data-index="' + id + '"]').prop('checked',newWed);
+                $('#events .values-input[data-name="thur"][data-index="' + id + '"]').prop('checked',newThur);
+                $('#events .values-input[data-name="fri"][data-index="' + id + '"]').prop('checked',newFri);
+                $('#events .values-input[data-name="sat"][data-index="' + id + '"]').prop('checked',newSat);
 
             });
         }, 20)
@@ -405,7 +442,7 @@ function save(callback) {
  * Show and hide the display depending on the events
  * Anzeige je nach Ereignissen ein- und ausblenden
  */
-function showHideSettings() {
+function showHideSettings(callback) {
 
     // Zeiteinstellungen => Feiertagseinstellung sichtbar bei combobox
     $('#wateringStartTime').on('change', function () {
@@ -494,24 +531,45 @@ function showHideSettings() {
             $('.visAnalog').hide();
             $('.visCalculation').show();
             $('.visNotAnalog').show();
+            $('.visFixDay').hide();
         } else if ($(this).val() === 'bistable') {
             $('.visSensor').show();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
             $('.visNotAnalog').hide();
+            $('.visFixDay').hide();
         } else if ($(this).val() === 'analog') {
             $('.visSensor').show();
             $('.visAnalog').show();
             $('.visCalculation').hide();
             $('.visNotAnalog').show();
+            $('.visFixDay').hide();
+        } else if ($(this).val() === 'fixDay') {
+            $('.visSensor').hide();
+            $('.visAnalog').hide();
+            $('.visCalculation').hide();
+            $('.visNotAnalog').hide();
+            $('.visFixDay').show();
         } else {
             $(this).val('calculation');
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
             $('.visNotAnalog').show();
+            $('.visFixDay').hide();
         }
     }).trigger('change');
+
+    // Wochentags-Auswahl in Sprinkler - Main settings
+
+    $('#startDay').on('change', function () {
+        if (($(this).val() === 'fixDay') && ($(this).val() === 'fixDay')) {
+            $('.visFixDaysWeek').show();
+        } else {
+            $('.visFixDaysWeek').hide();
+        }
+    }).trigger('change');
+
 }
 
 let selectId;

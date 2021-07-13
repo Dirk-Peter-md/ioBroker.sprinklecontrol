@@ -15,7 +15,7 @@ const myConfig = require('./lib/myConfig.js');                          // myCon
 const evaporation = require('./lib/evaporation.js');
 const addTime = require('./lib/tools.js').addTime;
 const formatTime = require('./lib/tools').formatTime;
-const trend = require('./lib/tools').trend;
+//const trend = require('./lib/tools').trend;
 
 /**
  * The adapter instance
@@ -30,9 +30,11 @@ let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorrowStr;
 /* DasWetter.com */
-/** @type {number} */
+/** @type {number}
+ * - heutige Regenvorhersage in mm */
 let weatherForecastTodayNum = 0;
-/** @type {number} */
+/** @type {number}
+ * - morgige Regenvorhersage in mm */
 let weatherForecastTomorrowNum = 0;
 
 /** @type {string} */
@@ -51,6 +53,8 @@ let autoOnOffStr;
 let kwStr; // akt. KW der Woche
 /** @type {number | undefined} */
 let timer;
+/** @type {number} */
+let today;  // heutige Tag 0:So;1:Mo...6:Sa
 
 /* memo */
 /** @type {{}} */
@@ -74,7 +78,7 @@ function startAdapter(options) {
     /**
      * +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
      *
-     * @param {() => void }callback
+     * @param {() => void}callback
      */
     adapter.on('unload', (callback) => {
         /* Wird beim Stoppen nicht ausgeführt - Warum?
@@ -363,7 +367,7 @@ function checkStates() {
 
     // akt. kW ermitteln für history last week
     kwStr = formatTime(adapter, '','kW');
-    adapter.log.info('checkStates akt-KW: ' + kwStr);
+    today = formatTime(adapter,'', 'day');
 }
 
 /**
@@ -514,6 +518,7 @@ function checkActualStates () {
 const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Berechnungen mittels SunCalc
     sunPos();
+    today = formatTime(adapter,'', 'day');
 
     // History Daten aktualisieren wenn eine neue Woche beginnt
     if (adapter.config.debug) {adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime(adapter, '','kW') + ' if: ' + (kwStr !== formatTime(adapter, '','kW')));}
@@ -676,6 +681,19 @@ function startTimeSprinkle() {
              * @type {Array.<{auto: Boolean, sprinkleID: Number, wateringTime: Number}>}
              */
             const memAddList = [];
+
+            /**
+             * result Rain
+             * - (aktuelle Wettervorhersage - Schwellwert der Regenberücksichtigung) wenn Sensor sich im Freien befindet
+             * - (> 0) es Regnet - Abbruch -
+             * - (<= 0) Start der Bewässerung
+             * @param {boolean} inGreenhouse - Sensor befindet sich im Gewächshaus
+             * @returns {number} - resultierende Regenmenge
+             */
+            function resRain (inGreenhouse) {
+                return (adapter.config.weatherForecast && !inGreenhouse) ? ((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)) : 0;
+            }
+
             for(const res of result) {
                 messageText += '<b>' + res.objectName + '</b>' + ' ' + res.soilMoisture.pct + '% (' + res.soilMoisture.pctTriggerIrrigation + '%)' + '\n';
                 // Test Bodenfeuchte
@@ -685,19 +703,18 @@ function startTimeSprinkle() {
                     if(res.methodControlSM === 'bistable') {
                         if(res.soilMoisture.pct < 50) {
                             /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                            const resRain = (adapter.config.weatherForecast && !res.inGreenhouse) ? ((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)) : 0;
-                            adapter.log.info('resRain = ' + resRain + ' = ' + (+ weatherForecastTodayNum) + ' - ' +  parseFloat(adapter.config.thresholdRain) + ', if ' + (resRain >= 0));
-                            if (resRain >= 0) {
+                            if (resRain(res.inGreenhouse) <= 0) {
+                                let curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
                                 memAddList.push({
                                     auto: true,
                                     sprinkleID: res.sprinkleID,
-                                    wateringTime: Math.round(60*res.wateringTime)
+                                    wateringTime: curWateringTime
                                 });
-                                messageText += '   START => ' + addTime(Math.round(60*res.wateringTime), '') + '\n';
+                                messageText += '   START => ' + addTime(curWateringTime, '') + '\n';
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                 messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' <= 0 ]');
+                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
                             }
                         }
                     // --- analog  --  Bodenfeuchte-Sensor im Wertebereich von 0 bis 100% --- //
@@ -705,9 +722,7 @@ function startTimeSprinkle() {
                     } else if (res.methodControlSM === 'analog') {
                         if(res.soilMoisture.pct <= res.soilMoisture.pctTriggerIrrigation) {
                             /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                            const resRain = (adapter.config.weatherForecast && !res.inGreenhouse) ? ((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)) : 0;
-                            adapter.log.info('resRain = ' + resRain + ' = ' + (+ weatherForecastTodayNum) + ' - ' +  parseFloat(adapter.config.thresholdRain) + ', if ' + (resRain >= 0));
-                            if (resRain >= 0) {
+                            if (resRain(res.inGreenhouse) <= 0) {
                                 let countdown = res.wateringTime * (100 - res.soilMoisture.pct) / (100 - res.soilMoisture.pctTriggerIrrigation); // in min
                                 // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                                 if (countdown > (res.wateringTime * res.wateringAdd / 100)) {countdown = res.wateringTime * res.wateringAdd / 100;}
@@ -716,16 +731,41 @@ function startTimeSprinkle() {
                                     sprinkleID: res.sprinkleID,
                                     wateringTime: Math.round(60* countdown)
                                 });
-                                messageText += '   START => ' + addTime(Math.round(60*res.wateringTime), '') + '\n';
+                                messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                 messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' <= 0 ]');
+                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
                             }
                         }
+                    // --- fixDay  --  Start an festen Tagen ohne Sensoren  --- //
+                    //  --              Bewässerungstag erreicht                //
+                    } else if (res.methodControlSM === 'fixDay') {
+                        if (res.startFixDay[today]) {
+                            /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
+                            if (resRain(false) <= 0) {
+                                let curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
+                                memAddList.push({
+                                    auto: true,
+                                    sprinkleID: res.sprinkleID,
+                                    wateringTime: curWateringTime
+                                });
+                                messageText += '   START => ' + addTime(curWateringTime, '') + '\n';
+                            } else if (adapter.config.weatherForecast){
+                                messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                            }
+                            if (res.startDay === 'threeRd'){          // Next Start in 3 Tagen
+                                res.startFixDay[today] = false;
+                                res.startFixDay[(today + 3 > 6) ? (today-4) : (today+3)] = true;
+                            }else if (res.startDay === 'twoNd') {     // Next Start in 2 Tagen
+                                res.startFixDay[today] = false;
+                                res.startFixDay[(today + 2 > 6) ? (today-6) : (today+2)] = true;
+                            }
+                        }
+                    // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
+                    //  --             Bodenfeuchte zu gering              --  //
                     } else {
-                        // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
-                        //  --             Bodenfeuchte zu gering              --  //
                         if (res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) {
                             /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
                             const resMoisture = (adapter.config.weatherForecast)?((+ res.soilMoisture.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.soilMoisture.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage

@@ -90,6 +90,14 @@
                                         <th data-name="triggerSM" id="events_col_17" data-type="text" style="width: 0" class="translate"></th>
                                         <th data-name="analogZPct" id="events_col_18" data-type="number" style="width: 0" class="translate"></th>
                                         <th data-name="analogOHPct" id="events_col_19" data-type="number" style="width: 0" class="translate"></th>
+                                        <th data-name="startDay" id="events_col_20" data-type="text" style="width: 0" class="translate"></th>
+                                        <th data-name="sun" id="events_col_21" data-type="checkbox" style="width: 0" class="translate"></th>
+                                        <th data-name="mon" id="events_col_22" data-type="checkbox" style="width: 0" class="translate"></th>
+                                        <th data-name="tue" id="events_col_23" data-type="checkbox" style="width: 0" class="translate"></th>
+                                        <th data-name="wed" id="events_col_24" data-type="checkbox" style="width: 0" class="translate"></th>
+                                        <th data-name="thur" id="events_col_25" data-type="checkbox" style="width: 0" class="translate"></th>
+                                        <th data-name="fri" id="events_col_26" data-type="checkbox" style="width: 0" class="translate"></th>
+                                        <th data-name="sat" id="events_col_27" data-type="checkbox" style="width: 0" class="translate"></th>
                                         <!-- ****************************************************************** -->
 
                                     </tr>
@@ -682,6 +690,7 @@
                                         <option value="calculation" class="translate">Calculation of evaporation</option>
                                         <option value="bistable" class="translate">Soil moisture sensor bistable</option>
                                         <option value="analog" class="translate">Soil moisture sensor analog</option>
+                                        <option value="fixDay" class="translate">Start on fixed days of the week (without sensors)</option>
                                     </select>
                                     <label for="methodControlSM" class="translate"></label>
                                     <span class="translate">Method of controlling soil moisture</span>
@@ -734,7 +743,6 @@
                                         <span class="translate">maximum soil moisture after the rain in (mm)</span>
                                     </div>
                                 </div>
-
                             </div>
                             <!-- analog => Soil moisture sensor analog => Bodenfeuchte Sensor analog -->
                             <div class="row visAnalog">
@@ -753,6 +761,60 @@
                                         <input type="number" class="form-control" id="analogOHPct"/>
                                         <label for="analogOHPct" class="translate"></label>
                                         <span class="translate">analog soil moisture sensor at 100 percent (sensor in the water)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- fixDay => Start on fixed days (without sensors) => Start an festen Wochentagen bzw. Perioden -->
+                            <div class="row visFixDay">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h6 class="translate sub-title">Start on fixed days (without sensors)</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 l3 input-field">
+                                        <div class="col s12 l12 input-field">
+                                            <select type="combobox" class="value" id="startDay">
+                                                <option value="threeRd" class="translate">Three days of rhythm</option>
+                                                <option value="twoNd" class="translate">Every second day</option>
+                                                <option value="fixDay" class="translate">Start on fixed days</option>
+                                            </select>
+                                            <label for="startDay" class="translate"></label>
+                                            <span class="translate">Selection of watering days in the week</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row visFixDaysWeek">
+                                    <div class="col s12 l12 input-field">
+                                        <legend class="translate">Tick the days of the week you want</legend>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="sun">
+                                            <span for="sun" class="translate">Sunday</span>
+                                        </div>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="mon">
+                                            <span for="mon" class="translate">Monday</span>
+                                        </div>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="tue">
+                                            <span for="tue" class="translate">Tuesday</span>
+                                        </div>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="wed">
+                                            <span for="wed" class="translate">Wednesday</span>
+                                        </div>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="thur">
+                                            <span for="thur" class="translate">Thursday</span>
+                                        </div>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="fri">
+                                            <span for="fri" class="translate">Friday</span>
+                                        </div>
+                                        <div class="col s12 l1 input-field">
+                                            <input type="checkbox" class="form-control" id="sat">
+                                            <span for="sat" class="translate">Saturday</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
