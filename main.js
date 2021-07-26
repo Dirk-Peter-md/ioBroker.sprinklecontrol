@@ -14,7 +14,7 @@ const valveControl = require('./lib/valveControl.js');                  // Steue
 const myConfig = require('./lib/myConfig.js');                          // myConfig => Speichern und abrufen von Konfigurationsdaten der Ventile
 const evaporation = require('./lib/evaporation.js');
 const addTime = require('./lib/tools.js').addTime;
-const formatTime = require('./lib/tools').formatTime;
+const formatTime = require('./lib/tools.js').formatTime;
 //const trend = require('./lib/tools').trend;
 
 /**
@@ -314,6 +314,35 @@ function GetSystemData() {
     }
 }
 
+/**
+ * Schreiben des nächsten Starts in .actualSoilMoisture
+ * oder Rückgabe des DayName für den nächsten Start
+ * @param {number} sprinkleID - Number of Array[0...]
+ * @param {boolean} returnOn - true = Rückgabe des Wochentags; false = Schreiben in State .actualSoilMoisture
+ * @returns {string} nextStart ['Sun','Mon','Tue','Wed','Thur','Fri','Sat']
+ */
+function curNextFixDay (sprinkleID, returnOn) {
+    let weekDayArray = myConfig.config[sprinkleID].startFixDay
+    const objPfad = 'sprinkle.' + myConfig.config[sprinkleID].objectName;
+    const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat']
+    let curDay = formatTime(adapter, '', 'day')
+    for ( let i=0; i<7; i++ ) {
+        curDay++;
+        if (curDay > 6) { curDay = curDay - 7}
+        if (weekDayArray[curDay] === true) {
+            if (returnOn) {
+                return weekday[curDay];
+            } else {
+                adapter.setState(objPfad + '.actualSoilMoisture', {
+                    val: curDay,
+                    ack: true
+                });
+            }
+            break;
+        }
+    }
+}
+
 //
 /**
  * Sets the status at start to a defined value
@@ -470,13 +499,29 @@ function checkActualStates () {
          * wenn in der config unter methodControlSM !== 'calculation' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
          */
         if (myConfig.config) {
-            const filter = myConfig.config.filter(d => d.methodControlSM !== 'calculation');
+            // analoge-Sensoren abfragen
+            let filter = myConfig.config.filter(d => d.methodControlSM === 'analog');
             if (filter) {
-                for(const fil of filter) {
-                    if (fil.methodControlSM !== 'calculation' && fil.triggerSM.length > 5) {
+                for(let fil of filter) {
+                    if (fil.methodControlSM === 'analog' && fil.triggerSM.length > 5) {
                         adapter.getForeignState(fil.triggerSM, (err,state) => {
-                            if (typeof state !== undefined && state != null && state.val) {
+                            adapter.log.info('filter analog: ' + fil.objectName + ', state: ' + state.val);
+                            if (typeof state !== undefined && state.val) {
                                 myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
+                            }
+                        });
+                    }
+                }
+            }
+            // Bistabile-Sensoren abfragen
+            filter = myConfig.config.filter(d => d.methodControlSM === 'bistable');
+            if (filter) {
+                for(let fil of filter) {
+                    if (fil.methodControlSM === 'bistable' && fil.triggerSM.length > 5) {
+                        adapter.getForeignState(fil.triggerSM, (err,state) => {
+                            adapter.log.info('filter bistable: ' + fil.objectName + ', state: ' + state.val);
+                            if (typeof state !== undefined && typeof state.val === 'boolean') {
+                                myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
                             }
                         });
                     }
@@ -695,96 +740,119 @@ function startTimeSprinkle() {
             }
 
             for(const res of result) {
-                messageText += '<b>' + res.objectName + '</b>' + ' ' + res.soilMoisture.pct + '% (' + res.soilMoisture.pctTriggerIrrigation + '%)' + '\n';
+                messageText += '<b>' + res.objectName + '</b>';
+                switch (res.methodControlSM) {
+                    case 'bistable':
+                        messageText += ' (' + res.soilMoisture.bool + ')\n';
+                        break;
+                    case 'analog':
+                        messageText += ' ' + res.soilMoisture.pct + '% (' + res.soilMoisture.pctTriggerIrrigation + '%)\n';
+                        break;
+                    case 'fixDay':
+                        messageText += ' (' + curNextFixDay(res.sprinkleID, true) + ')\n';
+                        break;
+                    case 'calculation':
+                        messageText += ' ' + res.soilMoisture.pct + '% (' + res.soilMoisture.pctTriggerIrrigation + '%)\n';
+                        break;
+                }
+
                 // Test Bodenfeuchte
                 if (adapter.config.debug) {adapter.log.info('Bodenfeuchte: ' + res.soilMoisture.val + ' <= ' + res.soilMoisture.triggersIrrigation + ' AutoOn: ' + res.autoOn);}
                 if (res.autoOn) {
-                    // -- bistable  --  Bodenfeuchte-Sensor mit 2-Punkt-Regler 0 und 100% -- //
-                    if(res.methodControlSM === 'bistable') {
-                        if(res.soilMoisture.pct < 50) {
-                            /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                            if (resRain(res.inGreenhouse) <= 0) {
-                                let curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
-                                memAddList.push({
-                                    auto: true,
-                                    sprinkleID: res.sprinkleID,
-                                    wateringTime: curWateringTime
-                                });
-                                messageText += '   START => ' + addTime(curWateringTime, '') + '\n';
-                            } else if (adapter.config.weatherForecast) {
-                                /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
-                                messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                    switch (res.methodControlSM) {
+                        // -- bistable  --  Bodenfeuchte-Sensor mit 2-Punkt-Regler true und false -- //
+                        case 'bistable':
+                            if(res.soilMoisture.bool) {
+                                /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
+                                if (resRain(res.inGreenhouse) <= 0) {
+                                    let curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
+                                    memAddList.push({
+                                        auto: true,
+                                        sprinkleID: res.sprinkleID,
+                                        wateringTime: curWateringTime
+                                    });
+                                    messageText += '   START => ' + addTime(curWateringTime, '') + '\n';
+                                } else if (adapter.config.weatherForecast) {
+                                    /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
+                                    messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                                }
                             }
-                        }
-                    // --- analog  --  Bodenfeuchte-Sensor im Wertebereich von 0 bis 100% --- //
-                    //  --                 Prozentuale Bodenfeuchte zu gering             --  //
-                    } else if (res.methodControlSM === 'analog') {
-                        if(res.soilMoisture.pct <= res.soilMoisture.pctTriggerIrrigation) {
-                            /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                            if (resRain(res.inGreenhouse) <= 0) {
-                                let countdown = res.wateringTime * (100 - res.soilMoisture.pct) / (100 - res.soilMoisture.pctTriggerIrrigation); // in min
-                                // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
-                                if (countdown > (res.wateringTime * res.wateringAdd / 100)) {countdown = res.wateringTime * res.wateringAdd / 100;}
-                                memAddList.push({
-                                    auto: true,
-                                    sprinkleID: res.sprinkleID,
-                                    wateringTime: Math.round(60* countdown)
-                                });
-                                messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
-                            } else if (adapter.config.weatherForecast) {
-                                /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
-                                messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                            break;
+                        // --- analog  --  Bodenfeuchte-Sensor im Wertebereich von 0 bis 100% --- //
+                        //  --                 Prozentuale Bodenfeuchte zu gering             --  //
+                        case 'analog':
+                            if(res.soilMoisture.pct <= res.soilMoisture.pctTriggerIrrigation) {
+                                /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
+                                if (resRain(res.inGreenhouse) <= 0) {
+                                    let countdown = res.wateringTime * (100 - res.soilMoisture.pct) / (100 - res.soilMoisture.pctTriggerIrrigation); // in min
+                                    // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
+                                    if (countdown > (res.wateringTime * res.wateringAdd / 100)) {countdown = res.wateringTime * res.wateringAdd / 100;}
+                                    memAddList.push({
+                                        auto: true,
+                                        sprinkleID: res.sprinkleID,
+                                        wateringTime: Math.round(60* countdown)
+                                    });
+                                    messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
+                                } else if (adapter.config.weatherForecast) {
+                                    /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
+                                    messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                                }
                             }
-                        }
-                    // --- fixDay  --  Start an festen Tagen ohne Sensoren  --- //
-                    //  --              Bewässerungstag erreicht                //
-                    } else if (res.methodControlSM === 'fixDay') {
-                        if (res.startFixDay[today]) {
-                            /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                            if (resRain(false) <= 0) {
-                                let curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
-                                memAddList.push({
-                                    auto: true,
-                                    sprinkleID: res.sprinkleID,
-                                    wateringTime: curWateringTime
-                                });
-                                messageText += '   START => ' + addTime(curWateringTime, '') + '\n';
-                            } else if (adapter.config.weatherForecast){
-                                messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                            break;
+                        // --- fixDay  --  Start an festen Tagen ohne Sensoren  --- //
+                        //  --              Bewässerungstag erreicht                //
+                        case 'fixDay':
+                            if (res.startFixDay[today]) {
+                                /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
+                                if (resRain(false) <= 0) {
+                                    let curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
+                                    memAddList.push({
+                                        auto: true,
+                                        sprinkleID: res.sprinkleID,
+                                        wateringTime: curWateringTime
+                                    });
+                                    messageText += '   START => ' + addTime(curWateringTime, '') + '\n';
+                                    if (res.startDay === 'threeRd'){          // Next Start in 3 Tagen
+                                        res.startFixDay[today] = false;
+                                        res.startFixDay[(+ today + 3 > 6) ? (+ today-4) : (+ today+3)] = true;
+                                    }else if (res.startDay === 'twoNd') {     // Next Start in 2 Tagen
+                                        res.startFixDay[today] = false;
+                                        res.startFixDay[(+ today + 2 > 6) ? (+ today-5) : (+ today+2)] = true;
+                                    }
+                                } else if (adapter.config.weatherForecast){
+                                    messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                                    res.startFixDay[today] = false;
+                                    res.startFixDay[(+ today + 1 > 6) ? (+ today-6) : (+ today+1)] = true;
+                                }
+                                curNextFixDay(res.sprinkleID, false);
                             }
-                            if (res.startDay === 'threeRd'){          // Next Start in 3 Tagen
-                                res.startFixDay[today] = false;
-                                res.startFixDay[(today + 3 > 6) ? (today-4) : (today+3)] = true;
-                            }else if (res.startDay === 'twoNd') {     // Next Start in 2 Tagen
-                                res.startFixDay[today] = false;
-                                res.startFixDay[(today + 2 > 6) ? (today-6) : (today+2)] = true;
+                            break;
+                        // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
+                        //  --             Bodenfeuchte zu gering              --  //
+                        case 'calculation':
+                            if (res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) {
+                                /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
+                                const resMoisture = (adapter.config.weatherForecast)?((+ res.soilMoisture.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.soilMoisture.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage
+                                if (resMoisture <= res.soilMoisture.triggersIrrigation) {   // Kontrolle ob Regenvorhersage ausreicht
+                                    let countdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation); // in min
+                                    // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
+                                    if (countdown > (res.wateringTime * res.wateringAdd / 100)) {countdown = res.wateringTime * res.wateringAdd / 100;}
+                                    memAddList.push({
+                                        auto: true,
+                                        sprinkleID: res.sprinkleID,
+                                        wateringTime: Math.round(60*countdown)
+                                    });
+                                    messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
+                                } else if (adapter.config.weatherForecast) {
+                                    /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
+                                    messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + res.soilMoisture.val + ' (' + resMoisture + ') <= ' + res.soilMoisture.triggersIrrigation + ' ]');
+                                }
                             }
-                        }
-                    // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
-                    //  --             Bodenfeuchte zu gering              --  //
-                    } else {
-                        if (res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) {
-                            /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
-                            const resMoisture = (adapter.config.weatherForecast)?((+ res.soilMoisture.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.soilMoisture.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage
-                            if (resMoisture <= res.soilMoisture.triggersIrrigation) {   // Kontrolle ob Regenvorhersage ausreicht
-                                let countdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation); // in min
-                                // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
-                                if (countdown > (res.wateringTime * res.wateringAdd / 100)) {countdown = res.wateringTime * res.wateringAdd / 100;}
-                                memAddList.push({
-                                    auto: true,
-                                    sprinkleID: res.sprinkleID,
-                                    wateringTime: Math.round(60*countdown)
-                                });
-                                messageText += '   START => ' + addTime(Math.round(60*countdown), '') + '\n';
-                            } else if (adapter.config.weatherForecast) {
-                                /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
-                                messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + res.soilMoisture.val + ' (' + resMoisture + ') <= ' + res.soilMoisture.triggersIrrigation + ' ]');
-                            }
-                        }
+                            break;
                     }
                 } else {
                     messageText += '   ' + '<i>' + 'Ventil auf Handbetrieb' + '</i>' + '\n';
@@ -828,26 +896,102 @@ function createSprinklers() {
                 },
                 'native': {},
             });
-
             // actual soil moisture
-            // Create .actualSoilMoisture
-            adapter.setObjectNotExists(objPfad + '.actualSoilMoisture', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => actual soil moisture in %',
-                    'type':  'number',
-                    'min':   0,
-                    'max':   150,
-                    'unit':  '%',					
-                    'read':  true,
-                    'write': false,
-                    'def':   false
-                },
-                'native': {},
-            });
+            // Create bzw. update .actualSoilMoisture nach der Sensorart
+            /**
+             * Aufbau des Objects .actualSoilMoisture
+             * @type {Object}
+             */
+            let myObj = {};
+            /** @type {string} */
+            let objName;
+
+            switch (res.methodControlSM) {
+                case 'calculation':
+                    objName = objectName + ' => Calculated soil moisture in %';
+                    myObj = {
+                        'type': 'state',
+                        'common': {
+                            'role': 'state',
+                            'name': objName,
+                            'type': 'number',
+                            'min': 0,
+                            'max': 150,
+                            'unit': '%',
+                            'read': true,
+                            'write': false,
+                            'def': false
+                        },
+                        'native': {},
+                    }
+                    break;
+                case 'bistable':
+                    objName = objectName + ' => bistable soil moisture sensor';
+                    myObj = {
+                        'type': 'state',
+                        'common': {
+                            'role': 'state',
+                            'name': objName,
+                            'type': 'boolean',
+                            'read': true,
+                            'write': false,
+                            'def': false
+                        },
+                        'native': {},
+                    }
+                    break;
+                case 'analog':
+                    objName = objectName + ' => analog soil moisture sensor in %';
+                    myObj = {
+                        'type': 'state',
+                        'common': {
+                            'role': 'state',
+                            'name': objName,
+                            'type': 'number',
+                            'min': 0,
+                            'max': 150,
+                            'unit': '%',
+                            'read': true,
+                            'write': false,
+                            'def': false
+                        },
+                        'native': {},
+                    }
+                    break;
+                case 'fixDay':
+                    objName = objectName + ' => start on a fixed day';
+                    myObj = {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objName,
+                            'type':  'number',
+                            'states': '0:Sun;1:Mon;2:Tue;3:Wed;4:Thur;5:Fri;6:Sat;7:off',
+                            'read':  true,
+                            'write': false,
+                            'def':   false
+                        },
+                        'native': {},
+                    }
+                    break;
+            }
+            adapter.setObjectNotExists(objPfad + '.actualSoilMoisture', myObj);
+            let myName;
+            setTimeout (()=> {
+                adapter.getObject(objPfad + '.actualSoilMoisture', function (err, obj) {
+                    if (err) {
+
+                    } else {
+                        if((typeof obj.common.name === 'string') && obj.common.name.length > 0) {myName = obj.common.name}
+                    }
+                });
+                if (myName !== objName) {
+                    adapter.setObject(objPfad + '.actualSoilMoisture', myObj);
+                }
+            }, 50)
+
             // actual state of sprinkler => Zustand des Ventils im Thread
-            // <<< 1  = warten >>> ( 0 = Aus, 2 = Active, 3 = Pause )
+            // <<< 1  = warten >>> ( 0:off; 1:wait; 2:on; 3:break; 4:Boost(on); 5:off(Boost) )
             // Create .sprinklerState
             adapter.setObjectNotExists(objPfad + '.sprinklerState', {
                 'type': 'state',
@@ -998,32 +1142,44 @@ function createSprinklers() {
                 'native': {},
             });			
             setTimeout(() => {
-                if (myConfig.config[j].methodControlSM === 'bistable' || myConfig.config[j].methodControlSM === 'analog') {
-                    adapter.setState(objPfad + '.actualSoilMoisture', {
-                        val: Math.round(10 * myConfig.config[j].soilMoisture.pct) / 10,
-                        ack: true
-                    });
-                } else {
-                    adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
-                        if (state == null || typeof state.val !== 'number' || state.val === 0) {
-                            adapter.setState(objPfad + '.actualSoilMoisture', {
-                                val: myConfig.config[j].soilMoisture.pct,
-                                ack: true
-                            });
-                        } else {
-                            // num Wert der Bodenfeuchte berechnen und der config speichern wenn Wert zwischen 0 und max liegt
-                            if ((0 < state.val) && (state.val <= (myConfig.config[j]).soilMoisture.maxRain*100/myConfig.config[j].soilMoisture.maxIrrigation)) {
-                                myConfig.config[j].soilMoisture.val = state.val * myConfig.config[j].soilMoisture.maxIrrigation / 100;
-                                myConfig.config[j].soilMoisture.pct = state.val;
-                            } else {
-                                // Wert aus config übernehmen
+                switch (myConfig.config[j].methodControlSM) {
+                    case 'bistable':
+                        adapter.setState(objPfad + '.actualSoilMoisture', {
+                            val: myConfig.config[j].soilMoisture.bool,
+                            ack: true
+                        });
+                        break;
+                    case 'analog':
+                        adapter.setState(objPfad + '.actualSoilMoisture', {
+                            val: Math.round(10 * myConfig.config[j].soilMoisture.pct) / 10,
+                            ack: true
+                        });
+                        break;
+                    case 'fixDay':
+                        curNextFixDay(myConfig.config[j].sprinkleID, false);
+                        break;
+                    case 'calculation':
+                        adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
+                            if (state == null || typeof state.val !== 'number' || state.val === 0) {
                                 adapter.setState(objPfad + '.actualSoilMoisture', {
                                     val: myConfig.config[j].soilMoisture.pct,
                                     ack: true
                                 });
+                            } else {
+                                // num Wert der Bodenfeuchte berechnen und der config speichern wenn Wert zwischen 0 und max liegt
+                                if ((0 < state.val) && (state.val <= (myConfig.config[j]).soilMoisture.maxRain*100/myConfig.config[j].soilMoisture.maxIrrigation)) {
+                                    myConfig.config[j].soilMoisture.val = state.val * myConfig.config[j].soilMoisture.maxIrrigation / 100;
+                                    myConfig.config[j].soilMoisture.pct = state.val;
+                                } else {
+                                    // Wert aus config übernehmen
+                                    adapter.setState(objPfad + '.actualSoilMoisture', {
+                                        val: myConfig.config[j].soilMoisture.pct,
+                                        ack: true
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
+
                 }
                 adapter.getState(objPfad + '.sprinklerState', (err, state) => {
                     if (state) {

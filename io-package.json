@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "news": {
+      "0.2.2": {
+        "en": "FixDay bug fixed, 'actualSoilMoisture' revised, information messages revised",
+        "de": "FixDay-Fehler behoben, 'actualSoilMoisture' überarbeitet, Informationsmeldungen überarbeitet",
+        "ru": "Исправлена ошибка FixDay, исправлено значение «actualSoilMoisture», исправлены информационные сообщения.",
+        "pt": "Bug FixDay corrigido, 'actualSoilMoisture' revisado, mensagens de informação revisadas",
+        "nl": "FixDay bug gerepareerd, 'actualSoilMoisture' herzien, informatieberichten herzien",
+        "fr": "Bug FixDay corrigé, 'actualSoilMoisture' révisé, messages d'information révisés",
+        "it": "FixDay bug risolto, 'actualSoilMoisture' rivisto, messaggi informativi rivisti",
+        "es": "Error FixDay corregido, 'actualSoilMoisture' revisado, mensajes de información revisados",
+        "pl": "Naprawiono błąd FixDay, poprawiono „actualSoilMoisture”, poprawiono komunikaty informacyjne",
+        "zh-cn": "FixDay 错误已修复，“actualSoilMoisture”已修改，信息消息已修改"
+      },
       "0.2.1": {
         "en": "Start on fixed weekdays (without sensors) added, bugs fixed",
         "de": "Start an festen Wochentagen (ohne Sensoren) hinzugefügt, Fehler behoben",
