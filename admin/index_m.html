@@ -1,833 +1,836 @@
-<html>
+<html lang="en">
 
-<head>
+    <head>
 
-    <!-- Load ioBroker scripts and styles-->
-    <link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
-    <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
-    <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+        <!-- Load ioBroker scripts and styles-->
+        <link rel="stylesheet" type="text/css" href="../../lib/css/fancytree/ui.fancytree.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+        <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 
-    <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+        <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
-    <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-    <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
+        <script type="text/javascript" src="../../lib/js/materialize.js"></script>
+        <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
 
-    <script type="text/javascript" src="../../js/translate.js"></script>
-    <script type="text/javascript" src="../../lib/js/selectID.js"></script>
-    <script type="text/javascript" src="../../js/adapter-settings.js"></script>
-    <!---
-    <script type="text/javascript" src="actions.js"></script>
-        -->
-    <!-- Load our own files -->
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    <script type="text/javascript" src="words.js"></script>
-    <script type="text/javascript" src="index_m.js"></script>
+        <script type="text/javascript" src="../../js/translate.js"></script>
+        <script type="text/javascript" src="../../lib/js/selectID.js"></script>
+        <script type="text/javascript" src="../../js/adapter-settings.js"></script>
+        <!---
+        <script type="text/javascript" src="actions.js"></script>
+            -->
+        <!-- Load our own files -->
+        <link rel="stylesheet" type="text/css" href="style.css" />
+        <script type="text/javascript" src="words.js"></script>
 
-</head>
+        <title>Sprinkle Control</title>
 
-<body>
-    <div class="m adapter-container">
-        <div id="header-area" class="row" >
-            <div id="header-logo-title" class="col s6" >
-                <img class="logo" src="sprinklecontrol.png"  alt="logo SprinkleControl">
-                <p>
-                    <span class="translate h-title">Sprinkler control</span><br />
-                    <span class="translate h-sub-title">Controlling your Sprinkler …</span>
-                </p>
+    </head>
+
+    <body>
+        <div class="m adapter-container">
+            <div id="header-area" class="row" >
+                <div id="header-logo-title" class="col s6" >
+                    <img class="logo" src="sprinklecontrol.png"  alt="logo SprinkleControl">
+                    <p>
+                        <span class="translate h-title">Sprinkler control</span><br />
+                        <span class="translate h-sub-title">Controlling your Sprinkler …</span>
+                    </p>
+                </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col s12" id="tab-area">
-                <ul class="tabs blue lighten-4" width="4%">
-                    <li class="tab col s6 l2"><a href="#tab-settings" class="translate active">main settings</a></li>
-                    <li class="tab col s6 l2 tab-pump"><a href="#tab-pump" class="translate">Pump Settings</a></li>
-                    <li class="tab col s6 l2 tab-time"><a href="#tab-time" class="translate">Time Settings</a></li>
-                    <li class="tab col s6 l2 tab-extra"><a href="#tab-extra" class="translate">Extra Settings</a></li>
-                    <li class="tab col s6 l2 tab-notification"><a href="#tab-notification" class="translate">Notifications</a></li>
-                </ul>
-            </div>
             <div class="row">
-                <!-- main settings -->
-                <div id="tab-settings" class="col s12 page">
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate title" style="background-color:#174475;">Sprinkler control</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12" id="events">
-                            <div class="row">
-                                <div class="col s2 m1 l1 left">
-                                    <a  id="responseOIDDialog" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                                </div>
-                            </div>
-                            <div class="table-values-div">
-                                <table class="table-values">
-                                    <thead>
-                                    <tr>
-                                        <th data-name="_index" id="events_col_0" style="width: 80px; background: #174475; text-align: center" data-style="text-align: center">Nr</th>
-                                        <th data-name="enabled" id="events_col_1" style="width: 70px; background: #174475" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
-                                        <th data-name="sprinkleName" id="events_col_2" data-type="text" style="width: 40%; background: #174475" class="translate">Name</th>
-                                        <th data-name="name" id="events_col_3" data-type="text" style="width: 40%; background: #174475" class="translate">Object-ID sprinkler</th>
-                                        <th data-buttons="edit2" id="events_col_4" style="width: 150px; background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
-                                        <th data-buttons="edit up down delete" style="width: 120px; background: #174475"></th>
-                                        <!-- ********************** only for temp states ********************** -->
-                                        <th data-name="triggerID" id="events_col_5" data-type="text" style="width: 0; background: #174475" class="translate"></th>
-                                        <th data-name="wateringTime" id="events_col_6" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="wateringAdd" id="events_col_7" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="wateringInterval" id="events_col_8" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="maxSoilMoistureIrrigation" id="events_col_9" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="maxSoilMoistureRain" id="events_col_10" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="triggersIrrigation" id="events_col_11" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="pipeFlow" id="events_col_12" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="booster" id="events_col_13" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="endIrrigation" id="events_col_14" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="methodControlSM" id="events_col_15" data-type="text" style="width: 0" class="translate"></th>
-                                        <th data-name="inGreenhouse" id="events_col_16" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="triggerSM" id="events_col_17" data-type="text" style="width: 0" class="translate"></th>
-                                        <th data-name="analogZPct" id="events_col_18" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="analogOHPct" id="events_col_19" data-type="number" style="width: 0" class="translate"></th>
-                                        <th data-name="startDay" id="events_col_20" data-type="text" style="width: 0" class="translate"></th>
-                                        <th data-name="sun" id="events_col_21" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="mon" id="events_col_22" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="tue" id="events_col_23" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="wed" id="events_col_24" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="thur" id="events_col_25" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="fri" id="events_col_26" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <th data-name="sat" id="events_col_27" data-type="checkbox" style="width: 0" class="translate"></th>
-                                        <!-- ****************************************************************** -->
-
-                                    </tr>
-                                    </thead>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col s12" id="tab-area">
+                    <ul class="tabs blue lighten-4" width="4%">
+                        <li class="tab col s6 l2"><a href="#tab-settings" class="translate active">main settings</a></li>
+                        <li class="tab col s6 l2 tab-pump"><a href="#tab-pump" class="translate">Pump Settings</a></li>
+                        <li class="tab col s6 l2 tab-time"><a href="#tab-time" class="translate">Time Settings</a></li>
+                        <li class="tab col s6 l2 tab-extra"><a href="#tab-extra" class="translate">Extra Settings</a></li>
+                        <li class="tab col s6 l2 tab-notification"><a href="#tab-notification" class="translate">Notifications</a></li>
+                    </ul>
                 </div>
-                <!-- Pump Settings -->
-                <div id="tab-pump" class="col s12 page">
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for Valve</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s10 m5 l5 input-field">
-                            <input type="text" class="value" id="triggerControlVoltage" />
-                            <label for="triggerControlVoltage" class="translate"></label>
-                            <span class="translate">Control voltage of the valves</span>
-                        </div>
-                        <div class="col s2 m1 l1">
-                            <a id="triggerControlVoltageDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                        <div class="col s12 m6 l2 input-field">
-                            <input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
-                            <label for="maximumParallelValves" class="translate"></label>
-                            <span class="translate">Maximum parallel operation of the valves</span>
-                        </div>
-                        <div class="col s12 m6 l2 input-field">
-                            <input type="number" class="value" id="switchingDistance" min=100 max=1000 placeholder="100-1000" step="100" value="300" />
-                            <label for="switchingDistance" class="translate"></label>
-                            <span class="translate">Switching distance between the valves in ms</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for Pump</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s10 m5 l5 input-field">
-                            <input type="text" class="value" id="triggerMainPump" />
-                            <label for="triggerMainPump" class="translate"></label>
-                            <span class="translate">Main pump</span>
-                        </div>
-                        <div class="col s2 m1 l1">
-                            <a id="triggerMainPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                        <div class="col s12 m4 l2 input-field">
-                            <input type="number" class="value" id="triggerMainPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
-                            <label for="triggerMainPumpPower" class="translate"></label>
-                            <span class="translate">maximum pump output of the main pump in l/h</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12 input-field">
-                            <input type="checkbox" class="value" id="cisternSettings" />
-                            <span for="cisternSettings" class="translate">Add cistern pump as priority pump</span>
-                        </div>
-                    </div>
-                    <div class="row col s12 cisternObjekt">
-                        <div class="row">
-                            <div class="input-field col s10 m5 l5">
-                                <input type="text" class="value" id="triggerCisternPump" />
-                                <label for="triggerCisternPump" class="translate"></label>
-                                <span class="translate">cistern pump</span>
-                            </div>
-                            <div class="col s2 m1 l1">
-                                <a id="triggerCisternPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                            <div class="col s6 m4 l2 input-field">
-                                <input type="number" class="value" id="triggerCisternPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
-                                <label for="triggerCisternPumpPower" class="translate"></label>
-                                <span class="translate">maximum pump capacity of the cistern in l/h</span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s10 m5 l5">
-                                <input type="text" class="value" id="actualValueLevel" />
-                                <label for="actualValueLevel" class="translate"></label>
-                                <span class="translate">Level of the cistern</span>
-                            </div>
-                            <div class="col s2 m1 l1">
-                                <a id="actualValueLevelDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                            <div class="col s6 m4 l2 input-field">
-                                <input type="number" class="value" id="triggerMinCisternLevel" min=0 max=100 placeholder="0-100" step="5" />
-                                <label for="triggerMinCisternLevel" class="translate"></label>
-                                <span class="translate">Minimum fill level of the cysts in %</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- time settings -->
-                <div id="tab-time" class="col s12 page">
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for start time</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12 m4">
-                            <select type="combobox" class="value" id="wateringStartTime">
-                                <option value="livingTime" class="translate">start with a fixed start time</option>
-                                <option value="livingSunrise" class="translate">Start time at sunrise</option>
-                                <option value="livingGoldenHourEnd" class="translate">Start time at the end of the golden hour</option>
-                            </select>
-                            <label for="wateringStartTime" class="translate"></label>
-                            <span class="translate">Start time for irrigation</span>
-                        </div>
-                        <div class="input-field col s6 l2 visTimeShift">
-                            <input type="number" id="timeShift" class="value" min="-120" max="120" placeholder="-120-120" step="1" />
-                            <label for="timeShift" class="translate"></label>
-                            <span class="translate">Time shift in min</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s6 l2 visWeekLiving">
-                            <input type="time" class="timepicker value" id="weekLiving" />
-                            <label for="weekLiving" class="translate"></label>
-                            <span class="translate">Start time in the week</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for start time on weekends</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s6 l2">
-                            <input type="checkbox" class="value" id="publicWeekend" />
-                            <span for="publicWeekend" class="translate">different start time on weekends</span>
-                        </div>
-                        <div class="input-field col s12 m6 l2 publicWeek">
-                            <input type="time" class="timepicker value" id="weekEndLiving" />
-                            <label for="weekEndLiving" class="translate"></label>
-                            <span class="translate">Start time at the weekend</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for the start time on public holidays</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s6 l2 publicWeekHol">
-                            <input type="checkbox" class="value" id="publicHolidays" />
-                            <span for="publicHolidays" class="translate">Start time of public holidays as on weekends</span>
-                        </div>
-                        <div class="input-field col s12 m6 l2 publicHol">
-                            <select id="publicHolInstance" class="value"></select>
-                            <label for="publicHolInstance" class="translate"></label>
-                            <span class="translate">public holidays Instance</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Tab Extra -->
-                <div id="tab-extra" class="col s12 page">
-                    <!-- Astro Einstellungen -->
-                    <div class="col s12 m6 l4">
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate sub-title">Astro settings</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12 l6 input-field">
-                                <input type="text" class="value" id="latitude" />
-                                <label for="latitude" class="translate"></label>
-                                <span class="translate">latitude</span>
-                            </div>
-                            <div class="col s12 l6 input-field">
-                                <input type="text" class="value" id="longitude" />
-                                <label for="longitude" class="translate"></label>
-                                <span class="translate">longitude</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Debug Einstellungen -->
-                    <div class="col s12 m6 l4">
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate sub-title">Debug settings</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s4 input-field">
-                                <input type="checkbox" class="value" id="debug" />
-                                <span for="debug" class="translate">debug</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- notifications on/off -->
-                    <div class="col s12 m6 l4">
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate sub-title">Additional notification setting</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s8 input-field">
-                                <input type="checkbox" class="value" id="notificationEnabled" />
-                                <span for="notificationEnabled" class="translate">Enable / Disable Notifications</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- aktuelle Wetterdaten -->
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Evaporation calculation sensors</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s10 m4 l4 input-field">
-                            <input type="text" class="value" id="sensorOutsideTemperature" />
-                            <label for="sensorOutsideTemperature" class="translate"></label>
-                            <span class="translate">Temperature sensor</span>
-                        </div>
-                        <div class="col s2 m2 l2">
-                            <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                        <div class="col s10 m4 l4 input-field">
-                            <input type="text" class="value" id="sensorOutsideHumidity" />
-                            <label for="sensorOutsideHumidity" class="translate"></label>
-                            <span class="translate">Humidity sensor</span>
-                        </div>
-                        <div class="col s2 m2 l2">
-                            <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s10 m4 l4 input-field">
-                            <input type="text" class="value" id="sensorWindSpeed" />
-                            <label for="sensorWindSpeed" class="translate"></label>
-                            <span class="translate">Wind speed sensor</span>
-                        </div>
-                        <div class="col s2 m2 l2">
-                            <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s10 m4 l4 input-field">
-                            <input type="text" class="value" id="sensorBrightness" />
-                            <label for="sensorBrightness" class="translate"></label>
-                            <span class="translate">Brightness sensor</span>
-                        </div>
-                        <div class="col s2 m2 l2">
-                            <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                        <div class="col s10 m4 l4 input-field">
-                            <input type="text" class="value" id="sensorRainfall" />
-                            <label for="sensorRainfall" class="translate"></label>
-                            <span class="translate">rain counter sensor</span>
-                        </div>
-                        <div class="col s2 m2 l2">
-                            <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                        </div>
-                    </div>
-                    <!-- Wettervorhersage -->
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Weather forecast</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12 m6 l2 weatherForecast">
-                            <input type="checkbox" class="value" id="weatherForecast" />
-                            <span for="weatherForecast" class="translate">Use weather forecast</span>
-                        </div>
-                        <div class="input-field col s12 m6 l2 weatherFor">
-                            <select id="weatherForInstance" class="value"></select>
-                            <label for="weatherForInstance" class="translate"></label>
-                            <span class="translate">Select the weather forecast instance</span>
-                        </div>
-                        <div class="input-field col s12 m6 l2 weatherFor">
-                            <input type="number" class="value" id="thresholdRain" min=0 max=5.0 placeholder="0-5.0" step="0.1" value="2" />
-                            <label for="thresholdRain" class="translate"></label>
-                            <span class="translate">Precipitation threshold in mm</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- notifications -->
-                <div id="tab-notification" class="col s12 page">
-                    <div class="row">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Selection of notification</h6>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12 m4">
-                            <select class="value" id="notificationsType">
-                                <option value="Telegram" class="translate">Telegram</option>
-                                <option value="E-Mail" class="translate">E-Mail</option>
-                                <option value="Pushover" class="translate">Pushover</option>
-                                <option value="WhatsApp" class="translate">WhatsApp</option>
-                            </select>
-                            <label for="notificationsType" class="translate"></label>
-                            <span class="translate">notifications type</span>
-                        </div>
-                    </div>
-                    <!-- Telegram -->
-                    <div class="row telegram">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for telegram</h6>
-                        </div>
-                    </div>
-                    <div class="row telegram">
-                        <div class="input-field col s12 m6 l3 telegram">
-                            <select id="telegramInstance" class="value"></select>
-                            <label for="telegramInstance" class="translate"></label>
-                            <span class="translate">Telegram instance</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 telegram">
-                            <select id="telegramUser" class="value"></select>
-                            <label for="telegramUser" class="translate"></label>
-                            <span class="translate">Telegram Receiver</span>
-                        </div>
-                    </div>
-                    <div class="row telegram">
-                        <div class="input-field col s12 m6 l3 telegram">
-                            <select class="value" id="telegramNoticeType">
-                                <option value="longTelegramNotice" class="translate">Long Notifications</option>
-                                <option value="shortTelegramNotice" class="translate">Short Notifications</option>
-                            </select>
-                            <label class="translate" for="telegramNoticeType"></label>
-                            <span class="translate">Notification Style</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 telegram">
-                            <input type="number" class="value" id="telegramWaitToSend" min="0" max="20"/>
-                            <label for="telegramWaitToSend" class="translate"></label>
-                            <span class="translate">Waiting for the send (seconds)</span>
-                        </div>
-                    </div>
-                    <div class="row telegram">
-                        <div class="input-field col s12 m6 l3 telegram">
-                            <input class="value" id="telegramSilentNotice" type="checkbox"/>
-                            <span for="telegramSilentNotice" class="translate">Silent Notice</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 telegram">
-                            <input class="value" id="telegramOnlyError" type="checkbox"/>
-                            <span for="telegramOnlyError" class="translate">Notification only on errors</span>
-                        </div>
-                    </div>
-
-                    <!-- WhatsApp -->
-                    <div class="row whatsapp">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for WhatsApp</h6>
-                        </div>
-                    </div>
-                    <div class="row whatsapp">
-                        <div class="input-field col s12 m6 l3 whatsapp">
-                            <select id="whatsappInstance" class="value"></select>
-                            <label for="whatsappInstance" class="translate"></label>
-                            <span class="translate">WhatsApp instance</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 whatsapp">
-                            <select class="value" id="whatsappNoticeType">
-                                <option value="longWhatsappNotice" class="translate">Long Notifications</option>
-                                <option value="shortWhatsappNotice" class="translate">Short Notifications</option>
-                            </select>
-                            <label class="translate" for="whatsappNoticeType"></label>
-                            <span class="translate">Notification Style</span>
-                        </div>
-                    </div>
-                    <div class="row whatsapp">
-                        <div class="input-field col s12 m6 l3 whatsapp">
-                            <input type="number" class="value" id="whatsappWaitToSend" min="0" max="20"/>
-                            <label for="whatsappWaitToSend" class="translate"></label>
-                            <span class="translate">Waiting for the send (seconds)</span>
-                        </div>
-                    </div>
-                    <div class="row whatsapp">
-                        <div class="input-field col s12 m6 l3 whatsapp">
-                            <input class="value" id="whatsappOnlyError" type="checkbox"/>
-                            <span for="whatsappOnlyError" class="translate">Notification only on errors</span>
-                        </div>
-                    </div>
-                    <!-- Pushover -->
-                    <div class="row pushover">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for Pushover</h6>
-                        </div>
-                    </div>
-                    <div class="row pushover">
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <select id="pushoverInstance" class="value"></select>
-                            <label for="pushoverInstance" class="translate"></label>
-                            <span class="translate">Pushover instance</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <select class="value" id="pushoverNoticeType">
-                                <option value="longPushoverNotice" class="translate">Long Notifications</option>
-                                <option value="shortPushoverNotice" class="translate">Short Notifications</option>
-                            </select>
-                            <label class="translate" for="pushoverNoticeType"></label>
-                            <span class="translate">Notification Style</span>
-                        </div>
-                    </div>
-                    <div class="row pushover">
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <input type="number" class="value" id="pushoverWaitToSend" min="0" max="20"/>
-                            <label for="pushoverWaitToSend" class="translate"></label>
-                            <span class="translate">Waiting for the send (seconds)</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <input class="value" id="pushoverDeviceID" type="text">
-                            <label for="pushoverDeviceID" class="translate"></label>
-                            <span class="translate">device ID (optional)</span>
-                        </div>
-                    </div>
-
-                    <div class="row pushover">
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <select class="value" id="pushoverSound">
-                                <option value="">              default </option>
-                                <option value="pushover">      pushover </option>
-                                <option value="bike">          bike </option>
-                                <option value="bugle">         bugle</option>
-                                <option value="cashregister">  cashregister </option>
-                                <option value="classical">     classical </option>
-                                <option value="cosmic">        cosmic </option>
-                                <option value="falling">       falling</option>
-                                <option value="gamelan">       gamelan </option>
-                                <option value="incoming">      incoming </option>
-                                <option value="intermission">  intermission </option>
-                                <option value="magic">         magic </option>
-                                <option value="mechanical">    mechanical </option>
-                                <option value="pianobar">      pianobar </option>
-                                <option value="siren">         siren</option>
-                                <option value="spacealarm">    spacealarm </option>
-                                <option value="tugboat">       tugboat </option>
-                                <option value="alien">         alien</option>
-                                <option value="climb">         climb </option>
-                                <option value="persistent">    persistent </option>
-                                <option value="echo">          echo</option>
-                                <option value="updown">        updown </option>
-                                <option value="none">          none</option>
-                            </select>
-                            <label class="translate" for="pushoverSound"></label>
-                            <span class="translate">Notification Sound</span>
-                        </div>
-                    </div>
-
-                    <div class="row pushover">
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <input class="value" id="pushoverSilentNotice" type="checkbox"/>
-                            <span for="pushoverSilentNotice" class="translate">Silent Notice</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 pushover">
-                            <input class="value" id="pushoverOnlyError" type="checkbox"/>
-                            <span for="pushoverOnlyError" class="translate">Notification only on errors</span>
-                        </div>
-                    </div>
-                    <!-- email -->
-                    <div class="row email">
-                        <div class="col s12">
-                            <h6 class="translate sub-title">Settings for E-Mail</h6>
-                        </div>
-                    </div>
-                    <div class="row email">
-                        <div class="input-field col s12 m6 l3 email">
-                            <input class="value" id="emailReceiver" type="text">
-                            <label for="emailReceiver" class="translate"></label>
-                            <span class="translate">email receiver</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 email">
-                            <input class="value" id="emailSender" type="text">
-                            <label for="emailSender" class="translate"></label>
-                            <span class="translate">email sender</span>
-                        </div>
-                    </div>
-                    <div class="row email">
-                        <div class="input-field col s12 m6 l3 email">
-                            <select id="emailInstance" class="value"></select>
-                            <label for="emailInstance" class="translate"></label>
-                            <span class="translate">email instance</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 email">
-                            <select class="value" id="emailNoticeType">
-                                <option value="longEmailNotice" class="translate">Long Notifications</option>
-                                <option value="shortEmailNotice" class="translate">Short Notifications</option>
-                            </select>
-                            <label class="translate" for="emailNoticeType"></label>
-                            <span class="translate">Notification Style</span>
-                        </div>
-                    </div>
-                    <div class="row email">
-                        <div class="input-field col s12 m6 l3 email">
-                            <input type="number" class="value" id="emailWaitToSend" min="0" max="20"/>
-                            <label for="emailWaitToSend" class="translate"></label>
-                            <span class="translate">Waiting for the send (seconds)</span>
-                        </div>
-                        <div class="input-field col s12 m6 l3 email">
-                            <input class="value" id="emailOnlyError" type="checkbox"/>
-                            <span for="emailOnlyError" class="translate">Notification only on errors</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Sprinkler - Ventil-Einstellungen -->
-        <div class="m material-dialogs">
-            <div id="dialog-select-member" class="modal modal-fixed-footer">
-                <div class="modal-content">
-                    <div class="row">
-                        <div class="col s12 title"></div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12 dialog-content">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Select</span></a>
-                    <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
-                </div>
-            </div>
-            <div id="dialog-sprinkle-edit" class="modal modal-fixed-footer">
                 <div class="row">
-                    <div class="modal-content">
+                    <!-- main settings -->
+                    <div id="tab-settings" class="col s12 page">
                         <div class="row">
                             <div class="col s12">
-                                <h6 class="title" style="background-color:#174475;"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
+                                <h6 class="translate title" style="background-color:#174475;">Sprinkler control</h6>
                             </div>
                         </div>
-                        <div class="col s12">
-                            <ul class="tabs blue lighten-4">
-                                <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
-                                <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
-                            </ul>
+                        <div class="row">
+                            <div class="col s12" id="events">
+                                <div class="row">
+                                    <div class="col s2 m1 l1 left">
+                                        <a  id="responseOIDDialog" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                    </div>
+                                </div>
+                                <div class="table-values-div">
+                                    <table class="table-values">
+                                        <thead>
+                                        <tr>
+                                            <th data-name="_index" id="events_col_0" style="width: 80px; background: #174475; text-align: center" data-style="text-align: center">Nr</th>
+                                            <th data-name="enabled" id="events_col_1" style="width: 70px; background: #174475" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
+                                            <th data-name="sprinkleName" id="events_col_2" data-type="text" style="width: 40%; background: #174475" class="translate">Name</th>
+                                            <th data-name="name" id="events_col_3" data-type="text" style="width: 40%; background: #174475" class="translate">Object-ID sprinkler</th>
+                                            <th data-buttons="edit2" id="events_col_4" style="width: 150px; background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
+                                            <th data-buttons="edit up down delete" style="width: 120px; background: #174475"></th>
+                                            <!-- ****************************************   ***   only for temp states   ***   **************************************** -->
+                                            <th data-name="triggerID" id="events_col_5" data-type="text" style="width: 0; background: #174475" class="translate"></th>
+                                            <th data-name="wateringTime" id="events_col_6" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="wateringAdd" id="events_col_7" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="wateringInterval" id="events_col_8" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="maxSoilMoistureIrrigation" id="events_col_9" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="maxSoilMoistureRain" id="events_col_10" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="triggersIrrigation" id="events_col_11" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="pipeFlow" id="events_col_12" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="booster" id="events_col_13" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="endIrrigation" id="events_col_14" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="methodControlSM" id="events_col_15" data-type="text" style="width: 0" class="translate"></th>
+                                            <th data-name="inGreenhouse" id="events_col_16" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="triggerSM" id="events_col_17" data-type="text" style="width: 0" class="translate"></th>
+                                            <th data-name="analogZPct" id="events_col_18" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="analogOHPct" id="events_col_19" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="startDay" id="events_col_20" data-type="text" style="width: 0" class="translate"></th>
+                                            <th data-name="sun" id="events_col_21" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="mon" id="events_col_22" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="tue" id="events_col_23" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="wed" id="events_col_24" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="thur" id="events_col_25" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="fri" id="events_col_26" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="sat" id="events_col_27" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <!-- ****************************************   ***   ********************   ***   **************************************** -->
+
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
-                        <!-- Sprinkler - Pump settings -->
-                        <div id="tab-pumpPopUp" class="col s12 page">
-                            <div class="row">
-                                <div class="col s12">
-                                    <h6 class="translate sub-title">Sprinkler consumption</h6>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col s12 l6 input-field">
-                                    <input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
-                                    <label for="pipeFlow" class="translate"></label>
-                                    <span class="translate">Flow amount in l/h</span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col s12 l6 input-field">
-                                    <input type="checkbox" class="form-control" id="booster" />
-                                    <span for="booster" class="translate">Booster</span>
-                                </div>
+                    </div>
+                    <!-- Pump Settings -->
+                    <div id="tab-pump" class="col s12 page">
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for Valve</h6>
                             </div>
                         </div>
-                        <!-- Sprinkler - Main settings -->
-                        <div id="tab-settingsPopUp" class="col s12 page">
-                            <div class="row">
-                                <div class="col s12">
-                                    <h6 class="translate sub-title">Irrigation settings</h6>
-                                </div>
+                        <div class="row">
+                            <div class="col s10 m5 l5 input-field">
+                                <input type="text" class="value" id="triggerControlVoltage" />
+                                <label for="triggerControlVoltage" class="translate"></label>
+                                <span class="translate">Control voltage of the valves</span>
                             </div>
-                            <!-- Irrigation settings => Bewässerungseinstellungen -->
-                            <div class="row">
-                                <div class="col s12 l4 input-field">
-                                    <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
-                                    <label for="wateringTime" class="translate"></label>
-                                    <span class="translate">Watering time in min</span>
-                                </div>
-                                <div class="col s12 l4 input-field">
-                                    <input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
-                                    <label for="wateringAdd" class="translate"></label>
-                                    <span class="translate">maximum irrigation extension</span>
-                                </div>
-                                <div class="col s12 l4 input-field">
-                                    <input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
-                                    <label for="wateringInterval" class="translate"></label>
-                                    <span class="translate">Watering interval in min</span>
-                                </div>
+                            <div class="col s2 m1 l1">
+                                <a id="triggerControlVoltageDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                             </div>
-                            <!-- Method of controlling soil moisture => Methode zur Kontrolle der Bodenfeuchtigkeit -->
-                            <div class="row">
-                                <div class="col s12">
-                                    <h6 class="translate sub-title">Switch-on point for watering</h6>
-                                </div>
+                            <div class="col s12 m6 l2 input-field">
+                                <input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
+                                <label for="maximumParallelValves" class="translate"></label>
+                                <span class="translate">Maximum parallel operation of the valves</span>
                             </div>
-                            <div class="row">
-                                <div class="col s12 m4 input-field">
-                                    <select type="combobox" class="value" id="methodControlSM">
-                                        <option value="calculation" class="translate">Calculation of evaporation</option>
-                                        <option value="bistable" class="translate">Soil moisture sensor bistable</option>
-                                        <option value="analog" class="translate">Soil moisture sensor analog</option>
-                                        <option value="fixDay" class="translate">Start on fixed days of the week (without sensors)</option>
-                                    </select>
-                                    <label for="methodControlSM" class="translate"></label>
-                                    <span class="translate">Method of controlling soil moisture</span>
-                                </div>
+                            <div class="col s12 m6 l2 input-field">
+                                <input type="number" class="value" id="switchingDistance" min=100 max=1000 placeholder="100-1000" step="100" value="300" />
+                                <label for="switchingDistance" class="translate"></label>
+                                <span class="translate">Switching distance between the valves in ms</span>
                             </div>
-                            <div class="row visSensor">
-                                <div class="col s10 m5 l4 input-field">
-                                    <input type="text" class="value" id="triggerSM" />
-                                    <label for="triggerSM" class="translate"></label>
-                                    <span class="translate">Soil moisture sensor</span>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for Pump</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s10 m5 l5 input-field">
+                                <input type="text" class="value" id="triggerMainPump" />
+                                <label for="triggerMainPump" class="translate"></label>
+                                <span class="translate">Main pump</span>
+                            </div>
+                            <div class="col s2 m1 l1">
+                                <a id="triggerMainPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                            </div>
+                            <div class="col s12 m4 l2 input-field">
+                                <input type="number" class="value" id="triggerMainPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
+                                <label for="triggerMainPumpPower" class="translate"></label>
+                                <span class="translate">maximum pump output of the main pump in l/h</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 input-field">
+                                <input type="checkbox" class="value" id="cisternSettings" />
+                                <span for="cisternSettings" class="translate">Add cistern pump as priority pump</span>
+                            </div>
+                        </div>
+                        <div class="row col s12 cisternObjekt">
+                            <div class="row">
+                                <div class="input-field col s10 m5 l5">
+                                    <input type="text" class="value" id="triggerCisternPump" />
+                                    <label for="triggerCisternPump" class="translate"></label>
+                                    <span class="translate">cistern pump</span>
                                 </div>
                                 <div class="col s2 m1 l1">
-                                    <a id="triggerSMDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                    <a id="triggerCisternPumpDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
                                 </div>
-                                <div class="col s12 l4 input-field">
-                                    <input type="checkbox" class="form-control" id="inGreenhouse" />
-                                    <span for="inGreenhouse" class="translate">Sensor in the greenhouse</span>
+                                <div class="col s6 m4 l2 input-field">
+                                    <input type="number" class="value" id="triggerCisternPumpPower" min=500 max=5000 placeholder="500-5000" step="100" />
+                                    <label for="triggerCisternPumpPower" class="translate"></label>
+                                    <span class="translate">maximum pump capacity of the cistern in l/h</span>
                                 </div>
                             </div>
-                            <!-- calculation => Calculation of evaporation => Berechnung der Verdunstung -->
                             <div class="row">
-                                <div class="col s12 l4 input-field visNotAnalog">
-                                    <input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
-                                    <label for="triggersIrrigation" class="translate"></label>
-                                    <span class="translate">Switch-on point (soil moisture) of the irrigation valves in %</span>
+                                <div class="input-field col s10 m5 l5">
+                                    <input type="text" class="value" id="actualValueLevel" />
+                                    <label for="actualValueLevel" class="translate"></label>
+                                    <span class="translate">Level of the cistern</span>
                                 </div>
+                                <div class="col s2 m1 l1">
+                                    <a id="actualValueLevelDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                </div>
+                                <div class="col s6 m4 l2 input-field">
+                                    <input type="number" class="value" id="triggerMinCisternLevel" min=0 max=100 placeholder="0-100" step="5" />
+                                    <label for="triggerMinCisternLevel" class="translate"></label>
+                                    <span class="translate">Minimum fill level of the cysts in %</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- time settings -->
+                    <div id="tab-time" class="col s12 page">
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for start time</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m4">
+                                <select type="combobox" class="value" id="wateringStartTime">
+                                    <option value="livingTime" class="translate">start with a fixed start time</option>
+                                    <option value="livingSunrise" class="translate">Start time at sunrise</option>
+                                    <option value="livingGoldenHourEnd" class="translate">Start time at the end of the golden hour</option>
+                                </select>
+                                <label for="wateringStartTime" class="translate"></label>
+                                <span class="translate">Start time for irrigation</span>
+                            </div>
+                            <div class="input-field col s6 l2 visTimeShift">
+                                <input type="number" id="timeShift" class="value" min="-120" max="120" placeholder="-120-120" step="1" />
+                                <label for="timeShift" class="translate"></label>
+                                <span class="translate">Time shift in min</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6 l2 visWeekLiving">
+                                <input type="time" class="timepicker value" id="weekLiving" />
+                                <label for="weekLiving" class="translate"></label>
+                                <span class="translate">Start time in the week</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for start time on weekends</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6 l2">
+                                <input type="checkbox" class="value" id="publicWeekend" />
+                                <span for="publicWeekend" class="translate">different start time on weekends</span>
+                            </div>
+                            <div class="input-field col s12 m6 l2 publicWeek">
+                                <input type="time" class="timepicker value" id="weekEndLiving" />
+                                <label for="weekEndLiving" class="translate"></label>
+                                <span class="translate">Start time at the weekend</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for the start time on public holidays</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s6 l2 publicWeekHol">
+                                <input type="checkbox" class="value" id="publicHolidays" />
+                                <span for="publicHolidays" class="translate">Start time of public holidays as on weekends</span>
+                            </div>
+                            <div class="input-field col s12 m6 l2 publicHol">
+                                <select id="publicHolInstance" class="value"></select>
+                                <label for="publicHolInstance" class="translate"></label>
+                                <span class="translate">public holidays Instance</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tab Extra -->
+                    <div id="tab-extra" class="col s12 page">
+                        <!-- Astro Einstellungen -->
+                        <div class="col s12 m6 l4">
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">Astro settings</h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s12 l6 input-field">
+                                    <input type="text" class="value" id="latitude" />
+                                    <label for="latitude" class="translate"></label>
+                                    <span class="translate">latitude</span>
+                                </div>
+                                <div class="col s12 l6 input-field">
+                                    <input type="text" class="value" id="longitude" />
+                                    <label for="longitude" class="translate"></label>
+                                    <span class="translate">longitude</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Debug Einstellungen -->
+                        <div class="col s12 m6 l4">
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">Debug settings</h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s4 input-field">
+                                    <input type="checkbox" class="value" id="debug" />
+                                    <span for="debug" class="translate">debug</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- notifications on/off -->
+                        <div class="col s12 m6 l4">
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="translate sub-title">Additional notification setting</h6>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col s8 input-field">
+                                    <input type="checkbox" class="value" id="notificationEnabled" />
+                                    <span for="notificationEnabled" class="translate">Enable / Disable Notifications</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- aktuelle Wetterdaten -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Evaporation calculation sensors</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s10 m4 l4 input-field">
+                                <input type="text" class="value" id="sensorOutsideTemperature" />
+                                <label for="sensorOutsideTemperature" class="translate"></label>
+                                <span class="translate">Temperature sensor</span>
+                            </div>
+                            <div class="col s2 m2 l2">
+                                <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                            </div>
+                            <div class="col s10 m4 l4 input-field">
+                                <input type="text" class="value" id="sensorOutsideHumidity" />
+                                <label for="sensorOutsideHumidity" class="translate"></label>
+                                <span class="translate">Humidity sensor</span>
+                            </div>
+                            <div class="col s2 m2 l2">
+                                <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s10 m4 l4 input-field">
+                                <input type="text" class="value" id="sensorWindSpeed" />
+                                <label for="sensorWindSpeed" class="translate"></label>
+                                <span class="translate">Wind speed sensor</span>
+                            </div>
+                            <div class="col s2 m2 l2">
+                                <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col s10 m4 l4 input-field">
+                                <input type="text" class="value" id="sensorBrightness" />
+                                <label for="sensorBrightness" class="translate"></label>
+                                <span class="translate">Brightness sensor</span>
+                            </div>
+                            <div class="col s2 m2 l2">
+                                <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                            </div>
+                            <div class="col s10 m4 l4 input-field">
+                                <input type="text" class="value" id="sensorRainfall" />
+                                <label for="sensorRainfall" class="translate"></label>
+                                <span class="translate">rain counter sensor</span>
+                            </div>
+                            <div class="col s2 m2 l2">
+                                <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                            </div>
+                        </div>
+                        <!-- Wettervorhersage -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Weather forecast</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m6 l2 weatherForecast">
+                                <input type="checkbox" class="value" id="weatherForecast" />
+                                <span for="weatherForecast" class="translate">Use weather forecast</span>
+                            </div>
+                            <div class="input-field col s12 m6 l2 weatherFor">
+                                <select id="weatherForInstance" class="value"></select>
+                                <label for="weatherForInstance" class="translate"></label>
+                                <span class="translate">Select the weather forecast instance</span>
+                            </div>
+                            <div class="input-field col s12 m6 l2 weatherFor">
+                                <input type="number" class="value" id="thresholdRain" min=0 max=5.0 placeholder="0-5.0" step="0.1" value="2" />
+                                <label for="thresholdRain" class="translate"></label>
+                                <span class="translate">Precipitation threshold in mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- notifications -->
+                    <div id="tab-notification" class="col s12 page">
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Selection of notification</h6>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m4">
+                                <select class="value" id="notificationsType">
+                                    <option value="Telegram" class="translate">Telegram</option>
+                                    <option value="E-Mail" class="translate">E-Mail</option>
+                                    <option value="Pushover" class="translate">Pushover</option>
+                                    <option value="WhatsApp" class="translate">WhatsApp</option>
+                                </select>
+                                <label for="notificationsType" class="translate"></label>
+                                <span class="translate">notifications type</span>
+                            </div>
+                        </div>
+                        <!-- Telegram -->
+                        <div class="row telegram">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for telegram</h6>
+                            </div>
+                        </div>
+                        <div class="row telegram">
+                            <div class="input-field col s12 m6 l3 telegram">
+                                <select id="telegramInstance" class="value"></select>
+                                <label for="telegramInstance" class="translate"></label>
+                                <span class="translate">Telegram instance</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 telegram">
+                                <select id="telegramUser" class="value"></select>
+                                <label for="telegramUser" class="translate"></label>
+                                <span class="translate">Telegram Receiver</span>
+                            </div>
+                        </div>
+                        <div class="row telegram">
+                            <div class="input-field col s12 m6 l3 telegram">
+                                <select class="value" id="telegramNoticeType">
+                                    <option value="longTelegramNotice" class="translate">Long Notifications</option>
+                                    <option value="shortTelegramNotice" class="translate">Short Notifications</option>
+                                </select>
+                                <label class="translate" for="telegramNoticeType"></label>
+                                <span class="translate">Notification Style</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 telegram">
+                                <input type="number" class="value" id="telegramWaitToSend" min="0" max="20"/>
+                                <label for="telegramWaitToSend" class="translate"></label>
+                                <span class="translate">Waiting for the send (seconds)</span>
+                            </div>
+                        </div>
+                        <div class="row telegram">
+                            <div class="input-field col s12 m6 l3 telegram">
+                                <input class="value" id="telegramSilentNotice" type="checkbox"/>
+                                <span for="telegramSilentNotice" class="translate">Silent Notice</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 telegram">
+                                <input class="value" id="telegramOnlyError" type="checkbox"/>
+                                <span for="telegramOnlyError" class="translate">Notification only on errors</span>
+                            </div>
+                        </div>
+
+                        <!-- WhatsApp -->
+                        <div class="row whatsapp">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for WhatsApp</h6>
+                            </div>
+                        </div>
+                        <div class="row whatsapp">
+                            <div class="input-field col s12 m6 l3 whatsapp">
+                                <select id="whatsappInstance" class="value"></select>
+                                <label for="whatsappInstance" class="translate"></label>
+                                <span class="translate">WhatsApp instance</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 whatsapp">
+                                <select class="value" id="whatsappNoticeType">
+                                    <option value="longWhatsappNotice" class="translate">Long Notifications</option>
+                                    <option value="shortWhatsappNotice" class="translate">Short Notifications</option>
+                                </select>
+                                <label class="translate" for="whatsappNoticeType"></label>
+                                <span class="translate">Notification Style</span>
+                            </div>
+                        </div>
+                        <div class="row whatsapp">
+                            <div class="input-field col s12 m6 l3 whatsapp">
+                                <input type="number" class="value" id="whatsappWaitToSend" min="0" max="20"/>
+                                <label for="whatsappWaitToSend" class="translate"></label>
+                                <span class="translate">Waiting for the send (seconds)</span>
+                            </div>
+                        </div>
+                        <div class="row whatsapp">
+                            <div class="input-field col s12 m6 l3 whatsapp">
+                                <input class="value" id="whatsappOnlyError" type="checkbox"/>
+                                <span for="whatsappOnlyError" class="translate">Notification only on errors</span>
+                            </div>
+                        </div>
+                        <!-- Pushover -->
+                        <div class="row pushover">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for Pushover</h6>
+                            </div>
+                        </div>
+                        <div class="row pushover">
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <select id="pushoverInstance" class="value"></select>
+                                <label for="pushoverInstance" class="translate"></label>
+                                <span class="translate">Pushover instance</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <select class="value" id="pushoverNoticeType">
+                                    <option value="longPushoverNotice" class="translate">Long Notifications</option>
+                                    <option value="shortPushoverNotice" class="translate">Short Notifications</option>
+                                </select>
+                                <label class="translate" for="pushoverNoticeType"></label>
+                                <span class="translate">Notification Style</span>
+                            </div>
+                        </div>
+                        <div class="row pushover">
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <input type="number" class="value" id="pushoverWaitToSend" min="0" max="20"/>
+                                <label for="pushoverWaitToSend" class="translate"></label>
+                                <span class="translate">Waiting for the send (seconds)</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <input class="value" id="pushoverDeviceID" type="text">
+                                <label for="pushoverDeviceID" class="translate"></label>
+                                <span class="translate">device ID (optional)</span>
+                            </div>
+                        </div>
+
+                        <div class="row pushover">
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <select class="value" id="pushoverSound">
+                                    <option value="">              default </option>
+                                    <option value="pushover">      pushover </option>
+                                    <option value="bike">          bike </option>
+                                    <option value="bugle">         bugle</option>
+                                    <option value="cashregister">  cashregister </option>
+                                    <option value="classical">     classical </option>
+                                    <option value="cosmic">        cosmic </option>
+                                    <option value="falling">       falling</option>
+                                    <option value="gamelan">       gamelan </option>
+                                    <option value="incoming">      incoming </option>
+                                    <option value="intermission">  intermission </option>
+                                    <option value="magic">         magic </option>
+                                    <option value="mechanical">    mechanical </option>
+                                    <option value="pianobar">      pianobar </option>
+                                    <option value="siren">         siren</option>
+                                    <option value="spacealarm">    spacealarm </option>
+                                    <option value="tugboat">       tugboat </option>
+                                    <option value="alien">         alien</option>
+                                    <option value="climb">         climb </option>
+                                    <option value="persistent">    persistent </option>
+                                    <option value="echo">          echo</option>
+                                    <option value="updown">        updown </option>
+                                    <option value="none">          none</option>
+                                </select>
+                                <label class="translate" for="pushoverSound"></label>
+                                <span class="translate">Notification Sound</span>
+                            </div>
+                        </div>
+
+                        <div class="row pushover">
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <input class="value" id="pushoverSilentNotice" type="checkbox"/>
+                                <span for="pushoverSilentNotice" class="translate">Silent Notice</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 pushover">
+                                <input class="value" id="pushoverOnlyError" type="checkbox"/>
+                                <span for="pushoverOnlyError" class="translate">Notification only on errors</span>
+                            </div>
+                        </div>
+                        <!-- email -->
+                        <div class="row email">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Settings for E-Mail</h6>
+                            </div>
+                        </div>
+                        <div class="row email">
+                            <div class="input-field col s12 m6 l3 email">
+                                <input class="value" id="emailReceiver" type="text">
+                                <label for="emailReceiver" class="translate"></label>
+                                <span class="translate">email receiver</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 email">
+                                <input class="value" id="emailSender" type="text">
+                                <label for="emailSender" class="translate"></label>
+                                <span class="translate">email sender</span>
+                            </div>
+                        </div>
+                        <div class="row email">
+                            <div class="input-field col s12 m6 l3 email">
+                                <select id="emailInstance" class="value"></select>
+                                <label for="emailInstance" class="translate"></label>
+                                <span class="translate">email instance</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 email">
+                                <select class="value" id="emailNoticeType">
+                                    <option value="longEmailNotice" class="translate">Long Notifications</option>
+                                    <option value="shortEmailNotice" class="translate">Short Notifications</option>
+                                </select>
+                                <label class="translate" for="emailNoticeType"></label>
+                                <span class="translate">Notification Style</span>
+                            </div>
+                        </div>
+                        <div class="row email">
+                            <div class="input-field col s12 m6 l3 email">
+                                <input type="number" class="value" id="emailWaitToSend" min="0" max="20"/>
+                                <label for="emailWaitToSend" class="translate"></label>
+                                <span class="translate">Waiting for the send (seconds)</span>
+                            </div>
+                            <div class="input-field col s12 m6 l3 email">
+                                <input class="value" id="emailOnlyError" type="checkbox"/>
+                                <span for="emailOnlyError" class="translate">Notification only on errors</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sprinkler - Ventil-Einstellungen -->
+            <div class="m material-dialogs">
+                <div id="dialog-select-member" class="modal modal-fixed-footer">
+                    <div class="modal-content">
+                        <div class="row">
+                            <div class="col s12 title"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 dialog-content">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Select</span></a>
+                        <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left ">close</i><span class="translate">Cancel</span></a>
+                    </div>
+                </div>
+                <div id="dialog-sprinkle-edit" class="modal modal-fixed-footer">
+                    <div class="row">
+                        <div class="modal-content">
+                            <div class="row">
+                                <div class="col s12">
+                                    <h6 class="title" style="background-color:#174475;"><span class="translate">Edit Device:</span> <span id="dialogDeviceEditSprinkle"></span></h6>
+                                </div>
+                            </div>
+                            <div class="col s12">
+                                <ul class="tabs blue lighten-4">
+                                    <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
+                                    <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
+                                </ul>
+                            </div>
+                            <!-- Sprinkler - Pump settings -->
+                            <div id="tab-pumpPopUp" class="col s12 page">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h6 class="translate sub-title">Sprinkler consumption</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 l6 input-field">
+                                        <input type="number" class="form-control" id="pipeFlow" min=200 max=3000 placeholder="200-2000" step="50" />
+                                        <label for="pipeFlow" class="translate"></label>
+                                        <span class="translate">Flow amount in l/h</span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 l6 input-field">
+                                        <input type="checkbox" class="form-control" id="booster" />
+                                        <span for="booster" class="translate">Booster</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Sprinkler - Main settings -->
+                            <div id="tab-settingsPopUp" class="col s12 page">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h6 class="translate sub-title">Irrigation settings</h6>
+                                    </div>
+                                </div>
+                                <!-- Irrigation settings => Bewässerungseinstellungen -->
+                                <div class="row">
+                                    <div class="col s12 l4 input-field">
+                                        <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
+                                        <label for="wateringTime" class="translate"></label>
+                                        <span class="translate">Watering time in min</span>
+                                    </div>
+                                    <div class="col s12 l4 input-field">
+                                        <input type="number" class="form-control" id="wateringAdd" min=100 max=300 step="10" />
+                                        <label for="wateringAdd" class="translate"></label>
+                                        <span class="translate">maximum irrigation extension</span>
+                                    </div>
+                                    <div class="col s12 l4 input-field">
+                                        <input type="number" class="form-control" id="wateringInterval" min=0 max=30 step="5" />
+                                        <label for="wateringInterval" class="translate"></label>
+                                        <span class="translate">Watering interval in min</span>
+                                    </div>
+                                </div>
+                                <!-- Method of controlling soil moisture => Methode zur Kontrolle der Bodenfeuchtigkeit -->
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h6 class="translate sub-title">Switch-on point for watering</h6>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 m4 input-field">
+                                        <select type="combobox" class="value" id="methodControlSM">
+                                            <option value="calculation" class="translate">Calculation of evaporation</option>
+                                            <option value="bistable" class="translate">Soil moisture sensor bistable</option>
+                                            <option value="analog" class="translate">Soil moisture sensor analog</option>
+                                            <option value="fixDay" class="translate">Start on fixed days of the week (without sensors)</option>
+                                        </select>
+                                        <label for="methodControlSM" class="translate"></label>
+                                        <span class="translate">Method of controlling soil moisture</span>
+                                    </div>
+                                </div>
+                                <div class="row visSensor">
+                                    <div class="col s10 m5 l4 input-field">
+                                        <input type="text" class="value" id="triggerSM" />
+                                        <label for="triggerSM" class="translate"></label>
+                                        <span class="translate">Soil moisture sensor</span>
+                                    </div>
+                                    <div class="col s2 m1 l1">
+                                        <a id="triggerSMDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                    </div>
+                                    <div class="col s12 l4 input-field visInGreenhouse">
+                                        <input type="checkbox" class="form-control" id="inGreenhouse" />
+                                        <span for="inGreenhouse" class="translate">Sensor in the greenhouse</span>
+                                    </div>
+                                </div>
+                                <!-- calculation => Calculation of evaporation => Berechnung der Verdunstung -->
+                                <div class="row">
+                                    <div class="col s12 l4 input-field visNotAnalog">
+                                        <input type="number" class="form-control" id="triggersIrrigation" min=30 max=80 />
+                                        <label for="triggersIrrigation" class="translate"></label>
+                                        <span class="translate">Switch-on point (soil moisture) of the irrigation valves in %</span>
+                                    </div>
+                                    <div class="row visCalculation">
+                                        <div class="col s12 l4 input-field">
+                                            <input type="checkbox" class="form-control" id="endIrrigation" />
+                                            <span for="endIrrigation" class="translate">after irrigation = 100</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- calculation => Calculation of evaporation => Berechnung der Verdunstung -->
                                 <div class="row visCalculation">
-                                    <div class="col s12 l4 input-field">
-                                        <input type="checkbox" class="form-control" id="endIrrigation" />
-                                        <span for="endIrrigation" class="translate">after irrigation = 100</span>
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <h6 class="translate sub-title">maximum soil moisture</h6>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s12 l4 input-field">
+                                            <input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
+                                            <label for="maxSoilMoistureIrrigation" class="translate"></label>
+                                            <span class="translate">maximum soil moisture after the irrigation in (mm)</span>
+                                        </div>
+                                        <div class="col s12 l4 input-field">
+                                            <input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
+                                            <label for="maxSoilMoistureRain" class="translate"></label>
+                                            <span class="translate">maximum soil moisture after the rain in (mm)</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- calculation => Calculation of evaporation => Berechnung der Verdunstung -->
-                            <div class="row visCalculation">
-                                <div class="row">
-                                    <div class="col s12">
-                                        <h6 class="translate sub-title">maximum soil moisture</h6>
+                                <!-- analog => Soil moisture sensor analog => Bodenfeuchte Sensor analog -->
+                                <div class="row visAnalog">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <h6 class="translate sub-title">Configuration of the analog soil moisture sensor</h6>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s12 l4 input-field">
+                                            <input type="number" class="form-control" id="analogZPct"/>
+                                            <label for="analogZPct" class="translate"></label>
+                                            <span class="translate">analog soil moisture sensor at 0 percent (sensor in the air)</span>
+                                        </div>
+                                        <div class="col s12 l4 input-field">
+                                            <input type="number" class="form-control" id="analogOHPct"/>
+                                            <label for="analogOHPct" class="translate"></label>
+                                            <span class="translate">analog soil moisture sensor at 100 percent (sensor in the water)</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col s12 l4 input-field">
-                                        <input type="number" class="form-control" id="maxSoilMoistureIrrigation" min=5 max=20 placeholder="5.0-20.0" step="0.1" />
-                                        <label for="maxSoilMoistureIrrigation" class="translate"></label>
-                                        <span class="translate">maximum soil moisture after the irrigation in (mm)</span>
+                                <!-- fixDay => Start on fixed days (without sensors) => Start an festen Wochentagen bzw. Perioden -->
+                                <div class="row visFixDay">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <h6 class="translate sub-title">Start on fixed days (without sensors)</h6>
+                                        </div>
                                     </div>
-                                    <div class="col s12 l4 input-field">
-                                        <input type="number" class="form-control" id="maxSoilMoistureRain" min="5.0" max="25.0" placeholder="5.0-25.0" step="0.1" />
-                                        <label for="maxSoilMoistureRain" class="translate"></label>
-                                        <span class="translate">maximum soil moisture after the rain in (mm)</span>
+                                    <div class="row">
+                                        <div class="col s12 l3">
+                                            <div class="col s12 l12 input-field">
+                                                <select type="combobox" class="value" id="startDay">
+                                                    <option value="threeRd" class="translate">Three days of rhythm</option>
+                                                    <option value="twoNd" class="translate">Every second day</option>
+                                                    <option value="fixDay" class="translate">Start on fixed days</option>
+                                                </select>
+                                                <label for="startDay" class="translate"></label>
+                                                <span class="translate">Selection of watering days in the week</span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                            <!-- analog => Soil moisture sensor analog => Bodenfeuchte Sensor analog -->
-                            <div class="row visAnalog">
-                                <div class="row">
-                                    <div class="col s12">
-                                        <h6 class="translate sub-title">Configuration of the analog soil moisture sensor</h6>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col s12 l4 input-field">
-                                        <input type="number" class="form-control" id="analogZPct"/>
-                                        <label for="analogZPct" class="translate"></label>
-                                        <span class="translate">analog soil moisture sensor at 0 percent (sensor in the air)</span>
-                                    </div>
-                                    <div class="col s12 l4 input-field">
-                                        <input type="number" class="form-control" id="analogOHPct"/>
-                                        <label for="analogOHPct" class="translate"></label>
-                                        <span class="translate">analog soil moisture sensor at 100 percent (sensor in the water)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- fixDay => Start on fixed days (without sensors) => Start an festen Wochentagen bzw. Perioden -->
-                            <div class="row visFixDay">
-                                <div class="row">
-                                    <div class="col s12">
-                                        <h6 class="translate sub-title">Start on fixed days (without sensors)</h6>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col s12 l3 input-field">
+                                    <div class="row visFixDaysWeek">
                                         <div class="col s12 l12 input-field">
-                                            <select type="combobox" class="value" id="startDay">
-                                                <option value="threeRd" class="translate">Three days of rhythm</option>
-                                                <option value="twoNd" class="translate">Every second day</option>
-                                                <option value="fixDay" class="translate">Start on fixed days</option>
-                                            </select>
-                                            <label for="startDay" class="translate"></label>
-                                            <span class="translate">Selection of watering days in the week</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row visFixDaysWeek">
-                                    <div class="col s12 l12 input-field">
-                                        <legend class="translate">Tick the days of the week you want</legend>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="sun">
-                                            <span for="sun" class="translate">Sunday</span>
-                                        </div>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="mon">
-                                            <span for="mon" class="translate">Monday</span>
-                                        </div>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="tue">
-                                            <span for="tue" class="translate">Tuesday</span>
-                                        </div>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="wed">
-                                            <span for="wed" class="translate">Wednesday</span>
-                                        </div>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="thur">
-                                            <span for="thur" class="translate">Thursday</span>
-                                        </div>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="fri">
-                                            <span for="fri" class="translate">Friday</span>
-                                        </div>
-                                        <div class="col s12 m2 l1 input-field">
-                                            <input type="checkbox" class="form-control" id="sat">
-                                            <span for="sat" class="translate">Saturday</span>
+                                            <legend class="translate">Tick the days of the week you want</legend>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="sun">
+                                                <span for="sun" class="translate">Sunday</span>
+                                            </div>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="mon">
+                                                <span for="mon" class="translate">Monday</span>
+                                            </div>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="tue">
+                                                <span for="tue" class="translate">Tuesday</span>
+                                            </div>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="wed">
+                                                <span for="wed" class="translate">Wednesday</span>
+                                            </div>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="thur">
+                                                <span for="thur" class="translate">Thursday</span>
+                                            </div>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="fri">
+                                                <span for="fri" class="translate">Friday</span>
+                                            </div>
+                                            <div class="col s12 m2 l1 input-field">
+                                                <input type="checkbox" class="form-control" id="sat">
+                                                <span for="sat" class="translate">Saturday</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Ok</span></a>
-                    <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left">close</i><span class="translate">Cancel</span></a>
+                    <div class="modal-footer">
+                        <a class="modal-action modal-close waves-effect waves-green btn btn-set"><i class="large material-icons left">check</i><span class="translate">Ok</span></a>
+                        <a class="modal-action modal-close waves-effect waves-green btn btn-close"><i class="large material-icons left">close</i><span class="translate">Cancel</span></a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
+        <!-- Load our own files when the Dom is loaded (jQuery) -->
+        <script type="text/javascript" src="index_m.js"></script>
+    </body>
 
 </html>

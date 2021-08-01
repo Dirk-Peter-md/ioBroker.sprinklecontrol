@@ -432,7 +432,7 @@ function save(callback) {
     });
 
     // Get edited table
-    obj.events    = table2values('events');
+    obj.events    = table2values('events'); //es wird nicht devices abgespeichert, sondern der Inhalt der Tabelle (all Zeilen müssen value="" haben)
 
 
     callback(obj);
@@ -485,8 +485,10 @@ function showHideSettings(callback) {
     // zusätzliche Einstellungen => Wettervorhersage
     if ($('#weatherForecast').prop('checked')) {
         $('.weatherFor').show();
+        $('.visInGreenhouse').show();
     } else {
         $('.weatherFor').hide();
+        $('.visInGreenhouse').hide();
     }
 
     // Benachrichtigung Karte Ein / Aus
