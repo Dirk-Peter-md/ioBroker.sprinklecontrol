@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "news": {
+      "0.2.3": {
+        "en": "fixed index_m bug; timeExtension (FixDay, bistable) bug fixed",
+        "de": "index_m-Fehler behoben; timeExtension (FixDay, bistabil) Fehler behoben",
+        "ru": "исправлена ошибка index_m; Исправлена ошибка timeExtension (FixDay, bistable)",
+        "pt": "bug index_m corrigido; Bug timeExtension (FixDay, bistable) corrigido",
+        "nl": "opgeloste index_m-bug; timeExtension (FixDay, bistabiel) bug opgelost",
+        "fr": "bogue index_m corrigé ; bug timeExtension (FixDay, bistable) corrigé",
+        "it": "corretto bug index_m; bug timeExtension (FixDay, bistabile) risolto",
+        "es": "error fijo index_m; error de timeExtension (FixDay, biestable) corregido",
+        "pl": "naprawiony błąd index_m; naprawiono błąd timeExtension (FixDay, bistabilny)",
+        "zh-cn": "修复 index_m 错误； timeExtension（FixDay，双稳态）错误已修复"
+      },
       "0.2.2": {
         "en": "FixDay bug fixed, 'actualSoilMoisture' revised, information messages revised",
         "de": "FixDay-Fehler behoben, 'actualSoilMoisture' überarbeitet, Informationsmeldungen überarbeitet",

@@ -50,7 +50,7 @@
                         <li class="tab col s6 l2 tab-notification"><a href="#tab-notification" class="translate">Notifications</a></li>
                     </ul>
                 </div>
-                <div class="row">
+                <div class="row" id="mainSettings">
                     <!-- main settings -->
                     <div id="tab-settings" class="col s12 page">
                         <div class="row">
@@ -661,7 +661,7 @@
                                         <h6 class="translate sub-title">Irrigation settings</h6>
                                     </div>
                                 </div>
-                                <!-- Irrigation settings => Bewässerungseinstellungen -->
+                                <!-- Irrigation settings → Bewässerungseinstellungen -->
                                 <div class="row">
                                     <div class="col s12 l4 input-field">
                                         <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
@@ -679,7 +679,7 @@
                                         <span class="translate">Watering interval in min</span>
                                     </div>
                                 </div>
-                                <!-- Method of controlling soil moisture => Methode zur Kontrolle der Bodenfeuchtigkeit -->
+                                <!-- Method of controlling soil moisture → Methode zur Kontrolle der Bodenfeuchtigkeit -->
                                 <div class="row">
                                     <div class="col s12">
                                         <h6 class="translate sub-title">Switch-on point for watering</h6>
@@ -696,6 +696,10 @@
                                         <label for="methodControlSM" class="translate"></label>
                                         <span class="translate">Method of controlling soil moisture</span>
                                     </div>
+                                    <div class="col s12 l4 input-field visInGreenhouse">
+                                        <input type="checkbox" class="form-control" id="inGreenhouse" />
+                                        <span for="inGreenhouse" class="translate">Sensor in the greenhouse</span>
+                                    </div>
                                 </div>
                                 <div class="row visSensor">
                                     <div class="col s10 m5 l4 input-field">
@@ -705,10 +709,6 @@
                                     </div>
                                     <div class="col s2 m1 l1">
                                         <a id="triggerSMDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                                    </div>
-                                    <div class="col s12 l4 input-field visInGreenhouse">
-                                        <input type="checkbox" class="form-control" id="inGreenhouse" />
-                                        <span for="inGreenhouse" class="translate">Sensor in the greenhouse</span>
                                     </div>
                                 </div>
                                 <!-- calculation => Calculation of evaporation => Berechnung der Verdunstung -->

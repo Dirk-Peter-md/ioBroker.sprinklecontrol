@@ -63,12 +63,12 @@ function load(settings, onChange) {
             $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
             $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val('700').trigger('change');
             $('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').val('calculation').trigger('change');
-            $('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').select().trigger('change');
-            $('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val('50').trigger('change');
+            //$('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').select().trigger('change');    // select() > val
+            //$('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val().trigger('change');
             $('#events .values-input[data-name="analogZPct"][data-index="' + id + '"]').val('0').trigger('change');
             $('#events .values-input[data-name="analogOHPct"][data-index="' + id + '"]').val('100').trigger('change');
             $('#events .values-input[data-name="startDay"][data-index="' + id + '"]').val('threeRd').trigger('change');
-            $('#events .values-input[data-name="startDay"][data-index="' + id + '"]').select().trigger('change');
+            //$('#events .values-input[data-name="startDay"][data-index="' + id + '"]').select().trigger('change');
             // boolean
             $('#events .values-input[data-name="booster"][data-index="' + id + '"]').prop('checked', false);
             $('#events .values-input[data-name="endIrrigation"][data-index="' + id + '"]').prop('checked', true);
@@ -382,7 +382,6 @@ function tableOnReady() {
                 let newFri = $('#fri').prop('checked');
                 let newSat = $('#sat').prop('checked');
 
-
                 $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
                 $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
                 $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val(newWateringAdd).trigger('change');
@@ -417,15 +416,18 @@ function tableOnReady() {
  * This will be called by the admin adapter when the user presses the Save or Save and Close button
  * Dies wird vom Admin-Adapter aufgerufen, wenn der Benutzer die Schaltfläche Speichern oder Speichern und Schließen drückt
  * @param {object} callback - JSON object which holds keys and their values that will be written to adapter config object
+ *                          - JSON-Objekt, das Schlüssel und deren Werte enthält, die in das Adapterkonfigurationsobjekt geschrieben werden
  */
 function save(callback) {
     // example: select elements with class=value and build settings object
     // Beispiel: Wählen Sie Elemente mit class = value aus und erstellen Sie das Einstellungsobjekt
     let obj = {};
-    $('.value').each(function () {
+    $('#mainSettings .value').each(function () {
         let $this = $(this);
         if ($this.attr('type') === 'checkbox') {
             obj[$this.attr('id')] = $this.prop('checked');
+        } else if ($this.attr('type') === 'number') {
+            obj[$this.attr('id')] = parseFloat($this.val());
         } else {
             obj[$this.attr('id')] = $this.val();
         }
@@ -440,7 +442,9 @@ function save(callback) {
 
 /**
  * Show and hide the display depending on the events
+ *
  * Anzeige je nach Ereignissen ein- und ausblenden
+ * @param callback
  */
 function showHideSettings(callback) {
 
@@ -459,7 +463,6 @@ function showHideSettings(callback) {
     }).trigger('change');
 
     // Pumpeneinstellungen => Zisterne sichtbar bei checkbox
-
     if ($('#cisternSettings').prop('checked')) {
         $('.cisternObjekt').show();
     } else {
@@ -483,16 +486,14 @@ function showHideSettings(callback) {
     }
 
     // zusätzliche Einstellungen => Wettervorhersage
-    if ($('#weatherForecast').prop('checked')) {
+    let mWeatherForecast = $('#weatherForecast').prop('checked');
+    if (mWeatherForecast) {
         $('.weatherFor').show();
-        $('.visInGreenhouse').show();
     } else {
         $('.weatherFor').hide();
-        $('.visInGreenhouse').hide();
     }
 
     // Benachrichtigung Karte Ein / Aus
-
     if ($('#notificationEnabled').prop('checked')) {
         $('.tab-notification').show();
     } else {
@@ -500,7 +501,6 @@ function showHideSettings(callback) {
     }
 
     // Benachrichtigung - Typ auswahl
-
     $('#notificationsType').on('change', function () {
         if ($(this).val() === 'Telegram') {
             $('.email').hide();
@@ -526,27 +526,45 @@ function showHideSettings(callback) {
     }).trigger('change');
 
     // Sensorauswahl in Sprinkler - Main settings
-
     $('#methodControlSM').on('change',function(){
         if ($(this).val() === 'calculation') {
+            $('.visInGreenhouse').hide()
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
             $('.visNotAnalog').show();
             $('.visFixDay').hide();
+
         } else if ($(this).val() === 'bistable') {
+            if (mWeatherForecast) {
+                $('.visInGreenhouse').show()
+            } else {
+                $('.visInGreenhouse').hide()
+            }
             $('.visSensor').show();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
             $('.visNotAnalog').hide();
             $('.visFixDay').hide();
+
         } else if ($(this).val() === 'analog') {
+            if (mWeatherForecast) {
+                $('.visInGreenhouse').show()
+            } else {
+                $('.visInGreenhouse').hide()
+            }
             $('.visSensor').show();
             $('.visAnalog').show();
             $('.visCalculation').hide();
             $('.visNotAnalog').show();
             $('.visFixDay').hide();
+
         } else if ($(this).val() === 'fixDay') {
+            if (mWeatherForecast) {
+                $('.visInGreenhouse').show()
+            } else {
+                $('.visInGreenhouse').hide()
+            }
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
@@ -554,6 +572,7 @@ function showHideSettings(callback) {
             $('.visFixDay').show();
         } else {
             $(this).val('calculation');
+            $('.visInGreenhouse').hide()
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
@@ -563,15 +582,13 @@ function showHideSettings(callback) {
     }).trigger('change');
 
     // Wochentags-Auswahl in Sprinkler - Main settings
-
     $('#startDay').on('change', function () {
-        if (($(this).val() === 'fixDay') && ($(this).val() === 'fixDay')) {
+        if (($(this).val() === 'fixDay')) {
             $('.visFixDaysWeek').show();
         } else {
             $('.visFixDaysWeek').hide();
         }
     }).trigger('change');
-
 }
 
 let selectId;

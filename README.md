@@ -35,6 +35,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 	### **WORK IN PROGRESS**
 -->
 
+### 0.2.3 (15.08.2021)
+* (Dirk-Peter-md) index_m-Fehler behoben
+* (Dirk-Peter-md) timeExtension (FixDay, bistabil) Fehler behoben
+
 ### 0.2.2 (27.07.2021)
 * (Dirk-Peter-md) Fehler FixDay behoben
 * (Dirk-Peter-md) Anzeige actualSoilMoisture überarbeitet
