@@ -990,6 +990,19 @@ function createSprinklers() {
                 }
             }, 50)
 
+            // Trigger point of sprinkler => Schaltpunkt der Bodenfeuchte
+            adapter.setObjectNotExists(objPfad + '.triggerPoint', {
+                'type': 'state',
+                'common': {
+                    'role':  'state',
+                    'name':  objectName + ' => Trigger point of sprinkler',
+                    'type':  'string',
+                    'read':  true,
+                    'write': false,
+                    'def':   false
+                },
+                'native': {},
+            });
             // actual state of sprinkler => Zustand des Ventils im Thread
             // <<< 1  = warten >>> ( 0:off; 1:wait; 2:on; 3:break; 4:Boost(on); 5:off(Boost) )
             // Create .sprinklerState
@@ -1148,15 +1161,27 @@ function createSprinklers() {
                             val: myConfig.config[j].soilMoisture.bool,
                             ack: true
                         });
+                        adapter.setState(objPfad + '.triggerPoint', {
+                            val: '-',
+                            ack: true
+                        });
                         break;
                     case 'analog':
                         adapter.setState(objPfad + '.actualSoilMoisture', {
                             val: Math.round(10 * myConfig.config[j].soilMoisture.pct) / 10,
                             ack: true
                         });
+                        adapter.setState(objPfad + '.triggerPoint', {
+                            val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
+                            ack: true
+                        });
                         break;
                     case 'fixDay':
                         curNextFixDay(myConfig.config[j].sprinkleID, false);
+                        adapter.setState(objPfad + '.triggerPoint', {
+                            val: '-',
+                            ack: true
+                        });
                         break;
                     case 'calculation':
                         adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
@@ -1179,7 +1204,11 @@ function createSprinklers() {
                                 }
                             }
                         });
-
+                        adapter.setState(objPfad + '.triggerPoint', {
+                            val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
+                            ack: true
+                        });
+                        break;
                 }
                 adapter.getState(objPfad + '.sprinklerState', (err, state) => {
                     if (state) {
@@ -1273,6 +1302,7 @@ function createSprinklers() {
                     });					
                     // State löschen
                     adapter.delObject(resID + '.actualSoilMoisture');	// "sprinklecontrol.0.sprinkle.???.actualSoilMoisture"
+                    adapter.delObject(resID + '.triggerPoint');     // "sprinklecontrol.0.sprinkle.???.triggerPoint"
                     adapter.delObject(resID + '.sprinklerState');	// "sprinklecontrol.0.sprinkle.???.sprinklerState"
                     adapter.delObject(resID + '.runningTime');	//	"sprinklecontrol.0.sprinkle.???.runningTime"
                     adapter.delObject(resID + '.countdown');	//	"sprinklecontrol.0.sprinkle.???.countdown"

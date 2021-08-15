@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "news": {
+      "0.2.4": {
+        "en": "Add trigger point indicator; Fixed a bug in the soil moisture analysis",
+        "de": "Triggerpunktanzeige hinzufügen; Fehler in der Bodenfeuchteanalyse behoben",
+        "ru": "Добавить индикатор точки срабатывания; Исправлена ошибка в анализе влажности почвы.",
+        "pt": "Adicionar indicador de ponto de gatilho; Corrigido um bug na análise de umidade do solo",
+        "nl": "Triggerpoint-indicator toevoegen; Een bug in de bodemvochtanalyse opgelost",
+        "fr": "Ajouter un indicateur de point de déclenchement ; Correction d'un bug dans l'analyse de l'humidité du sol",
+        "it": "Aggiungi indicatore del punto di trigger; Risolto un bug nell'analisi dell'umidità del suolo",
+        "es": "Agregar indicador de punto de activación; Se corrigió un error en el análisis de humedad del suelo.",
+        "pl": "Dodaj wskaźnik punktu wyzwalania; Naprawiono błąd w analizie wilgotności gleby",
+        "zh-cn": "增加触发点指示器；修复了土壤水分分析中的错误"
+      },
       "0.2.3": {
         "en": "fixed index_m bug; timeExtension (FixDay, bistable) bug fixed",
         "de": "index_m-Fehler behoben; timeExtension (FixDay, bistabil) Fehler behoben",
