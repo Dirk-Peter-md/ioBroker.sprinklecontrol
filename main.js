@@ -168,8 +168,8 @@ function startAdapter(options) {
                 }
                 startTimeSprinkle();
             }
-            /* wenn (...sprinkleName.runningTime sich ändert) so wird der aktuelle Sprenger [sprinkleName]
-                bei == 0 gestoppt, > 1 gestartet */
+            // wenn (...sprinkleName.runningTime sich ändert) so wird der aktuelle Sprenger [sprinkleName]
+            //    bei == 0 gestoppt, > 1 gestartet
             if (myConfig.config && !state.ack) {
                 const found = myConfig.config.find(d => d.objectID === id);
                 if (found) {
@@ -185,15 +185,28 @@ function startAdapter(options) {
                     }
                 }
             }
-            /* wenn in der config unter methodControlSM !== 'calculation' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen*/
+            // wenn in der config unter methodControlSM !== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
             if (myConfig.config) {
-                const found = myConfig.config.find(d => d.triggerSM === id);
-                if (found && id === myConfig.config[found.sprinkleID].triggerSM) {
-                    myConfig.setSoilMoistPct(found.sprinkleID, state.val);
+                function filterByID(obj){
+                    return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
+                }
+                const filter = myConfig.config.filter(filterByID);
+                if (filter) {
+                    for (let fil of filter) {
+                        if (id === myConfig.config[fil.sprinkleID].triggerSM){
+                            // analog
+                            if (fil.methodControlSM === 'analog') {
+                                myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
+                            } else if (fil.methodControlSM === 'bistable') {   // bistable
+                                myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
+                            }
+                        }
+                    }
                 }
             }
-            /* wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
-               bei false nicht automatisch gestartet */
+
+            // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
+            //   bei false nicht automatisch gestartet
             if (myConfig.config && (typeof state.val === 'boolean')) {
                 const found = myConfig.config.find(d => d.autoOnID === id);
                 if (found && id === myConfig.config[found.sprinkleID].autoOnID) { myConfig.config[found.sprinkleID].autoOn = state.val; }
@@ -231,8 +244,8 @@ function startAdapter(options) {
                 }
             }
             // Regencontainer
-            /* If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
-				* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt. */
+            // If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
+			//	* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt.
             if (id === adapter.config.sensorRainfall) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurAmountOfRain(parseFloat(state.val));
@@ -485,46 +498,48 @@ function checkActualStates () {
                 });
             }
         });
-        /**
-         * Füllstand der Zisterne in %
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
-         */
-        adapter.getForeignState(adapter.config.actualValueLevel, (err, state) => {
-            if (typeof state !== undefined && state != null) {
-                valveControl.setFillLevelCistern(parseFloat(state.val));
-            }
-        });
-        /**
-         * wenn in der config unter methodControlSM !== 'calculation' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
-         */
-        if (myConfig.config) {
-            // analoge-Sensoren abfragen
-            let filter = myConfig.config.filter(d => d.methodControlSM === 'analog');
-            if (filter) {
-                for(let fil of filter) {
-                    if (fil.methodControlSM === 'analog' && fil.triggerSM.length > 5) {
-                        adapter.getForeignState(fil.triggerSM, (err,state) => {
-                            adapter.log.info('filter analog: ' + fil.objectName + ', state: ' + state.val);
-                            if (typeof state !== undefined && state.val) {
-                                myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
-                            }
-                        });
-                    }
+    }
+
+    /**
+     * Füllstand der Zisterne in %
+     * @param {string|null} err
+     * @param {ioBroker.State|null|undefined} state
+     */
+    adapter.getForeignState(adapter.config.actualValueLevel, (err, state) => {
+        if (typeof state !== undefined && state != null) {
+            valveControl.setFillLevelCistern(parseFloat(state.val));
+        }
+    });
+
+    /**
+     * wenn in der config unter methodControlSM !== 'analog' oder 'bistabil' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
+     */
+    if (myConfig.config) {
+        // analoge-Sensoren abfragen
+        let filter = myConfig.config.filter(d => d.methodControlSM === 'analog');
+        if (filter) {
+            for(let fil of filter) {
+                if (fil.methodControlSM === 'analog' && fil.triggerSM.length > 5) {
+                    adapter.getForeignState(fil.triggerSM, (err,state) => {
+                        adapter.log.info('filter analog: ' + fil.objectName + ', state: ' + state.val);
+                        if (typeof state !== undefined && state.val) {
+                            myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
+                        }
+                    });
                 }
             }
-            // Bistabile-Sensoren abfragen
-            filter = myConfig.config.filter(d => d.methodControlSM === 'bistable');
-            if (filter) {
-                for(let fil of filter) {
-                    if (fil.methodControlSM === 'bistable' && fil.triggerSM.length > 5) {
-                        adapter.getForeignState(fil.triggerSM, (err,state) => {
-                            adapter.log.info('filter bistable: ' + fil.objectName + ', state: ' + state.val);
-                            if (typeof state !== undefined && typeof state.val === 'boolean') {
-                                myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
-                            }
-                        });
-                    }
+        }
+        // Bistabile-Sensoren abfragen
+        filter = myConfig.config.filter(d => d.methodControlSM === 'bistable');
+        if (filter) {
+            for(let fil of filter) {
+                if (fil.methodControlSM === 'bistable' && fil.triggerSM.length > 5) {
+                    adapter.getForeignState(fil.triggerSM, (err,state) => {
+                        adapter.log.info('filter bistable: ' + fil.objectName + ', state: ' + state.val);
+                        if (typeof state !== undefined && typeof state.val === 'boolean') {
+                            myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
+                        }
+                    });
                 }
             }
         }
@@ -694,7 +709,7 @@ function startTimeSprinkle() {
         /**
          * next Auto-Start
          * @param {string|null} err
-         * @param {State|null|undefined|} state
+         * @param {State|null|undefined} state
          */
         adapter.getState('info.nextAutoStart', (err, state) =>{
             if (state) {
@@ -919,11 +934,10 @@ function createSprinklers() {
                             'max': 150,
                             'unit': '%',
                             'read': true,
-                            'write': false,
-                            'def': false
+                            'write': false
                         },
                         'native': {},
-                    }
+                    };
                     break;
                 case 'bistable':
                     objName = objectName + ' => bistable soil moisture sensor';
@@ -938,7 +952,7 @@ function createSprinklers() {
                             'def': false
                         },
                         'native': {},
-                    }
+                    };
                     break;
                 case 'analog':
                     objName = objectName + ' => analog soil moisture sensor in %';
@@ -952,11 +966,10 @@ function createSprinklers() {
                             'max': 150,
                             'unit': '%',
                             'read': true,
-                            'write': false,
-                            'def': false
+                            'write': false
                         },
                         'native': {},
-                    }
+                    };
                     break;
                 case 'fixDay':
                     objName = objectName + ' => start on a fixed day';
@@ -966,13 +979,15 @@ function createSprinklers() {
                             'role':  'state',
                             'name':  objName,
                             'type':  'number',
+                            'min': 0,
+                            'max': 7,
                             'states': '0:Sun;1:Mon;2:Tue;3:Wed;4:Thur;5:Fri;6:Sat;7:off',
                             'read':  true,
                             'write': false,
-                            'def':   false
+                            'def': 7
                         },
                         'native': {},
-                    }
+                    };
                     break;
             }
             adapter.setObjectNotExists(objPfad + '.actualSoilMoisture', myObj);
@@ -988,7 +1003,7 @@ function createSprinklers() {
                 if (myName !== objName) {
                     adapter.setObject(objPfad + '.actualSoilMoisture', myObj);
                 }
-            }, 50)
+            }, 200);
 
             // Trigger point of sprinkler => Schaltpunkt der Bodenfeuchte
             adapter.setObjectNotExists(objPfad + '.triggerPoint', {
@@ -999,7 +1014,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   '-'
                 },
                 'native': {},
             });
@@ -1017,7 +1032,7 @@ function createSprinklers() {
                     'states': '0:off;1:wait;2:on;3:break;4:Boost(on);5:off(Boost)',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   0
                 },
                 'native': {},
             });
@@ -1030,7 +1045,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': true,
-                    'def':   false
+                    'def':   '-'
                 },
                 'native': {},
             });
@@ -1043,7 +1058,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   '-'
                 },
                 'native': {},
             });
@@ -1056,7 +1071,7 @@ function createSprinklers() {
                     'type':  'boolean',
                     'read':  true,
                     'write': true,
-                    'def':   false
+                    'def':   true
                 },
                 'native': {},
             });
@@ -1069,7 +1084,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   '-'
                 },
                 'native': {},
             });
@@ -1082,7 +1097,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   '-'
                 },
                 'native': {},
             });
@@ -1096,7 +1111,7 @@ function createSprinklers() {
                     'unit':  'Liter',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   0
                 },
                 'native': {},
             });
@@ -1110,7 +1125,7 @@ function createSprinklers() {
                     'unit':  'Liter',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   0
                 },
                 'native': {},
             });
@@ -1124,7 +1139,7 @@ function createSprinklers() {
                     'unit':  'Liter',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   0
                 },
                 'native': {},
             });
@@ -1137,7 +1152,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   ''
                 },
                 'native': {},
             });
@@ -1150,7 +1165,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   false
+                    'def':   ''
                 },
                 'native': {},
             });			

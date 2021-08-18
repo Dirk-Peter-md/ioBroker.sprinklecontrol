@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "news": {
+      "0.2.5": {
+          "en": "Multiple use of soil moisture sensors; Objects with \"def\": ... revised",
+          "de": "Mehrfachverwendung von Bodenfeuchte-Sensoren; Objekte mit \"def\": ... überarbeitet",
+          "ru": "Многократное использование датчиков влажности почвы; Объекты с \"def\": ... исправлено",
+          "pt": "Uso múltiplo de sensores de umidade do solo; Objetos com \"def\": ... revisado",
+          "nl": "Meervoudig gebruik van bodemvochtsensoren; Objecten met \"def\": ... herzien",
+          "fr": "Utilisation multiple de capteurs d'humidité du sol ; Objets avec \"def\": ... révisé",
+          "it": "Utilizzo multiplo di sensori di umidità del suolo; Oggetti con \"def\": ... rivisto",
+          "es": "Uso múltiple de sensores de humedad del suelo; Objetos con \"def\": ... revisado",
+          "pl": "Wielokrotne wykorzystanie czujników wilgotności gleby; Obiekty z \"def\": ... poprawione",
+          "zh-cn": "土壤水分传感器的多次使用；带有“def”的对象：...修订"
+      },
       "0.2.4": {
         "en": "Add trigger point indicator; Fixed a bug in the soil moisture analysis",
         "de": "Triggerpunktanzeige hinzufügen; Fehler in der Bodenfeuchteanalyse behoben",
@@ -337,7 +349,7 @@
         "type": "number",
         "read": true,
         "write": false,
-        "def": false,
+        "def": 0,
         "unit": "mm"
       },
       "native": {}
@@ -351,7 +363,7 @@
         "type": "number",
         "read": true,
         "write": false,
-        "def": false,
+        "def": 0,
         "unit": "mm"
       },
       "native": {}
@@ -365,7 +377,7 @@
         "type": "number",
         "read": true,
         "write": false,
-        "def": false,
+        "def": 0,
         "unit": "mm"
       },
       "native": {}
@@ -401,7 +413,7 @@
         "states": "false:off;true:Auto",
         "read": true,
         "write": true,
-        "def": false
+        "def": true
       },
       "native": {}
     },
@@ -414,7 +426,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": false
+        "def": "0:0"
       },
       "native": {}
     },
@@ -427,7 +439,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": false
+        "def": "-"
       },
       "native": {}
     },
@@ -448,7 +460,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": false
+        "def": "-"
       },
       "native": {}
     },
@@ -462,7 +474,7 @@
         "unit": "mm",
         "read": true,
         "write": false,
-        "def": false
+        "def": "No signal"
       },
       "native": {}
     },
@@ -476,7 +488,7 @@
         "unit": "mm",
         "read": true,
         "write": false,
-        "def": false
+        "def": "no signal"
       },
       "native": {}
     },
@@ -489,7 +501,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": false
+        "def": "no signal"
       },
       "native": {}
     }
