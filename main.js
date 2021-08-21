@@ -104,6 +104,7 @@ function startAdapter(options) {
 
     /**
      * ++++++++++++++++++ Answers when getTelegramUser calls from index_m ++++++++++++++++++
+     * -------------- Antwortet bei Aufrufen von getTelegramUser von index_m ---------------
      * @param {object} obj
      */
     adapter.on('message', (obj) => {
@@ -512,40 +513,6 @@ function checkActualStates () {
     });
 
     /**
-     * wenn in der config unter methodControlSM !== 'analog' oder 'bistabil' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
-     */
-    if (myConfig.config) {
-        // analoge-Sensoren abfragen
-        let filter = myConfig.config.filter(d => d.methodControlSM === 'analog');
-        if (filter) {
-            for(let fil of filter) {
-                if (fil.methodControlSM === 'analog' && fil.triggerSM.length > 5) {
-                    adapter.getForeignState(fil.triggerSM, (err,state) => {
-                        adapter.log.info('filter analog: ' + fil.objectName + ', state: ' + state.val);
-                        if (typeof state !== undefined && state.val) {
-                            myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
-                        }
-                    });
-                }
-            }
-        }
-        // Bistabile-Sensoren abfragen
-        filter = myConfig.config.filter(d => d.methodControlSM === 'bistable');
-        if (filter) {
-            for(let fil of filter) {
-                if (fil.methodControlSM === 'bistable' && fil.triggerSM.length > 5) {
-                    adapter.getForeignState(fil.triggerSM, (err,state) => {
-                        adapter.log.info('filter bistable: ' + fil.objectName + ', state: ' + state.val);
-                        if (typeof state !== undefined && typeof state.val === 'boolean') {
-                            myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
-                        }
-                    });
-                }
-            }
-        }
-    }
-
-    /**
      * rückgabe der gespeicherten Objekte unter sprinkle.*
      * @param {string|null} err
      * @param {Object|undefined} list
@@ -560,13 +527,12 @@ function checkActualStates () {
         });	
 	
     //
-    setTimeout(() => {
+    setTimeout(()=>{
         createSprinklers();
-    }, 1000);
+    },1000);
     setTimeout(() => {
         startTimeSprinkle();
     }, 2000);
-	
 }
 
 
@@ -994,8 +960,8 @@ function createSprinklers() {
             let myName;
             setTimeout (()=> {
                 adapter.getObject(objPfad + '.actualSoilMoisture', function (err, obj) {
-                    if (err) {
-
+                    if (err || !obj) {
+                        adapter.log.error(objPfad + '.actualSoilMoisture, getObject => err: ' + err);
                     } else {
                         if((typeof obj.common.name === 'string') && obj.common.name.length > 0) {myName = obj.common.name}
                     }
@@ -1003,7 +969,7 @@ function createSprinklers() {
                 if (myName !== objName) {
                     adapter.setObject(objPfad + '.actualSoilMoisture', myObj);
                 }
-            }, 200);
+            }, 100);
 
             // Trigger point of sprinkler => Schaltpunkt der Bodenfeuchte
             adapter.setObjectNotExists(objPfad + '.triggerPoint', {
@@ -1168,29 +1134,38 @@ function createSprinklers() {
                     'def':   ''
                 },
                 'native': {},
-            });			
+            });
+
             setTimeout(() => {
                 switch (myConfig.config[j].methodControlSM) {
                     case 'bistable':
-                        adapter.setState(objPfad + '.actualSoilMoisture', {
-                            val: myConfig.config[j].soilMoisture.bool,
-                            ack: true
-                        });
+                        if(myConfig.config[j].triggerSM.length > 5) {
+                            adapter.getForeignState(myConfig.config[j].triggerSM, (err,state) => {
+                                if (typeof state !== undefined && typeof state.val === 'boolean') {
+                                    myConfig.setSoilMoistBool(myConfig.config[j].sprinkleID, state.val);
+                                }
+                            });
+                        }
                         adapter.setState(objPfad + '.triggerPoint', {
                             val: '-',
                             ack: true
                         });
                         break;
+
                     case 'analog':
-                        adapter.setState(objPfad + '.actualSoilMoisture', {
-                            val: Math.round(10 * myConfig.config[j].soilMoisture.pct) / 10,
-                            ack: true
-                        });
+                        if (myConfig.config[j].triggerSM.length > 5) {
+                            adapter.getForeignState(myConfig.config[j].triggerSM, (err,state) => {
+                                if (typeof state !== undefined && state.val) {
+                                    myConfig.setSoilMoistPct(myConfig.config[j].sprinkleID, state.val);
+                                }
+                            });
+                        }
                         adapter.setState(objPfad + '.triggerPoint', {
                             val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
                             ack: true
                         });
                         break;
+
                     case 'fixDay':
                         curNextFixDay(myConfig.config[j].sprinkleID, false);
                         adapter.setState(objPfad + '.triggerPoint', {
@@ -1198,6 +1173,7 @@ function createSprinklers() {
                             ack: true
                         });
                         break;
+
                     case 'calculation':
                         adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
                             if (state == null || typeof state.val !== 'number' || state.val === 0) {
@@ -1225,6 +1201,7 @@ function createSprinklers() {
                         });
                         break;
                 }
+
                 adapter.getState(objPfad + '.sprinklerState', (err, state) => {
                     if (state) {
                         adapter.setState(objPfad + '.sprinklerState', {val: 0, ack: true});
@@ -1355,6 +1332,7 @@ function main(adapter) {
 	adapter.config:
 	*/
     adapter.log.debug(JSON.stringify(adapter.config.events));
+
     /**
      * The adapters config (in the instance object everything under the attribute "native") is accessible via adapter.config:
      * => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über adapter.config:
@@ -1365,24 +1343,21 @@ function main(adapter) {
         if (!err) {
             // init createConfig
             myConfig.createConfig(adapter);
-            // init evaporation
-            evaporation.initEvaporation(adapter);
-            // Hauptpumpe zur Bewässerung setzen
-            valveControl.initValveControl(adapter);
             checkStates();
         }
     });
-
 
     GetSystemData();
     sendMessageText.initConfigMessage(adapter);
 
     timer = setTimeout(function() {
         checkActualStates();
+        // init evaporation
+        evaporation.initEvaporation(adapter);
+        // Hauptpumpe zur Bewässerung setzen
+        valveControl.initValveControl(adapter);
         sunPos();
     }, 2000);
-
-
 
     /*
     * in this template all states changes inside the adapters namespace are subscribed
