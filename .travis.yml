@@ -7,7 +7,6 @@ node_js:
   - '12'
   - '14'
   - '16'
-  - 'node'
 before_script:
   - export NPMVERSION=$(echo "$($(which npm) -v)"|cut -c1)
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
@@ -21,7 +20,7 @@ addons:
     packages:
       - g++-6
 script:
-  - export DEBUG=testing:*
-  - npm run test:package
-  - npm run test:unit
-  - npm run test:integration
+  - 'export DEBUG=testing:*'
+  - 'npm run test:package'
+  - 'npm run test:unit'
+  - 'npm run test:integration'
