@@ -527,12 +527,9 @@ function showHideSettings(callback) {
 
     // Sensorauswahl in Sprinkler - Main settings
     $('#methodControlSM').on('change',function(){
-        if (mWeatherForecast) {
-            $('.visInGreenhouse').show()
-        } else {
-            $('.visInGreenhouse').hide()
-        }
+
         if ($(this).val() === 'calculation') {
+            $('.visInGreenhouse').show()
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
@@ -540,6 +537,11 @@ function showHideSettings(callback) {
             $('.visFixDay').hide();
 
         } else if ($(this).val() === 'bistable') {
+            if (mWeatherForecast) {
+                $('.visInGreenhouse').show()
+            } else {
+                $('.visInGreenhouse').hide()
+            }
             $('.visSensor').show();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
@@ -547,6 +549,11 @@ function showHideSettings(callback) {
             $('.visFixDay').hide();
 
         } else if ($(this).val() === 'analog') {
+            if (mWeatherForecast) {
+                $('.visInGreenhouse').show()
+            } else {
+                $('.visInGreenhouse').hide()
+            }
             $('.visSensor').show();
             $('.visAnalog').show();
             $('.visCalculation').hide();
@@ -554,6 +561,11 @@ function showHideSettings(callback) {
             $('.visFixDay').hide();
 
         } else if ($(this).val() === 'fixDay') {
+            if (mWeatherForecast) {
+                $('.visInGreenhouse').show()
+            } else {
+                $('.visInGreenhouse').hide()
+            }
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
@@ -561,6 +573,7 @@ function showHideSettings(callback) {
             $('.visFixDay').show();
         } else {
             $(this).val('calculation');
+            $('.visInGreenhouse').show()
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
