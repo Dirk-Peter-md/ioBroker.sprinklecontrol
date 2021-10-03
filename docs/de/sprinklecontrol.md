@@ -1,6 +1,6 @@
 ![Logo](img/sprinklecontrol.png)
 # SprinkleControl
-### *Der Adapter zur individuellen automatischen Gartenbewässerung. << So wie es jeder mag >> :)*
+### *Der Adapter zur individuellen automatischen Gartenbewässerung. << So wie es jeder mag >> ;-)*
 
 
 ---

@@ -336,13 +336,13 @@ function GetSystemData() {
  * @returns {string} nextStart ['Sun','Mon','Tue','Wed','Thur','Fri','Sat']
  */
 function curNextFixDay (sprinkleID, returnOn) {
-    let weekDayArray = myConfig.config[sprinkleID].startFixDay
+    let weekDayArray = myConfig.config[sprinkleID].startFixDay;
     const objPfad = 'sprinkle.' + myConfig.config[sprinkleID].objectName;
-    const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat']
-    let curDay = formatTime(adapter, '', 'day')
+    const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
+    let curDay = formatTime(adapter, '', 'day');
     for ( let i=0; i<7; i++ ) {
         curDay++;
-        if (curDay > 6) { curDay = curDay - 7}
+        if (curDay > 6) {curDay = curDay - 7}
         if (weekDayArray[curDay] === true) {
             if (returnOn) {
                 return weekday[curDay];
@@ -717,7 +717,7 @@ function startTimeSprinkle() {
              * @returns {number} - resultierende Regenmenge
              */
             function resRain (inGreenhouse) {
-                return (adapter.config.weatherForecast && !inGreenhouse) ? ((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)) : 0;
+                return (adapter.config.weatherForecast && !inGreenhouse) ? (((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)).toFixed(1)) : 0;
             }
 
             for(const res of result) {
@@ -756,7 +756,7 @@ function startTimeSprinkle() {
                                 } else if (adapter.config.weatherForecast) {
                                     /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain(res.inGreenhouse) + ' > 0 ]');
                                 }
                             }
                             break;
@@ -778,7 +778,7 @@ function startTimeSprinkle() {
                                 } else if (adapter.config.weatherForecast) {
                                     /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain(res.inGreenhouse) + ' > 0 ]');
                                 }
                             }
                             break;
@@ -804,7 +804,7 @@ function startTimeSprinkle() {
                                     }
                                 } else if (adapter.config.weatherForecast){
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain + ' > 0 ]');
+                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain(false) + ' > 0 ]');
                                     res.startFixDay[today] = false;
                                     res.startFixDay[(+ today + 1 > 6) ? (+ today-6) : (+ today+1)] = true;
                                 }
@@ -817,7 +817,7 @@ function startTimeSprinkle() {
                             if (res.soilMoisture.val <= res.soilMoisture.triggersIrrigation) {
                                 /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
                                 const resMoisture = (adapter.config.weatherForecast)?((+ res.soilMoisture.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.soilMoisture.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage
-                                if (resMoisture <= res.soilMoisture.triggersIrrigation) {   // Kontrolle ob Regenvorhersage ausreicht
+                                if ((resMoisture <= res.soilMoisture.triggersIrrigation) || res.inGreenhouse) {   // Kontrolle ob Regenvorhersage ausreicht || Bewässerung inGreenhouse
                                     let countdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation); // in min
                                     // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                                     if (countdown > (res.wateringTime * res.wateringAdd / 100)) {countdown = res.wateringTime * res.wateringAdd / 100;}
@@ -966,9 +966,12 @@ function createSprinklers() {
                         if((typeof obj.common.name === 'string') && obj.common.name.length > 0) {myName = obj.common.name}
                     }
                 });
-                if (myName !== objName) {
-                    adapter.setObject(objPfad + '.actualSoilMoisture', myObj);
-                }
+                setTimeout(()=>{
+                    adapter.log.info('myName: ' + myName + ', objName: ' + objName + ', vergleich: ' + (myName === objName)); // löschen
+                    if (myName !== objName) {
+                        adapter.setObject(objPfad + '.actualSoilMoisture', myObj);
+                    }
+                },200);
             }, 100);
 
             // Trigger point of sprinkler => Schaltpunkt der Bodenfeuchte
@@ -1050,7 +1053,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   '-'
+                    'def':   '--:--'
                 },
                 'native': {},
             });
@@ -1118,7 +1121,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   ''
+                    'def':   '--:--'
                 },
                 'native': {},
             });
@@ -1131,7 +1134,7 @@ function createSprinklers() {
                     'type':  'string',
                     'read':  true,
                     'write': false,
-                    'def':   ''
+                    'def':   '--:--'
                 },
                 'native': {},
             });
@@ -1167,7 +1170,53 @@ function createSprinklers() {
                         break;
 
                     case 'fixDay':
-                        curNextFixDay(myConfig.config[j].sprinkleID, false);
+
+                        /** @type {number} */
+                        let nextStartDay = ((today + 1) > 6 ? 0 : (today + 1));
+
+                        /**
+                         * Neuen Start-Tag für Dreitage- und Zweitage-modus setzen
+                         * @param {boolean} threeRd - Dreitage-modus Ja/Nein
+                         *     true => Dreitage-modus (treeRD)
+                         *     false => Zweitage-modus (twoNd)
+                         */
+                        function setNewDay (threeRd) {
+                            let today = formatTime(adapter,'', 'day');
+                            adapter.log.info('setNewDay; ' + myConfig.config[j].objectName + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
+                            adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
+                                adapter.log.info('state; ' + myConfig.config[j].objectName + ', state: ' + state + ', val: ' + state.val + ', typeof: ' + typeof state.val); //löschen
+                                if (state && (typeof state.val === "number")) {
+                                    if ((state.val >= 0) && (state.val <= 6)) {
+                                        if ((threeRd)
+                                            && (state.val === (((today + 3) > 6) ? 2 : (today + 3)))
+                                            || (state.val === (((today + 2) > 6) ? 1 : (today + 2)))
+                                            || (state.val === (((today + 1) > 6) ? 0 : (today + 1)))
+                                            || (state.val === today)) {
+                                            myConfig.config[j].startFixDay[state.val] = true;
+                                            adapter.log.info('state; ' + myConfig.config[j].objectName + ', oldStartDay: '+ state.val + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
+                                        } else {
+                                            myConfig.config[j].startFixDay[nextStartDay] = true;
+                                            adapter.log.info('state; ' + myConfig.config[j].objectName + ', nextStartDay: '+ nextStartDay + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
+                                        }
+                                    } else {
+                                        myConfig.config[j].startFixDay[nextStartDay] = true;
+                                        adapter.log.info('state; ' + myConfig.config[j].objectName + ', else nextStartDay: '+ nextStartDay + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
+                                    }
+                                    curNextFixDay(myConfig.config[j].sprinkleID, false);
+                                }
+                            });
+
+                        }
+
+                        if (myConfig.config[j].startDay === 'threeRd') {
+                            setNewDay(true);
+                        } else if (myConfig.config[j].startDay === 'twoNd') {
+                            setNewDay(false);
+                        } else if (myConfig.config[j].startDay === 'fixDay') {
+                            adapter.log.info('set Day (fixDay): ' + myConfig.config[j].objectName);
+                            curNextFixDay(myConfig.config[j].sprinkleID, false);
+                        }
+
                         adapter.setState(objPfad + '.triggerPoint', {
                             val: '-',
                             ack: true
@@ -1229,37 +1278,37 @@ function createSprinklers() {
                 });
                 // history		
                 adapter.getState(objPfad + '.history.lastRunningTime', (err, state) => {
-                    if (state.val === false) {
-                        adapter.setState(objPfad + '.history.lastRunningTime', {val: '00:00', ack: true});
+                    if (typeof state === "object" && typeof state.val !== "string") {
+                        adapter.setState(objPfad + '.history.lastRunningTime', {val: '--:--', ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastOn', (err, state) => {
-                    if (state.val === false) {
+                    if (typeof state === "object" && typeof state.val !== "string") {
                         adapter.setState(objPfad + '.history.lastOn', {val: '-', ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastConsumed', (err, state) => {
-                    if (state.val === false) {
+                    if (typeof state === "object" && typeof state.val !== "number") {
                         adapter.setState(objPfad + '.history.lastConsumed', {val: 0, ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.curCalWeekConsumed', (err, state) => {
-                    if (state.val === false) {
+                    if (typeof state === "object" && typeof state.val !== "number") {
                         adapter.setState(objPfad + '.history.curCalWeekConsumed', {val: 0, ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastCalWeekConsumed', (err, state) => {
-                    if (state.val === false) {
+                    if (typeof state === "object" && typeof state.val !== "number") {
                         adapter.setState(objPfad + '.history.lastCalWeekConsumed', {val: 0, ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.curCalWeekRunningTime', (err, state) => {
-                    if (state.val === false) {
+                    if (typeof state === "object" && typeof state.val !== "string") {
                         adapter.setState(objPfad + '.history.curCalWeekRunningTime', {val: '00:00', ack: true});
                     }
                 });
                 adapter.getState(objPfad + '.history.lastCalWeekRunningTime', (err, state) => {
-                    if (state.val === false) {
+                    if (typeof state === "object" && typeof state.val !== "string") {
                         adapter.setState(objPfad + '.history.lastCalWeekRunningTime', {val: '00:00', ack: true});
                     }
                 });

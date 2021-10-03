@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "news": {
+      "0.2.6": {
+        "en": "\"inGreenhouse\" added to \"Calculation\" irrigation method ",
+        "de": "\"inGreenhouse\" zur Bewässerungsmethode \"Calculation\" hinzugefügt",
+        "ru": "«inGreenhouse» добавлен в метод полива «Расчет».",
+        "pt": "\"inGreenhouse\" adicionado ao método de irrigação \"Cálculo\"",
+        "nl": "\"inGreenhouse\" toegevoegd aan \"Berekening\" irrigatiemethode",
+        "fr": "\"inGreenhouse\" ajouté à la méthode d'irrigation \"Calcul\"",
+        "it": "\"inGreenhouse\" aggiunto al metodo di irrigazione \"Calcolo\"",
+        "es": "\"inGreenhouse\" agregado al método de riego \"Cálculo\"",
+        "pl": "\"inGreenhouse\" dodane do metody nawadniania \"Calculation\"",
+        "zh-cn": "“inGreenhouse”添加到“计算”灌溉方法"
+      },
       "0.2.5": {
         "en": "Multiple use of soil moisture sensors; Objects with \"def\": ... revised",
         "de": "Mehrfachverwendung von Bodenfeuchte-Sensoren; Objekte mit \"def\": ... überarbeitet",
