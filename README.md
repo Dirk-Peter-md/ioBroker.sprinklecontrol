@@ -35,6 +35,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 	### **WORK IN PROGRESS**
 -->
 
+### 0.2.7 (16.10.2021)
+* (Dirk-Peter-md) zusätzliche Testnachrichten gelöscht, Readme aktualisiert
+
 ### 0.2.6 (03.10.2021)
 * (Dirk-Peter-md) inGreenhouse in Bewässerungsverfahren "Calculation" hinzugefügt
 

@@ -1181,9 +1181,7 @@ function createSprinklers() {
                          */
                         function setNewDay (threeRd) {
                             const today = formatTime(adapter,'', 'day');
-                            adapter.log.info('setNewDay; ' + myConfig.config[j].objectName + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
                             adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
-                                adapter.log.info('state; ' + myConfig.config[j].objectName + ', state: ' + state + ', val: ' + state.val + ', typeof: ' + typeof state.val); //löschen
                                 if (state && (typeof state.val === 'number')) {
                                     if ((state.val >= 0) && (state.val <= 6)) {
                                         if ((threeRd)
@@ -1192,14 +1190,11 @@ function createSprinklers() {
                                             || (state.val === (((today + 1) > 6) ? 0 : (today + 1)))
                                             || (state.val === today)) {
                                             myConfig.config[j].startFixDay[state.val] = true;
-                                            adapter.log.info('state; ' + myConfig.config[j].objectName + ', oldStartDay: '+ state.val + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
                                         } else {
                                             myConfig.config[j].startFixDay[nextStartDay] = true;
-                                            adapter.log.info('state; ' + myConfig.config[j].objectName + ', nextStartDay: '+ nextStartDay + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
                                         }
                                     } else {
                                         myConfig.config[j].startFixDay[nextStartDay] = true;
-                                        adapter.log.info('state; ' + myConfig.config[j].objectName + ', else nextStartDay: '+ nextStartDay + ', startFixDay: ' + myConfig.config[j].startFixDay); //löschen
                                     }
                                     curNextFixDay(myConfig.config[j].sprinkleID, false);
                                 }
@@ -1332,8 +1327,6 @@ function createSprinklers() {
             setTimeout(() => {
 
                 if (fullRes.indexOf(resultID) === -1) {
-                    // State löschen
-					
                     // History - Objekt(Ordner) löschen					
                     adapter.delObject(resID + '.history', function (err) {
                         if (err) {

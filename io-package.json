@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.6",
+    "version": "0.2.7",
     "news": {
+      "0.2.7": {
+        "en": "additional test messages deleted, Readme updated",
+        "de": "zusätzliche Testnachrichten gelöscht, Readme aktualisiert",
+        "ru": "удалены дополнительные тестовые сообщения, обновлен Readme",
+        "pt": "mensagens de teste adicionais excluídas, Leiame atualizado",
+        "nl": "aanvullende testberichten verwijderd, Leesmij bijgewerkt",
+        "fr": "messages de test supplémentaires supprimés, Lisez-moi mis à jour",
+        "it": "messaggi di prova aggiuntivi eliminati, Leggimi aggiornato",
+        "es": "mensajes de prueba adicionales eliminados, Léame actualizado",
+        "pl": "usunięto dodatkowe wiadomości testowe, zaktualizowano plik Readme",
+        "zh-cn": "删除了其他测试消息，更新了自述文件"
+      },
       "0.2.6": {
         "en": "\"inGreenhouse\" added to \"Calculation\" irrigation method ",
         "de": "\"inGreenhouse\" zur Bewässerungsmethode \"Calculation\" hinzugefügt",
