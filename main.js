@@ -11,7 +11,7 @@ const SunCalc = require('suncalc2');
 
 const sendMessageText = require('./lib/sendMessageText.js');            // sendMessageText
 const valveControl = require('./lib/valveControl.js');                  // Steuerung der einzelnen Ventile
-const myConfig = require('./lib/myConfig.js');                          // myConfig => Speichern und abrufen von Konfigurationsdaten der Ventile
+const myConfig = require('./lib/myConfig.js');                          // myConfig → Speichern und abrufen von Konfigurationsdaten der Ventile
 const evaporation = require('./lib/evaporation.js');
 const addTime = require('./lib/tools.js').addTime;
 const formatTime = require('./lib/tools.js').formatTime;
@@ -24,7 +24,7 @@ const formatTime = require('./lib/tools.js').formatTime;
 let adapter;
 const adapterName = require('./package.json').name.split('.').pop();
 
-/** ext. Adapter => Deutsche Feiertage
+/** ext. Adapter → Deutsche Feiertage
  *  @type {any} */
 let publicHolidayStr;
 /** @type {any} */
@@ -52,7 +52,7 @@ let autoOnOffStr;
 /** @type {string} */
 let kwStr; // akt. KW der Woche
 /** @type {number | undefined} */
-let timer;
+let timer, timerSleep;
 /** @type {number} */
 let today;  // heutige Tag 0:So;1:Mo...6:Sa
 
@@ -90,6 +90,7 @@ function startAdapter(options) {
         try {
             adapter.log.info('cleaned everything up...');
             clearTimeout(timer);
+            clearTimeout(timerSleep);
             /*Startzeiten der Timer löschen*/
             schedule.cancelJob('calcPosTimer');
             schedule.cancelJob('sprinkleStartTime');
@@ -151,10 +152,9 @@ function startAdapter(options) {
      */
     adapter.on('stateChange', (id, state) => {
         if (state) {
-            // The state was changed => Der Zustand wurde geändert
-            if (adapter.config.debug) {
-                adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-            }
+            // The state was changed → Der Zustand wurde geändert
+            adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+
             // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
             if (id === adapter.namespace + '.control.Holiday') {
                 holidayStr = state.val;
@@ -163,7 +163,7 @@ function startAdapter(options) {
             // wenn (autoOnOff == false) so werden alle Sprenger nicht mehr automatisch gestartet.
             if (id === adapter.namespace + '.control.autoOnOff') {
                 autoOnOffStr = state.val;
-                adapter.log.info('startAdapter: control.autoOnOff: ' + state.val);
+                adapter.log.info(`startAdapter: control.autoOnOff: ${state.val}`);
                 if (!state.val) {
                     valveControl.clearEntireList();
                 }
@@ -212,12 +212,12 @@ function startAdapter(options) {
                 const found = myConfig.config.find(d => d.autoOnID === id);
                 if (found && id === myConfig.config[found.sprinkleID].autoOnID) { myConfig.config[found.sprinkleID].autoOn = state.val; }
             }
-            // Change in outside temperature => Änderung der Außentemperatur
+            // Change in outside temperature → Änderung der Außentemperatur
             if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurTemperature(parseFloat(state.val), state.ts);
                 } else {
-                    adapter.log.warn('sensorOutsideTemperature => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
+                    adapter.log.warn(`sensorOutsideTemperature => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                 }
             }
             // LuftFeuchtigkeit
@@ -225,7 +225,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurHumidity(parseFloat(state.val), state.lc);
                 } else {
-                    adapter.log.warn('sensorOutsideHumidity => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
+                    adapter.log.warn(`sensorOutsideHumidity => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                 }
             }
             // Helligkeit
@@ -233,7 +233,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurIllumination(parseFloat(state.val), state.lc);
                 } else {
-                    adapter.log.warn('sensorBrightness => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
+                    adapter.log.warn(`sensorBrightness => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                 }
             }
             // Windgeschwindigkeit
@@ -241,7 +241,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
                 } else {
-                    adapter.log.warn('sensorWindSpeed => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
+                    adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                 }
             }
             // Regencontainer
@@ -251,7 +251,7 @@ function startAdapter(options) {
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
                     evaporation.setCurAmountOfRain(parseFloat(state.val));
                 } else {
-                    adapter.log.warn('sensorRainfall => Wrong value: '+ state.val + ', Type: ' + typeof state.val);
+                    adapter.log.warn(`sensorRainfall => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                 }
             }
             // Feiertagskalender
@@ -294,45 +294,46 @@ function startAdapter(options) {
                 valveControl.setFillLevelCistern(parseFloat(state.val) || 0);
                 //fillLevelCistern = state.val || 0;
             }
-        } else {
-            // The state was deleted
-            adapter.log.info(`state ${id} deleted`);
         }
     });
 }
 
 // +++++++++++++++++ Get longitude an latitude from system config ++++++++++++++++++++
-function GetSystemData() {
-    /**get longitude/latitude from system if not set or not valid
-     * do not change if we have already a valid value
-     * so we could use different settings compared to system if necessary
-     * >>>
-     * Längen- / Breitengrad vom System abrufen, falls nicht festgelegt oder ungültig
-     * Ändern Sie nicht, wenn wir bereits einen gültigen Wert haben
-     * Daher können wir bei Bedarf andere Einstellungen als das System verwenden
-     */
+/**get longitude/latitude from system if not set or not valid
+ * do not change if we have already a valid value
+ * so we could use different settings compared to system if necessary
+ * >>>
+ * Längen- / Breitengrad vom System abrufen, falls nicht festgelegt oder ungültig
+ * wird nicht geändert, wenn bereits ein gültiger Wert vorhanden ist,
+ * daher können wir bei Bedarf andere Einstellungen als das System verwenden
+ */
+async function GetSystemData() {
     if (typeof adapter.config.longitude === undefined || adapter.config.longitude == null || adapter.config.longitude.length === 0 || isNaN(adapter.config.longitude)
         || typeof adapter.config.latitude === undefined || adapter.config.latitude == null || adapter.config.latitude.length === 0 || isNaN(adapter.config.latitude)) {
 
-        adapter.log.debug('longitude/longitude not set, get data from system ' + typeof adapter.config.longitude + ' ' + adapter.config.longitude + '/' + typeof adapter.config.latitude + ' ' + adapter.config.latitude);
+        try {
+            const obj = await adapter.getForeignObjectAsync('system.config');
 
-        adapter.getForeignObject('system.config', (err, state) => {
-            if (err) {
-                adapter.log.error(err);
+            if (obj && obj.common && obj.common.longitude && obj.common.latitude) {
+                adapter.config.longitude = obj.common.longitude;
+                adapter.config.latitude = obj.common.latitude;
+
+                adapter.log.debug(`longitude: ${adapter.config.longitude} | latitude: ${adapter.config.latitude}`);
             } else {
-                adapter.config.longitude = state.common.longitude;
-                adapter.config.latitude = state.common.latitude;
-                adapter.log.info('system  longitude ' + adapter.config.longitude + ' latitude ' + adapter.config.latitude);
+                adapter.log.error('system settings cannot be called up. Please check configuration!');
             }
-        });
+        } catch (err) {
+            adapter.log.warn('system settings cannot be called up. Please check configuration!');
+        }
     }
 }
 
+
 /**
- * Schreiben des nächsten Starts in .actualSoilMoisture
+ * Schreiben des nächsten Starts in '.actualSoilMoisture'
  * oder Rückgabe des DayName für den nächsten Start
  * @param {number} sprinkleID - Number of Array[0...]
- * @param {boolean} returnOn - true = Rückgabe des Wochentags; false = Schreiben in State .actualSoilMoisture
+ * @param {boolean} returnOn - true = Rückgabe des Wochentags; false = Schreiben in State /.actualSoilMoisture
  * @returns {string} nextStart ['Sun','Mon','Tue','Wed','Thur','Fri','Sat']
  */
 function curNextFixDay (sprinkleID, returnOn) {
@@ -360,7 +361,7 @@ function curNextFixDay (sprinkleID, returnOn) {
 //
 /**
  * Sets the status at start to a defined value
- * => Setzt den Status beim Start auf einen definierten Wert
+ * → Setzt den Status beim Start auf einen definierten Wert
  */
 function checkStates() {
     //
@@ -416,123 +417,122 @@ function checkStates() {
 /**
  * aktuelle States checken nach dem Start (2000 ms) wenn alle Sprenger-Kreise angelegt wurden
  */
-function checkActualStates () {
-    /**
-     * switch Holiday
-     * @param {string|null} err
-     * @param {ioBroker.State|null|undefined} state
-     */
-    adapter.getState('control.Holiday', (err, state) => {
-        if (state) {
-            holidayStr = state.val;
-        }
-    });
+async function checkActualStates () {
 
-    /**
-     * switch autoOnOff
-     * @param {string|null} err
-     * @param {ioBroker.State|null|undefined} state
-     */
-    adapter.getState('control.autoOnOff', (err, state) => {
-        if (state) {
-            autoOnOffStr = state.val;
-        }
-    });
-
-    //
-    if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance !== 'none' || adapter.config.publicHolInstance !== '')) {
+    try {
         /**
-         * Feiertag HEUTE
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
+         * switch Holiday
+         * @type {ioBroker.GetStatePromise}
+         * @private {obj} _holiday
          */
-        adapter.getForeignState(adapter.config.publicHolInstance + '.heute.boolean', (err, state) => {
-            if (state) {
-                publicHolidayStr = state.val;
+        const _holiday = await adapter.getStateAsync('control.Holiday');
+            if (_holiday && _holiday.val) {
+                holidayStr = _holiday.val;
             }
-        });
-        /**
-         * Feiertag MORGEN
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
-         */
-        adapter.getForeignState(adapter.config.publicHolInstance + '.morgen.boolean', (err, state) => {
-            if (state) {
-                publicHolidayTomorrowStr = state.val;
-            }
-        });
-    }
 
-    if (adapter.config.weatherForecast === true && (adapter.config.weatherForInstance !== 'none' || adapter.config.weatherForInstance !== '')) {
         /**
-         * Niederschlagsmenge HEUTE in mm
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
+         * switch autoOnOff
+         * @type {ioBroker.GetStatePromise}
+         * @private {obj} _autoOnOff
          */
-        adapter.getForeignState(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value', (err, state) => {
-            if (state) {
-                if (typeof state.val == 'string') {
-                    weatherForecastTodayNum = parseFloat(state.val);
-                } else if (typeof state.val == 'number') {
-                    weatherForecastTodayNum = state.val;
-                } else {
-                    weatherForecastTodayNum = 0;
-                    console.log.info('checkActualStates => Wettervorhersage state.val ( ' + state.val + '; ' + typeof state.val + ' ) kann nicht als Number verarbeitet werden');
+        const _autoOnOff = await adapter.getStateAsync('control.autoOnOff');
+            if (_autoOnOff && _autoOnOff.val) {
+                autoOnOffStr = _autoOnOff.val;
+            }
+
+        if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance !== 'none' || adapter.config.publicHolInstance !== '')) {
+            /**
+             * Feiertag Heute
+             * @type {ioBroker.GetStatePromise}
+             * @private
+             */
+            const _publicHolInstanceHeute = adapter.getForeignStateAsync(
+                adapter.config.publicHolInstance + '.heute.boolean'
+            ).catch((e) => adapter.log.warn(e));
+                if (await _publicHolInstanceHeute && _publicHolInstanceHeute.val) {
+                    publicHolidayStr = _publicHolInstanceHeute.val;
                 }
-                adapter.setState('info.rainToday', {
-                    val: weatherForecastTodayNum,
-                    ack: true
-                });
+            /**
+             * Feiertag MORGEN
+             * @type {ioBroker.GetStatePromise}
+             * @private
+             */
+            const _publicHolInstanceMorgen = adapter.getForeignStateAsync(
+                adapter.config.publicHolInstance + '.morgen.boolean'
+            ).catch((e) => adapter.log.warn(e));
+                if (await _publicHolInstanceMorgen && _publicHolInstanceMorgen.val) {
+                    publicHolidayTomorrowStr = _publicHolInstanceMorgen.val;
+                }
+        }
+
+        if (adapter.config.weatherForecast === true && (adapter.config.weatherForInstance !== 'none' || adapter.config.weatherForInstance !== '')) {
+            /**
+             * Niederschlagsmenge HEUTE in mm
+             * @type {ioBroker.GetStatePromise}
+             * @private
+             */
+            const _weatherForInstanceToday = adapter.getForeignStateAsync(
+                adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value'
+            ).catch((e) => adapter.log.warn(e));
+                if (await _weatherForInstanceToday && _weatherForInstanceToday.val) {
+                    if (typeof _weatherForInstanceToday.val == 'string') {
+                        weatherForecastTodayNum = parseFloat(_weatherForInstanceToday.val);
+                    } else if (typeof _weatherForInstanceToday.val == 'number') {
+                        weatherForecastTodayNum = _weatherForInstanceToday.val;
+                    } else {
+                        weatherForecastTodayNum = 0;
+                        console.log.info('checkActualStates => Wettervorhersage state.val ( ' + _weatherForInstanceToday.val + '); ' + typeof _weatherForInstanceToday.val + ' kann nicht als Number verarbeitet werden');
+                    }
+                    await adapter.setStateAsync('info.rainToday',
+                        weatherForecastTodayNum,
+                        true
+                    );
+                }
+
+            /**
+             * Niederschlagsmenge MORGEN in mm
+             * @type {ioBroker.GetStatePromise}
+             * @private
+             */
+            const _weatherForInstance = adapter.getForeignStateAsync(
+                adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value'
+            ).catch((e) => adapter.log.warn(e));
+                if (_weatherForInstance && _weatherForInstance.val) {
+                    weatherForecastTomorrowNum = _weatherForInstance.val;
+                    await adapter.setStateAsync(
+                        'info.rainTomorrow',
+                        weatherForecastTomorrowNum,
+                        true
+                    );
+                }
+        }
+        if (adapter.config.actualValueLevel){
+            /**
+             * Füllstand der Zisterne in %
+             * @type {ioBroker.GetStatePromise}
+             * @private
+             */
+            const _actualValueLevel = adapter.getForeignStateAsync(adapter.config.actualValueLevel).catch((e) => adapter.log.warn(e));
+            if (_actualValueLevel && typeof _actualValueLevel.val !== undefined) {
+                valveControl.setFillLevelCistern(parseFloat(_actualValueLevel.val));
             }
-        });
+        }
         /**
-         * Niederschlagsmenge MORGEN in mm
-         * @param {string|null} err
-         * @param {ioBroker.State|null|undefined} state
+         * return the saved objects under sprinkle.*
+         * rückgabe der gespeicherten Objekte unter sprinkle.*
          */
-        adapter.getForeignState(adapter.config.weatherForInstance, (err, state) => {
-            if (state) {
-                weatherForecastTomorrowNum = state.val;
-                adapter.setState('info.rainTomorrow', {
-                    val: weatherForecastTomorrowNum,
-                    ack: true
-                });
+        const _list = await adapter.getForeignObjectsAsync(adapter.namespace + '.sprinkle.*', 'channel').catch((e) => adapter.log.warn(e));
+            if (_list) {
+                ObjSprinkle = _list;
+                await createSprinklers();
+                await sleep(100);
+                startTimeSprinkle();
             }
-        });
+
+    } catch (e) {
+        adapter.log.warn(`sprinkleControl cannot check actual States ... Please check your sprinkleControl states: ${e}`);
     }
 
-    /**
-     * Füllstand der Zisterne in %
-     * @param {string|null} err
-     * @param {ioBroker.State|null|undefined} state
-     */
-    adapter.getForeignState(adapter.config.actualValueLevel, (err, state) => {
-        if (typeof state !== undefined && state != null) {
-            valveControl.setFillLevelCistern(parseFloat(state.val));
-        }
-    });
-
-    /**
-     * rückgabe der gespeicherten Objekte unter sprinkle.*
-     * @param {string|null} err
-     * @param {Object|undefined} list
-     */
-    adapter.getForeignObjects(adapter.namespace + '.sprinkle.*', 'channel',
-        function (err, list) {
-            if (err) {
-                adapter.log.error(err);
-            } else {
-                ObjSprinkle = list;
-            }
-        });	
-	
-    //
-    setTimeout(()=>{
-        createSprinklers();
-    },1000);
-    setTimeout(() => {
-        startTimeSprinkle();
-    }, 2000);
 }
 
 
@@ -546,8 +546,8 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     sunPos();
     today = formatTime(adapter,'', 'day');
 
-    // History Daten aktualisieren wenn eine neue Woche beginnt
-    if (adapter.config.debug) {adapter.log.info('calcPos 0:05 old-KW: ' + kwStr + ' new-KW: ' + formatTime(adapter, '','kW') + ' if: ' + (kwStr !== formatTime(adapter, '','kW')));}
+    // History Daten aktualisieren, wenn eine neue Woche beginnt
+    adapter.log.debug(`calcPos 0:05 old-KW: ${kwStr} new-KW: ${formatTime(adapter, '','kW')} if: ${(kwStr !== formatTime(adapter, '','kW'))}`);
     if (kwStr !== formatTime(adapter, '','kW')) {
         const result = myConfig.config;
         if (result) {	
@@ -576,7 +576,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // ETpToday und ETpYesterday in evaporation aktualisieren da ein neuer Tag
     evaporation.setNewDay();
 	
-    // Startzeit Festlegen => verzögert wegen Daten von SunCalc
+    // Startzeit Festlegen → verzögert wegen Daten von SunCalc
     setTimeout(() => {
         startTimeSprinkle();
     },1000);
@@ -585,10 +585,10 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
 
 // Berechnung mittels sunCalc
 function sunPos() {
-    // get today's sunlight times => Holen Sie sich die heutige Sonnenlicht Zeit	
+    // get today's sunlight times → Holen Sie sich die heutige Sonnenlichtzeit
     const times = SunCalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
 	
-    // format sunrise time from the Date object => Formatieren Sie die Sonnenaufgangszeit aus dem Date-Objekt
+    // format sunrise time from the Date object → Formatieren Sie die Sonnenaufgangszeit aus dem Date-Objekt
     sunriseStr = ('0' + times.sunrise.getHours()).slice(-2) + ':' + ('0' + times.sunrise.getMinutes()).slice(-2);
 
     // format golden hour end time from the Date object => Formatiere golden hour end time aus dem Date-Objekt
@@ -606,14 +606,17 @@ function startTimeSprinkle() {
 
     // if autoOnOff == false => keine auto Start
     if (!autoOnOffStr) {
-        if (adapter.config.debug) {adapter.log.info('Sprinkle: autoOnOff == Aus(' + autoOnOffStr + ')');}
-        adapter.setState('info.nextAutoStart', { val: 'autoOnOff = off(0)', ack: true });
+        adapter.log.info(`Sprinkle: autoOnOff == Aus( ${autoOnOffStr} )`);
+        adapter.setState('info.nextAutoStart', {
+            val: 'autoOnOff = off(0)',
+            ack: true
+        });
         return;
     }
 
     /**
      * next start time (automatic)
-     * => Berechnung des nächsten Starts (Automatik)
+     * → Berechnung des nächsten Starts (Automatik)
      * @returns {string}
      */
     function nextStartTime () {
@@ -656,12 +659,12 @@ function startTimeSprinkle() {
                     newStartTime = goldenHourEnd;
                     break;
             }
-            // Start am Wochenende => wenn andere Zeiten verwendet werden soll
+            // Start am Wochenende →, wenn andere Zeiten verwendet werden soll
             if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
                 infoMessage = 'Start am Wochenende ';
                 newStartTime = adapter.config.weekEndLiving;
             }
-            // Start an Feiertagen => wenn Zeiten des Wochenendes verwendet werden soll
+            // Start an Feiertagen →, wenn Zeiten des Wochenendes verwendet werden soll
             if((adapter.config.publicHolidays) && (adapter.config.publicWeekend)
                 && (((publicHolidayStr === true) && (run === 1))            // heute Feiertag && erster Durchlauf
                 || ((publicHolidayTomorrowStr === true) && (run === 2))     // morgen Feiertag && zweiter Durchlauf
@@ -688,7 +691,7 @@ function startTimeSprinkle() {
                     if(!sendMessageText.onlySendError){
                         sendMessageText.sendMessage(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
                     }
-                    adapter.log.info(infoMessage + '(' + myWeekdayStr[myWeekday] + ') um ' + newStartTime);
+                    adapter.log.info(`${infoMessage} (${myWeekdayStr[myWeekday]}) um ${newStartTime}`);
                 }
             }
         });
@@ -711,8 +714,8 @@ function startTimeSprinkle() {
             /**
              * result Rain
              * - (aktuelle Wettervorhersage - Schwellwert der Regenberücksichtigung) wenn Sensor sich im Freien befindet
-             * - (> 0) es Regnet - Abbruch -
-             * - (<= 0) Start der Bewässerung
+             * - (> 0) es regnet - Abbruch -
+             * - (≤ 0) Start der Bewässerung
              * @param {boolean} inGreenhouse - Sensor befindet sich im Gewächshaus
              * @returns {number} - resultierende Regenmenge
              */
@@ -738,7 +741,7 @@ function startTimeSprinkle() {
                 }
 
                 // Test Bodenfeuchte
-                if (adapter.config.debug) {adapter.log.info('Bodenfeuchte: ' + res.soilMoisture.val + ' <= ' + res.soilMoisture.triggersIrrigation + ' AutoOn: ' + res.autoOn);}
+                adapter.log.debug(`Bodenfeuchte: ${res.soilMoisture.val} <= ${res.soilMoisture.triggersIrrigation} AutoOn: ${res.autoOn}`);
                 if (res.autoOn) {
                     switch (res.methodControlSM) {
                         // -- bistable  --  Bodenfeuchte-Sensor mit 2-Punkt-Regler true und false -- //
@@ -756,7 +759,7 @@ function startTimeSprinkle() {
                                 } else if (adapter.config.weatherForecast) {
                                     /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain(res.inGreenhouse) + ' > 0 ]');
+                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
                                 }
                             }
                             break;
@@ -778,7 +781,7 @@ function startTimeSprinkle() {
                                 } else if (adapter.config.weatherForecast) {
                                     /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain(res.inGreenhouse) + ' > 0 ]');
+                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
                                 }
                             }
                             break;
@@ -804,7 +807,7 @@ function startTimeSprinkle() {
                                     }
                                 } else if (adapter.config.weatherForecast){
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + resRain(false) + ' > 0 ]');
+                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(false)} > 0 ]`);
                                     res.startFixDay[today] = false;
                                     res.startFixDay[(+ today + 1 > 6) ? (+ today-6) : (+ today+1)] = true;
                                 }
@@ -830,7 +833,7 @@ function startTimeSprinkle() {
                                 } else if (adapter.config.weatherForecast) {
                                     /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(res.objectName + ': Start verschoben, da Regenvorhersage für Heute ' + weatherForecastTodayNum +' mm [ ' + res.soilMoisture.val + ' (' + resMoisture + ') <= ' + res.soilMoisture.triggersIrrigation + ' ]');
+                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${res.soilMoisture.val} (${resMoisture}) <= ${res.soilMoisture.triggersIrrigation} ]`);
                                 }
                             }
                             break;
@@ -854,342 +857,461 @@ function startTimeSprinkle() {
 }
 
 //
-function createSprinklers() {
+async function createSprinklers() {
     const result = adapter.config.events;
     if (result) {	
         for(const res of result) {
-            const objectName = res.sprinkleName.replace(/[.;, ]/g, '_');
+            let objectName;
+
+            if(res.sprinkleName !== '') {
+                objectName = res.sprinkleName.replace(/[.;, ]/g, '_');
+            } else if (res.sprinkleName === '') {
+                objectName = res.name.replace(/[.;, ]/g, '_');
+            }
+
             const objPfad = 'sprinkle.' + objectName;
             const j = myConfig.config.findIndex(d => d.objectName === objectName);
-            // Create Object for sprinklers (ID)
-            adapter.setObjectNotExists('sprinkle.' + objectName, {
-                'type': 'channel',
-                'common': {
-                    'name': res.sprinkleName
-                },
-                'native': {},
-            });
-            // Create Object for sprinklers (ID)
-            adapter.setObjectNotExists('sprinkle.' + objectName + '.history', {
-                'type': 'channel',
-                'common': {
-                    'name': res.sprinkleName + ' => History'
-                },
-                'native': {},
-            });
-            // actual soil moisture
-            // Create bzw. update .actualSoilMoisture nach der Sensorart
-            /**
-             * Aufbau des Objects .actualSoilMoisture
-             * @type {Object}
-             */
-            let myObj = {};
-            /** @type {string} */
-            let objName;
 
-            switch (res.methodControlSM) {
-                case 'calculation':
-                    objName = objectName + ' => Calculated soil moisture in %';
-                    myObj = {
-                        'type': 'state',
+            // Create bzw. update .actualSoilMoisture
+
+            let nameMetConSM, objMetConSM;
+            await fillMetConSM(res);
+            function fillMetConSM(res) {
+                //adapter.log.debug(JSON.stringify(res));
+                switch (res.methodControlSM) {
+                    case 'calculation':
+                        nameMetConSM = objectName + ' => Calculated soil moisture in %';
+                        objMetConSM = {
+                            'type': 'state',
+                            'common': {
+                                'role': 'state',
+                                'name': nameMetConSM,
+                                'type': 'number',
+                                'min': 0,
+                                'max': 150,
+                                'unit': '%',
+                                'read': true,
+                                'write': false,
+                                'def': 50
+                            },
+                            'native': {},
+                        };
+                        break;
+                    case 'bistable':
+                        nameMetConSM = objectName + ' => bistable soil moisture sensor';
+                        objMetConSM = {
+                            'type': 'state',
+                            'common': {
+                                'role': 'state',
+                                'name': nameMetConSM,
+                                'type': 'boolean',
+                                'read': true,
+                                'write': false,
+                                'def': false
+                            },
+                            'native': {},
+                        };
+                        break;
+                    case 'analog':
+                        nameMetConSM = objectName + ' => analog soil moisture sensor in %';
+                        objMetConSM = {
+                            'type': 'state',
+                            'common': {
+                                'role': 'state',
+                                'name': nameMetConSM,
+                                'type': 'number',
+                                'min': 0,
+                                'max': 150,
+                                'unit': '%',
+                                'read': true,
+                                'write': false
+                            },
+                            'native': {},
+                        };
+                        break;
+                    case 'fixDay':
+                        nameMetConSM = objectName + ' => start on a fixed day';
+                        objMetConSM = {
+                            'type': 'state',
+                            'common': {
+                                'role':  'state',
+                                'name':  nameMetConSM,
+                                'type':  'number',
+                                'min': 0,
+                                'max': 7,
+                                'states': {"0":"Sun", "1":"Mon", "2":"Tue", "3":"Wed", "4":"Thur", "5":"Fri", "6":"Sat", "7":"off"},
+                                'read':  true,
+                                'write': false,
+                                'def': 7
+                            },
+                            'native': {},
+                        };
+                        break;
+                    default:
+                        adapter.log.warn(`sprinkleControl cannot created ... Please check your sprinkleControl config ${objectName} methodControl`);
+                }
+            }
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+            // +++++                                     Objekte  erstellen                                     +++++ //
+            // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+            if (objectName && objectName !== '') {
+                try {
+                    // Create Object for sprinkle. (ID)
+                    const _sprinkleNotExist = await adapter.setObjectNotExistsAsync('sprinkle.' + objectName, {
+                        'type': 'channel',
                         'common': {
-                            'role': 'state',
-                            'name': objName,
-                            'type': 'number',
-                            'min': 0,
-                            'max': 150,
-                            'unit': '%',
-                            'read': true,
-                            'write': false
+                            'name': res.sprinkleName
                         },
                         'native': {},
-                    };
-                    break;
-                case 'bistable':
-                    objName = objectName + ' => bistable soil moisture sensor';
-                    myObj = {
-                        'type': 'state',
+                    }).catch((e) => adapter.log.warn(`sprinkle.${objectName} ${e}`));
+                    // Create Object for .history
+                    const _historyNotExist = await adapter.setObjectNotExistsAsync('sprinkle.' + objectName + '.history', {
+                        'type': 'channel',
                         'common': {
-                            'role': 'state',
-                            'name': objName,
-                            'type': 'boolean',
-                            'read': true,
-                            'write': false,
-                            'def': false
+                            'name': res.sprinkleName + ' => History'
                         },
                         'native': {},
-                    };
-                    break;
-                case 'analog':
-                    objName = objectName + ' => analog soil moisture sensor in %';
-                    myObj = {
-                        'type': 'state',
-                        'common': {
-                            'role': 'state',
-                            'name': objName,
-                            'type': 'number',
-                            'min': 0,
-                            'max': 150,
-                            'unit': '%',
-                            'read': true,
-                            'write': false
-                        },
-                        'native': {},
-                    };
-                    break;
-                case 'fixDay':
-                    objName = objectName + ' => start on a fixed day';
-                    myObj = {
+                    }).catch((e) => adapter.log.warn(`${objectName}.history ${e}`));
+                    // Create Object for .history.curCalWeekConsumed
+                    // Sprinkler consumption of the current calendar week => History - Sprinkler-Verbrauch der aktuellen Kalenderwoche (783 Liter)
+                    const _curCalWeekConsumedNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.curCalWeekConsumed', {
                         'type': 'state',
                         'common': {
                             'role':  'state',
-                            'name':  objName,
+                            'name':  objectName + ' => History - Sprinkler consumption of the current calendar week',
                             'type':  'number',
-                            'min': 0,
-                            'max': 7,
-                            'states': '0:Sun;1:Mon;2:Tue;3:Wed;4:Thur;5:Fri;6:Sat;7:off',
+                            'unit':  'Liter',
                             'read':  true,
                             'write': false,
-                            'def': 7
+                            'def':   0
                         },
                         'native': {},
-                    };
-                    break;
-            }
-            adapter.setObjectNotExists(objPfad + '.actualSoilMoisture', myObj);
-            let myName;
-            setTimeout (()=> {
-                adapter.getObject(objPfad + '.actualSoilMoisture', function (err, obj) {
-                    if (err || !obj) {
-                        adapter.log.error(objPfad + '.actualSoilMoisture, getObject => err: ' + err);
-                    } else {
-                        if((typeof obj.common.name === 'string') && obj.common.name.length > 0) {myName = obj.common.name;}
+                    }).catch((e) => adapter.log.warn(`${objectName}.curCalWeekConsumed ${e}`));
+                    // Create Object for .history.curCalWeekRunningTime
+                    // Sprinkler running time of the current calendar week => History - Sprinkler-Laufzeit der aktuellen Kalenderwoche (783 Liter)
+                    const _curCalWeekRunningTimeNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.curCalWeekRunningTime', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => History - Sprinkler running time of the current calendar week',
+                            'type':  'string',
+                            'read':  true,
+                            'write': false,
+                            'def':   '00:00'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.curCalWeekRunningTime ${e}`));
+                    // Create Object for .history.lastCalWeekConsumed
+                    // Sprinkler consumption of the last calendar week => History - Sprinkler-Verbrauch der letzten Kalenderwoche (783 Liter)
+                    const _lastCalWeekConsumedNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.lastCalWeekConsumed', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => History - Sprinkler consumption of the last calendar week',
+                            'type':  'number',
+                            'unit':  'Liter',
+                            'read':  true,
+                            'write': false,
+                            'def':   0
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.lastCalWeekConsumed ${e}`));
+                    // Create Object for .history.lastCalWeekRunningTime
+                    // Sprinkler running time of the last calendar week => History - Sprinkler-Laufzeit der letzten Kalenderwoche (783 Liter)
+                    const _lastCalWeekRunningTimeNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.lastCalWeekRunningTime', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => History - Sprinkler running time of the last calendar week',
+                            'type':  'string',
+                            'read':  true,
+                            'write': false,
+                            'def':   '00:00'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.curCalWeekRunningTime ${e}`));
+                    // Create Object for .history.lastConsumed
+                    // Last consumed of sprinkler => History - Letzte Verbrauchsmenge des Ventils (783 Liter)
+                    const _lastConsumedNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.lastConsumed', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => History - Last consumed of sprinkler',
+                            'type':  'number',
+                            'unit':  'Liter',
+                            'read':  true,
+                            'write': false,
+                            'def':   0
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.lastConsumed ${e}`));
+                    // Create Object for .history.lastOn
+                    // Last On of sprinkler => History - Letzter Start des Ventils (30.03 06:30)
+                    const _lastOnNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.lastOn', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => History - Last On of sprinkler',
+                            'type':  'string',
+                            'read':  true,
+                            'write': false,
+                            'def':   '-'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.lastOn ${e}`));
+                    // Create Object for .history.lastRunningTime
+                    // Last running time of sprinkler => History - Letzte Laufzeit des Ventils (0 sek, 47:00 min, 1:03:45 )
+                    const _lastRunningTimeNotExist = adapter.setObjectNotExistsAsync(objPfad + '.history.lastRunningTime', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => History - Last running time',
+                            'type':  'string',
+                            'read':  true,
+                            'write': false,
+                            'def':   '00:00'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.lastRunningTime ${e}`));
+                    // Create Object for .autoOn
+                    const _autoOnNotExist = await adapter.setObjectNotExistsAsync(objPfad + '.autoOn', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => Switch automatic mode on / off',
+                            'type':  'boolean',
+                            'read':  true,
+                            'write': true,
+                            'def':   false
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.autoOn ${e}`));
+                    // Create Object for .actualSoilMoisture
+                    const _actualSoilMoistureNotExist = await adapter.setObjectNotExistsAsync(objPfad + '.actualSoilMoisture',
+                        objMetConSM
+                    ).catch((e) => adapter.log.warn(`${objectName}.autoOn ${e}`));
+                    // Create Object for .countdown => Countdown des Ventils
+                    const _countdownNotExist = adapter.setObjectNotExistsAsync(objPfad + '.countdown', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => countdown of sprinkler',
+                            'type':  'string',
+                            'read':  true,
+                            'write': false,
+                            'def':   '-'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.countdown ${e}`));
+                    // Create Object for .runningTime => Laufzeit des Ventils
+                    const _runningTimeNotExist = await adapter.setObjectNotExistsAsync(objPfad + '.runningTime', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => running time of sprinkler',
+                            'type':  'string',
+                            'read':  true,
+                            'write': true,
+                            'def':   '-'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.runningTime ${e}`));
+                    // Create Object for .sprinklerState => Zustand des Ventils im Thread
+                    // <<< 1  = warten >>> ( 0:off; 1:wait; 2:on; 3:break; 4:Boost(on); 5:off(Boost) )
+                    // Create .sprinklerState
+                    const _sprinklerStateNotExists = await adapter.setObjectNotExistsAsync(objPfad + '.sprinklerState', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => actual state of sprinkler',
+                            'type':  'number',
+                            'min':	0,
+                            'max':	5,
+                            'states': {
+                                "0": "off",
+                                "1": "wait",
+                                "2": "on",
+                                "3": "break",
+                                "4": "Boost(on)",
+                                "5": "off(Boost)"
+                            },
+                            'read':  true,
+                            'write': false,
+                            'def':   0
+                        },
+                        'native': {}
+                    }).catch((e) => adapter.log.warn(`${objectName}.sprinklerState ${e}`));
+                    // Create Object for triggerPoint → Schaltpunkt der Bodenfeuchte
+                    const _triggerPointNotExist = await adapter.setObjectNotExistsAsync(objPfad + '.triggerPoint', {
+                        'type': 'state',
+                        'common': {
+                            'role':  'state',
+                            'name':  objectName + ' => Trigger point of sprinkler',
+                            'type':  'string',
+                            'read':  true,
+                            'write': false,
+                            'def':   '-'
+                        },
+                        'native': {},
+                    }).catch((e) => adapter.log.warn(`${objectName}.triggerPoint ${e}`));
+                    // Object created
+                    let value = true;
+                    (await Promise.all([
+                        _sprinkleNotExist,
+                        _historyNotExist,
+                        _curCalWeekConsumedNotExist,
+                        _curCalWeekRunningTimeNotExist,
+                        _lastCalWeekConsumedNotExist,
+                        _lastCalWeekRunningTimeNotExist,
+                        _lastConsumedNotExist,
+                        _lastOnNotExist,
+                        _lastRunningTimeNotExist,
+                        _autoOnNotExist,
+                        _actualSoilMoistureNotExist,
+                        _countdownNotExist,
+                        _runningTimeNotExist,
+                        _sprinklerStateNotExists,
+                        _triggerPointNotExist
+                    ])).forEach((val) => {
+                        value += val;
+                    });
+                    if (value){
+                        adapter.log.info(`sprinkleControl [sprinkle.${objectName}] was created`);
                     }
-                });
-                setTimeout(()=>{
-                    if (myName !== objName) {   // bei Änderung der "Methode zur Kontrolle der Bodenfeuchtigkeit" aktualisiere das Objekt
-                        adapter.setObject(objPfad + '.actualSoilMoisture', myObj);
+
+                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+                    // +++++                            zustände der States aktualisieren                       +++++ //
+                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+
+                    // Abfrage, ob sich die Bewässerungsart geändert hat
+                    const _actualSoilMoistureObj = await adapter.getObjectAsync(objPfad + '.actualSoilMoisture').catch((e) => adapter.log.warn(e));
+                    if (_actualSoilMoistureObj) {
+                        if (typeof _actualSoilMoistureObj.common.name !== 'string' || _actualSoilMoistureObj.common.name !== nameMetConSM) {           //  Objekt wurde ausgelesen
+                            await adapter.setObjectAsync(
+                                objPfad + '.actualSoilMoisture',
+                                objMetConSM
+                            ).catch((e) => adapter.log.warn(e));
+                            adapter.log.info(`sprinkleControl [sprinkle.${objectName}.actualSoilMoisture] was updated`);
+
+                        }
                     }
-                },200);
-            }, 100);
-
-            // Trigger point of sprinkler => Schaltpunkt der Bodenfeuchte
-            adapter.setObjectNotExists(objPfad + '.triggerPoint', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => Trigger point of sprinkler',
-                    'type':  'string',
-                    'read':  true,
-                    'write': false,
-                    'def':   '-'
-                },
-                'native': {},
-            });
-            // actual state of sprinkler => Zustand des Ventils im Thread
-            // <<< 1  = warten >>> ( 0:off; 1:wait; 2:on; 3:break; 4:Boost(on); 5:off(Boost) )
-            // Create .sprinklerState
-            adapter.setObjectNotExists(objPfad + '.sprinklerState', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => actual state of sprinkler',
-                    'type':  'number',
-                    'min':	0,
-                    'max':	5,
-                    'states': '0:off;1:wait;2:on;3:break;4:Boost(on);5:off(Boost)',
-                    'read':  true,
-                    'write': false,
-                    'def':   0
-                },
-                'native': {},
-            });
-            // running time of sprinkler => Laufzeit des Ventils
-            adapter.setObjectNotExists(objPfad + '.runningTime', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => running time of sprinkler',
-                    'type':  'string',
-                    'read':  true,
-                    'write': true,
-                    'def':   '-'
-                },
-                'native': {},
-            });
-            // countdown of sprinkler => Countdown des Ventils
-            adapter.setObjectNotExists(objPfad + '.countdown', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => countdown of sprinkler',
-                    'type':  'string',
-                    'read':  true,
-                    'write': false,
-                    'def':   '-'
-                },
-                'native': {},
-            });
-            // autoOn
-            adapter.setObjectNotExists(objPfad + '.autoOn', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => Switch automatic mode on / off',
-                    'type':  'boolean',
-                    'read':  true,
-                    'write': true,
-                    'def':   true
-                },
-                'native': {},
-            });
-            // History - Last running time of sprinkler => History - Letzte Laufzeit des Ventils (0 sek, 47:00 min, 1:03:45 )
-            adapter.setObjectNotExists(objPfad + '.history.lastRunningTime', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Last running time',
-                    'type':  'string',
-                    'read':  true,
-                    'write': false,
-                    'def':   '00:00'
-                },
-                'native': {},
-            });
-            // History - Last On of sprinkler => History - Letzter Start des Ventils (30.03 06:30)
-            adapter.setObjectNotExists(objPfad + '.history.lastOn', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Last On of sprinkler',
-                    'type':  'string',
-                    'read':  true,
-                    'write': false,
-                    'def':   '-'
-                },
-                'native': {},
-            });
-            // History - Last consumed of sprinkler => History - Letzte Verbrauchsmenge des Ventils (783 Liter)
-            adapter.setObjectNotExists(objPfad + '.history.lastConsumed', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Last consumed of sprinkler',
-                    'type':  'number',
-                    'unit':  'Liter',
-                    'read':  true,
-                    'write': false,
-                    'def':   0
-                },
-                'native': {},
-            });
-            // History - Sprinkler consumption of the current calendar week => History - Sprinkler-Verbrauch der aktuellen Kalenderwoche (783 Liter)
-            adapter.setObjectNotExists(objPfad + '.history.curCalWeekConsumed', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Sprinkler consumption of the current calendar week',
-                    'type':  'number',
-                    'unit':  'Liter',
-                    'read':  true,
-                    'write': false,
-                    'def':   0
-                },
-                'native': {},
-            });
-            // History - Sprinkler consumption of the last calendar week => History - Sprinkler-Verbrauch der letzten Kalenderwoche (783 Liter)
-            adapter.setObjectNotExists(objPfad + '.history.lastCalWeekConsumed', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Sprinkler consumption of the last calendar week',
-                    'type':  'number',
-                    'unit':  'Liter',
-                    'read':  true,
-                    'write': false,
-                    'def':   0
-                },
-                'native': {},
-            });
-            // History - Sprinkler running time of the current calendar week => History - Sprinkler-Laufzeit der aktuellen Kalenderwoche (783 Liter)
-            adapter.setObjectNotExists(objPfad + '.history.curCalWeekRunningTime', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Sprinkler running time of the current calendar week',
-                    'type':  'string',
-                    'read':  true,
-                    'write': false,
-                    'def':   '00:00'
-                },
-                'native': {},
-            });
-            // History - Sprinkler running time of the last calendar week => History - Sprinkler-Laufzeit der letzten Kalenderwoche (783 Liter)
-            adapter.setObjectNotExists(objPfad + '.history.lastCalWeekRunningTime', {
-                'type': 'state',
-                'common': {
-                    'role':  'state',
-                    'name':  objectName + ' => History - Sprinkler running time of the last calendar week',
-                    'type':  'string',
-                    'read':  true,
-                    'write': false,
-                    'def':   '00:00'
-                },
-                'native': {},
-            });
-
-            setTimeout(() => {
-                switch (myConfig.config[j].methodControlSM) {
-                    case 'bistable':
-                        if(myConfig.config[j].triggerSM.length > 5) {
-                            adapter.getForeignState(myConfig.config[j].triggerSM, (err,state) => {
-                                if (typeof state !== undefined && typeof state.val === 'boolean') {
-                                    myConfig.setSoilMoistBool(myConfig.config[j].sprinkleID, state.val);
-                                }
-                            });
+                    //
+                    if (await _autoOnNotExist) {
+                        const _autoOn = await adapter.getStateAsync(objPfad + '.autoOn').catch((e) => adapter.log.warn(e));
+                        if (_autoOn && _autoOn.val) {
+                            if (typeof _autoOn.val === 'boolean' && ((new Date () - _autoOn.ts) > 60000)) {
+                                myConfig.config[j].autoOn = _autoOn.val;
+                            } else {
+                                adapter.setStateAsync(
+                                    objPfad + '.autoOn',
+                                    true,
+                                    true
+                                ).catch((e) => adapter.log.warn(`${objectName}.autoOn ${e}`));
+                                myConfig.config[j].autoOn = true;
+                            }
                         }
-                        adapter.setState(objPfad + '.triggerPoint', {
-                            val: '-',
-                            ack: true
-                        });
-                        break;
-
-                    case 'analog':
-                        if (myConfig.config[j].triggerSM.length > 5) {
-                            adapter.getForeignState(myConfig.config[j].triggerSM, (err,state) => {
-                                if (typeof state !== undefined && state.val) {
-                                    myConfig.setSoilMoistPct(myConfig.config[j].sprinkleID, state.val);
-                                }
-                            });
+                    }
+                    //
+                    if(await _countdownNotExist){
+                        const _countdown = await adapter.getStateAsync(objPfad + '.countdown').catch((e) => adapter.log.warn(`${objectName}.countdown ${e}`));
+                        if (_countdown && _countdown.val !== '0') {
+                            adapter.setStateAsync(
+                                objPfad + '.countdown',
+                                '0',
+                                true
+                            ).catch((e) => adapter.log.warn(e));
                         }
-                        adapter.setState(objPfad + '.triggerPoint', {
-                            val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
-                            ack: true
-                        });
-                        break;
+                    }
+                    //
+                    if (_runningTimeNotExist) {
+                        const _runningTime = await adapter.getStateAsync(objPfad + '.runningTime').catch((e) => adapter.log.warn(`${objectName}.runningTime ${e}`));
+                        if (_runningTime && _runningTime.val !== '00:00') {
+                            adapter.setStateAsync(objPfad + '.runningTime',
+                                '00:00',
+                                true
+                            ).catch((e) => adapter.log.warn(e));
+                        }
+                    }
+                    //
+                    if (_sprinklerStateNotExists){
+                        const _sprinklerState = await adapter.getStateAsync(objPfad + '.sprinklerState').catch((e) => adapter.log.warn(`${objectName}.sprinklerState ${e}`));
+                        if (_sprinklerState && _sprinklerState.val !== 0) {
+                            await adapter.setStateAsync(objPfad + '.sprinklerState',
+                                0,
+                                true
+                            ).catch((e) => adapter.log.warn(`${objectName}.sprinklerState ${e}`));
+                        }
+                    }
+                    // Festlegen des Schaltpunktes für den nächsten Start
+                    switch (myConfig.config[j].methodControlSM) {
+                        case 'bistable':
+                                // Sensor soil moisture => Sensor Bodenfeuchte
+                                const _triggerSMBistabile = await adapter.getForeignStateAsync(myConfig.config[j].triggerSM).catch((e) => adapter.log.warn(`${objectName}.triggerSMBistabile ${e}`));
+                                if (_triggerSMBistabile && typeof _triggerSMBistabile.val === 'boolean') {
+                                    myConfig.setSoilMoistBool(myConfig.config[j].sprinkleID, _triggerSMBistabile.val);
+                                } else {
+                                    myConfig.setSoilMoistBool(myConfig.config[j].sprinkleID, true);
+                                    adapter.log.warn(`The bistable sensor ${myConfig.config[j].triggerSM} in ${objectName} does not deliver correct values!`)
+                                }
 
-                    case 'fixDay':
+                            adapter.setStateAsync(objPfad + '.triggerPoint',
+                                '-',
+                                true
+                            ).catch((e) => adapter.log.warn(`${objectName}.triggerPoint ${e}`));
+                            break;
 
-                        /** @type {number} */
-                        const nextStartDay = ((today + 1) > 6 ? 0 : (today + 1));
+                        case 'analog':
+                            // Sensor soil moisture => Sensor Bodenfeuchte
+                            /**
+                             * Schaltpunkt '.triggerSM' auslesen
+                             * @type {ioBroker.State | void} _triggerSM - Schaltpunkt
+                             * @private
+                             */
+                            const _triggerSMAnalog = await adapter.getForeignStateAsync(myConfig.config[j].triggerSM).catch((e) => adapter.log.warn(`${objectName}.triggerSMAnalog ${e}`));
+                            if (_triggerSMAnalog && (typeof _triggerSMAnalog.val === 'number' || typeof _triggerSMAnalog.val === 'string')) {
+                                myConfig.setSoilMoistPct(myConfig.config[j].sprinkleID, _triggerSMAnalog.val);
+                            } else {
+                                await adapter.setStateAsync(objPfad + '.actualSoilMoisture',
+                                    50,
+                                    true
+                                );
+                                adapter.log.warn(`The analoge sensor ${myConfig.config[j].triggerSM} in ${objectName} does not deliver correct values!`)
+                            }
+                            adapter.setStateAsync(objPfad + '.triggerPoint',
+                                (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
+                                true
+                            ).catch((e) => adapter.log.warn(`${objectName}.triggerPoint setState ${e}`));
+                            break;
 
-                        /**
-                         * Neuen Start-Tag für Dreitage- und Zweitage-modus setzen
-                         * @param {boolean} threeRd - Dreitage-modus Ja/Nein
-                         *     true => Dreitage-modus (treeRD)
-                         *     false => Zweitage-modus (twoNd)
-                         */
-                        function setNewDay (threeRd) {
-                            const today = formatTime(adapter,'', 'day');
-                            adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
-                                if (state && (typeof state.val === 'number')) {
-                                    if ((state.val >= 0) && (state.val <= 6)) {
+                        case 'fixDay':
+
+                            /** @type {number} */
+                            const nextStartDay = ((today + 1) > 6 ? 0 : (today + 1));
+
+                            /**
+                             * Neuen Start-Tag für Dreitage- und Zweitage-modus setzen
+                             * @param {boolean} threeRd - Dreitage-modus Ja/Nein
+                             *     true → Dreitage-modus (treeRD)
+                             *     false → Zweitage-modus (twoNd)
+                             */
+                            async function setNewDay (threeRd) {
+                                const today = formatTime(adapter,'', 'day');
+                                /**
+                                 *
+                                 * @type {ioBroker.GetStatePromise} _actualSoilMoisture
+                                 * @private {ioBroker.State|Void} _actualSoilMoisture
+                                 */
+                                const _actualSoilMoisture = await adapter.getStateAsync(
+                                    objPfad + '.actualSoilMoisture'
+                                ).catch((e) => adapter.log.warn(`${objectName}.actualSoilMoisture fixDay setState ${e}`));
+                                if (_actualSoilMoisture && (typeof _actualSoilMoisture.val === 'number')) {
+                                    if ((_actualSoilMoisture.val >= 0) && (_actualSoilMoisture.val <= 6)) {
                                         if ((threeRd)
-                                            && (state.val === (((today + 3) > 6) ? 2 : (today + 3)))
-                                            || (state.val === (((today + 2) > 6) ? 1 : (today + 2)))
-                                            || (state.val === (((today + 1) > 6) ? 0 : (today + 1)))
-                                            || (state.val === today)) {
-                                            myConfig.config[j].startFixDay[state.val] = true;
+                                            && (_actualSoilMoisture.val === (((today + 3) > 6) ? 2 : (today + 3)))
+                                            || (_actualSoilMoisture.val === (((today + 2) > 6) ? 1 : (today + 2)))
+                                            || (_actualSoilMoisture.val === (((today + 1) > 6) ? 0 : (today + 1)))
+                                            || (_actualSoilMoisture.val === today)) {
+                                            myConfig.config[j].startFixDay[_actualSoilMoisture.val] = true;
                                         } else {
                                             myConfig.config[j].startFixDay[nextStartDay] = true;
                                         }
@@ -1198,117 +1320,66 @@ function createSprinklers() {
                                     }
                                     curNextFixDay(myConfig.config[j].sprinkleID, false);
                                 }
-                            });
+                            }
 
-                        }
+                            if (myConfig.config[j].startDay === 'threeRd') {
+                                await setNewDay(true);
+                            } else if (myConfig.config[j].startDay === 'twoNd') {
+                                await setNewDay(false);
+                            } else if (myConfig.config[j].startDay === 'fixDay') {
+                                adapter.log.info(`set Day (fixDay): ${myConfig.config[j].objectName}`);
+                                curNextFixDay(myConfig.config[j].sprinkleID, false);
+                            }
 
-                        if (myConfig.config[j].startDay === 'threeRd') {
-                            setNewDay(true);
-                        } else if (myConfig.config[j].startDay === 'twoNd') {
-                            setNewDay(false);
-                        } else if (myConfig.config[j].startDay === 'fixDay') {
-                            adapter.log.info('set Day (fixDay): ' + myConfig.config[j].objectName);
-                            curNextFixDay(myConfig.config[j].sprinkleID, false);
-                        }
+                            adapter.setStateAsync(objPfad + '.triggerPoint',
+                                '-',
+                                true
+                            ).catch((e) => adapter.log.warn(`${objectName}.triggerPoint fixDay setState ${e}`));
+                            break;
 
-                        adapter.setState(objPfad + '.triggerPoint', {
-                            val: '-',
-                            ack: true
-                        });
-                        break;
+                        case 'calculation':
 
-                    case 'calculation':
-                        adapter.getState(objPfad + '.actualSoilMoisture', (err, state) => {
-                            if (state == null || typeof state.val !== 'number' || state.val === 0) {
-                                adapter.setState(objPfad + '.actualSoilMoisture', {
-                                    val: myConfig.config[j].soilMoisture.pct,
-                                    ack: true
-                                });
-                            } else {
-                                // num Wert der Bodenfeuchte berechnen und der config speichern wenn Wert zwischen 0 und max liegt
-                                if ((0 < state.val) && (state.val <= (myConfig.config[j]).soilMoisture.maxRain*100/myConfig.config[j].soilMoisture.maxIrrigation)) {
-                                    myConfig.config[j].soilMoisture.val = state.val * myConfig.config[j].soilMoisture.maxIrrigation / 100;
-                                    myConfig.config[j].soilMoisture.pct = state.val;
+                            const _actualSoilMoisture = await adapter.getStateAsync(objPfad + '.actualSoilMoisture').catch((e) => adapter.log.warn(e));
+                            if (_actualSoilMoisture) {
+                                if (await _actualSoilMoisture && typeof _actualSoilMoisture.val !== 'number' || _actualSoilMoisture.val === 0) {
+                                    adapter.setStateAsync(objPfad + '.actualSoilMoisture',
+                                        myConfig.config[j].soilMoisture.pct,
+                                        true
+                                    ).catch((e) => adapter.log.warn(e));
                                 } else {
-                                    // Wert aus config übernehmen
-                                    adapter.setState(objPfad + '.actualSoilMoisture', {
-                                        val: myConfig.config[j].soilMoisture.pct,
-                                        ack: true
-                                    });
+                                    // num Wert der Bodenfeuchte berechnen und in der config speichern, wenn Wert zwischen 0 und max liegt
+                                    if ((0 < _actualSoilMoisture.val) && (_actualSoilMoisture.val <= (myConfig.config[j]).soilMoisture.maxRain*100/myConfig.config[j].soilMoisture.maxIrrigation)) {
+                                        myConfig.config[j].soilMoisture.val = _actualSoilMoisture.val * myConfig.config[j].soilMoisture.maxIrrigation / 100;
+                                        myConfig.config[j].soilMoisture.pct = _actualSoilMoisture.val;
+                                    } else {
+                                        // Wert aus config übernehmen
+                                        adapter.setStateAsync(objPfad + '.actualSoilMoisture',
+                                            myConfig.config[j].soilMoisture.pct,
+                                            true
+                                        ).catch((e) => adapter.log.warn(e));
+                                    }
                                 }
                             }
-                        });
-                        adapter.setState(objPfad + '.triggerPoint', {
-                            val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
-                            ack: true
-                        });
-                        break;
-                }
 
-                adapter.getState(objPfad + '.sprinklerState', (err, state) => {
-                    if (state) {
-                        adapter.setState(objPfad + '.sprinklerState', {val: 0, ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.runningTime', (err, state) => {
-                    if (state) {
-                        adapter.setState(objPfad + '.runningTime', {val: '00:00', ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.countdown', (err, state) => {
-                    if (state) {
-                        adapter.setState(objPfad + '.countdown', {val: '0', ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.autoOn', (err, state) => {
-                    if (state) {
-                        if (typeof state.val === 'boolean' && ((new Date () - state.ts) > 60000)) {
-                            myConfig.config[j].autoOn = state.val;
-                        } else {
-                            adapter.setState(objPfad + '.autoOn', {val: true, ack: true});
-                            myConfig.config[j].autoOn = true;
+                            adapter.setStateAsync(objPfad + '.triggerPoint',
+                                (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
+                                true
+                            ).catch((e) => adapter.log.warn(e));
+                            break;
+
                         }
-                    }
-                });
-                // history		
-                adapter.getState(objPfad + '.history.lastRunningTime', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'string') {
-                        adapter.setState(objPfad + '.history.lastRunningTime', {val: '00:00', ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.history.lastOn', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'string') {
-                        adapter.setState(objPfad + '.history.lastOn', {val: '-', ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.history.lastConsumed', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'number') {
-                        adapter.setState(objPfad + '.history.lastConsumed', {val: 0, ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.history.curCalWeekConsumed', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'number') {
-                        adapter.setState(objPfad + '.history.curCalWeekConsumed', {val: 0, ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.history.lastCalWeekConsumed', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'number') {
-                        adapter.setState(objPfad + '.history.lastCalWeekConsumed', {val: 0, ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.history.curCalWeekRunningTime', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'string') {
-                        adapter.setState(objPfad + '.history.curCalWeekRunningTime', {val: '00:00', ack: true});
-                    }
-                });
-                adapter.getState(objPfad + '.history.lastCalWeekRunningTime', (err, state) => {
-                    if (typeof state === 'object' && typeof state.val !== 'string') {
-                        adapter.setState(objPfad + '.history.lastCalWeekRunningTime', {val: '00:00', ack: true});
-                    }
-                });
-            },1500);
+
+                } catch (e) {
+                    adapter.log.warn(`sprinkleControl cannot created ... Please check your sprinkleControl config: ${e}`);
+                }
+            } else {
+                adapter.log.warn('sprinkleControl cannot created ... Please check in your config the sprinkle Name')
+            }
         }
-        // delete old sprinkle
+
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+        // +++++                                        Objekte löschen                                         +++++ //
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
         for(const i in ObjSprinkle) {
 
             const resID = ObjSprinkle[i]._id;
@@ -1324,58 +1395,66 @@ function createSprinklers() {
                     fullRes.push(res);
                 }
             }
-            setTimeout(() => {
 
-                if (fullRes.indexOf(resultID) === -1) {
-                    // History - Objekt(Ordner) löschen					
-                    adapter.delObject(resID + '.history', function (err) {
-                        if (err) {
-                            adapter.log.warn(err);
-                        }
-                    });					
-                    // State löschen
-                    adapter.delObject(resID + '.actualSoilMoisture');	// "sprinklecontrol.0.sprinkle.???.actualSoilMoisture"
-                    adapter.delObject(resID + '.triggerPoint');     // "sprinklecontrol.0.sprinkle.???.triggerPoint"
-                    adapter.delObject(resID + '.sprinklerState');	// "sprinklecontrol.0.sprinkle.???.sprinklerState"
-                    adapter.delObject(resID + '.runningTime');	//	"sprinklecontrol.0.sprinkle.???.runningTime"
-                    adapter.delObject(resID + '.countdown');	//	"sprinklecontrol.0.sprinkle.???.countdown"
-                    adapter.delObject(resID + '.autoOn'); // "sprinklecontrol.0.sprinkle.???.autoOn"
-                    adapter.delObject(resID + '.history.lastOn');	//	"sprinklecontrol.0.sprinkle.???..history.lastOn"
-                    adapter.delObject(resID + '.history.lastConsumed');	//	"sprinklecontrol.0.sprinkle.???..history.lastConsumed"
-                    adapter.delObject(resID + '.history.lastRunningTime');	// "sprinklecontrol.0.sprinkle.???.history.lastRunningTime"
-                    adapter.delObject(resID + '.history.curCalWeekConsumed');	//	"sprinklecontrol.0.sprinkle.???.history.curCalWeekConsumed"
-                    adapter.delObject(resID + '.history.lastCalWeekConsumed');	//	"sprinklecontrol.0.sprinkle.???.history.lastCalWeekConsumed"
-                    adapter.delObject(resID + '.history.curCalWeekRunningTime');	//	"sprinklecontrol.0.sprinkle.???.history.curCalWeekRunningTime"
-                    adapter.delObject(resID + '.history.lastCalWeekRunningTime');	//	"sprinklecontrol.0.sprinkle.???.history.lastCalWeekRunningTime"
-                    // Objekt(Ordner) löschen
-                    adapter.delObject(resID, function (err) {
-                        if (err) {
-                            adapter.log.warn(err);
-                        }
-                    });				
+            if (fullRes.indexOf(resultID) === -1) {
+                try {
+                    // object deleted
+                    Promise.all([
+                        adapter.delObjectAsync(resID + '.actualSoilMoisture'),	           // "sprinklecontrol.0.sprinkle.???.actualSoilMoisture"
+                        adapter.delObjectAsync(resID + '.triggerPoint'),                    // "sprinklecontrol.0.sprinkle.???.triggerPoint"
+                        adapter.delObjectAsync(resID + '.sprinklerState'),	               // "sprinklecontrol.0.sprinkle.???.sprinklerState"
+                        adapter.delObjectAsync(resID + '.runningTime'),	                   //	"sprinklecontrol.0.sprinkle.???.runningTime"
+                        adapter.delObjectAsync(resID + '.countdown'),	                   //	"sprinklecontrol.0.sprinkle.???.countdown"
+                        adapter.delObjectAsync(resID + '.autoOn'),                          // "sprinklecontrol.0.sprinkle.???.autoOn"
+                        adapter.delObjectAsync(resID + '.history.lastOn'),	               //	"sprinklecontrol.0.sprinkle.???..history.lastOn"
+                        adapter.delObjectAsync(resID + '.history.lastConsumed'),	           //	"sprinklecontrol.0.sprinkle.???..history.lastConsumed"
+                        adapter.delObjectAsync(resID + '.history.lastRunningTime'),	       // "sprinklecontrol.0.sprinkle.???.history.lastRunningTime"
+                        adapter.delObjectAsync(resID + '.history.curCalWeekConsumed'),	   //	"sprinklecontrol.0.sprinkle.???.history.curCalWeekConsumed"
+                        adapter.delObjectAsync(resID + '.history.lastCalWeekConsumed'),	   //	"sprinklecontrol.0.sprinkle.???.history.lastCalWeekConsumed"
+                        adapter.delObjectAsync(resID + '.history.curCalWeekRunningTime'),	//	"sprinklecontrol.0.sprinkle.???.history.curCalWeekRunningTime"
+                        adapter.delObjectAsync(resID + '.history.lastCalWeekRunningTime'),	//	"sprinklecontrol.0.sprinkle.???.history.lastCalWeekRunningTime"
+                        // History - Objekt(Ordner.history) löschen
+                        await adapter.delObjectAsync(resID + '.history'),
+                        // Objekt(Ordner) löschen
+                        await adapter.delObjectAsync(resID)
+                    ]).then((resultID)=>{
+                        adapter.log.info(`sprinkleControl [${resultID}] was deleted`);
+                    })
+                } catch (e) {
+                    adapter.log.warn(e);
                 }
-            }, 1500);	
-
+            }
         }
-
     }
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ * @param {number} ms  => Waiting time in ms
+ * @return {Promise<unknown>}
+ */
+async function sleep(ms) {
+    return new Promise(async (resolve) => {
+        // @ts-ignore
+        timerSleep = setTimeout(async () => resolve(), ms);
+    });
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *
  * @param {ioBroker.Adapter} adapter
  */
 function main(adapter) {
 
-    /* The adapters config (in the instance object everything under the attribute "native") is accessible via
+    /* The adapters' config (in the instance object everything under the attribute "native") is accessible via
     * adapter.config:
 	* => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über
 	adapter.config:
 	*/
-    adapter.log.debug(JSON.stringify(adapter.config.events));
+    adapter.log.debug(`adapter.config.events: ${JSON.stringify(adapter.config.events)}`);
 
     /**
-     * The adapters config (in the instance object everything under the attribute "native") is accessible via adapter.config:
+     * The adapters' config (in the instance object everything under the attribute "native") is accessible via adapter.config:
      * => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über adapter.config:
      * @param {any} err
      * @param {any} obj
@@ -1388,11 +1467,11 @@ function main(adapter) {
         }
     });
 
-    GetSystemData();
+    GetSystemData().then();
     sendMessageText.initConfigMessage(adapter);
 
     timer = setTimeout(function() {
-        checkActualStates();
+        checkActualStates().then();
         // init evaporation
         evaporation.initEvaporation(adapter);
         // Hauptpumpe zur Bewässerung setzen

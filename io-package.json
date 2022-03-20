@@ -289,7 +289,6 @@
     "publicHolInstance": "",
     "latitude": "",
     "longitude": "",
-    "debug": false,
     "sensorOutsideTemperature": "",
     "sensorOutsideHumidity": "",
     "sensorWindSpeed": "",
@@ -434,7 +433,10 @@
         "role": "switch",
         "name": "Auto / Manu On - Off",
         "type": "boolean",
-        "states": "false:off;true:Auto",
+        "states": {
+          "false": "off",
+          "true": "Auto"
+        },
         "read": true,
         "write": true,
         "def": true
@@ -450,7 +452,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": ""
+        "def": "-"
       },
       "native": {}
     },
@@ -463,7 +465,7 @@
         "type": "string",
         "read": true,
         "write": false,
-        "def": ""
+        "def": "-"
       },
       "native": {}
     },
