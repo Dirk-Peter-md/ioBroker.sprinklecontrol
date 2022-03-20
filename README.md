@@ -35,6 +35,11 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 	### **WORK IN PROGRESS**
 -->
 
+## **WORK IN PROGRESS**
+
+-   Did some changes
+-   Did some more changes
+
 ### 0.2.7 (16.10.2021)
 * (Dirk-Peter-md) zusätzliche Testnachrichten gelöscht, Readme aktualisiert
 
