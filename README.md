@@ -32,6 +32,8 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ## Changelog
 
 <!-- ### __WORK IN PROGRESS__ -->
+
+### __WORK IN PROGRESS
 * Adaptation for js controller 4
 * switched main.js to async
 
