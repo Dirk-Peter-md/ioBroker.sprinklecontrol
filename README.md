@@ -35,6 +35,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+
 ### 0.2.8 (2022-03-20)
 * Adaptation for js controller 4
 * switched main.js to async
@@ -107,7 +108,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ## License
 MIT License
 
-Copyright (c) 2021 Dirk Peter <dirk.peter@freenet.de>
+Copyright (c) 2020 - 2021 Dirk Peter <dirk.peter@freenet.de>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

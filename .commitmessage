@@ -1,0 +1,4 @@
+chore: release v0.2.8
+
+* Adaptation for js controller 4
+* switched main.js to async
