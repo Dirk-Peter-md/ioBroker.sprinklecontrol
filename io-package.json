@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.8",
+    "version": "0.2.9",
     "news": {
+      "0.2.9": {
+        "en": "Bug initialization routine",
+        "de": "Bug-Initialisierungsroutine",
+        "ru": "Процедура инициализации ошибки",
+        "pt": "Rotina de inicialização de bugs",
+        "nl": "Bug initialisatie routine",
+        "fr": "Routine d'initialisation de bogue",
+        "it": "Routine di inizializzazione dei bug",
+        "es": "Rutina de inicialización de errores",
+        "pl": "Procedura inicjowania błędów",
+        "zh-cn": "错误初始化例程"
+      },
       "0.2.8": {
         "en": "Adaptation for js controller 4; switched main.js to async",
         "de": "Anpassung für js-Controller 4; main.js auf async umgestellt",

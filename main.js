@@ -443,24 +443,24 @@ async function checkActualStates () {
         if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance !== 'none' || adapter.config.publicHolInstance !== '')) {
             /**
              * Feiertag Heute
-             * @type {ioBroker.GetStatePromise}
+             * @type {ioBroker.State | void}
              * @private
              */
-            const _publicHolInstanceHeute = adapter.getForeignStateAsync(
+            const _publicHolInstanceHeute = await adapter.getForeignStateAsync(
                 adapter.config.publicHolInstance + '.heute.boolean'
             ).catch((e) => adapter.log.warn(e));
-                if (await _publicHolInstanceHeute && _publicHolInstanceHeute.val) {
-                    publicHolidayStr = _publicHolInstanceHeute.val;
-                }
+            if (_publicHolInstanceHeute && _publicHolInstanceHeute.val) {
+                publicHolidayStr = _publicHolInstanceHeute.val;
+            }
             /**
              * Feiertag MORGEN
-             * @type {ioBroker.GetStatePromise}
+             * @type {ioBroker.State | void}
              * @private
              */
-            const _publicHolInstanceMorgen = adapter.getForeignStateAsync(
+            const _publicHolInstanceMorgen = await adapter.getForeignStateAsync(
                 adapter.config.publicHolInstance + '.morgen.boolean'
             ).catch((e) => adapter.log.warn(e));
-                if (await _publicHolInstanceMorgen && _publicHolInstanceMorgen.val) {
+                if (_publicHolInstanceMorgen && _publicHolInstanceMorgen.val) {
                     publicHolidayTomorrowStr = _publicHolInstanceMorgen.val;
                 }
         }
@@ -468,13 +468,13 @@ async function checkActualStates () {
         if (adapter.config.weatherForecast === true && (adapter.config.weatherForInstance !== 'none' || adapter.config.weatherForInstance !== '')) {
             /**
              * Niederschlagsmenge HEUTE in mm
-             * @type {ioBroker.GetStatePromise}
+             * @type {ioBroker.State | void}
              * @private
              */
-            const _weatherForInstanceToday = adapter.getForeignStateAsync(
+            const _weatherForInstanceToday = await adapter.getForeignStateAsync(
                 adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value'
             ).catch((e) => adapter.log.warn(e));
-                if (await _weatherForInstanceToday && _weatherForInstanceToday.val) {
+                if (_weatherForInstanceToday && _weatherForInstanceToday.val) {
                     if (typeof _weatherForInstanceToday.val == 'string') {
                         weatherForecastTodayNum = parseFloat(_weatherForInstanceToday.val);
                     } else if (typeof _weatherForInstanceToday.val == 'number') {
@@ -491,28 +491,30 @@ async function checkActualStates () {
 
             /**
              * Niederschlagsmenge MORGEN in mm
-             * @type {ioBroker.GetStatePromise}
+             * @type {ioBroker.State | void}
              * @private
              */
-            const _weatherForInstance = adapter.getForeignStateAsync(
+            const _weatherForInstance = await adapter.getForeignStateAsync(
                 adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value'
             ).catch((e) => adapter.log.warn(e));
-                if (_weatherForInstance && _weatherForInstance.val) {
-                    weatherForecastTomorrowNum = _weatherForInstance.val;
-                    await adapter.setStateAsync(
-                        'info.rainTomorrow',
-                        weatherForecastTomorrowNum,
-                        true
-                    );
-                }
+            if (_weatherForInstance && _weatherForInstance.val) {
+                weatherForecastTomorrowNum = _weatherForInstance.val;
+                await adapter.setStateAsync(
+                    'info.rainTomorrow',
+                    weatherForecastTomorrowNum,
+                    true
+                );
+            }
         }
         if (adapter.config.actualValueLevel){
             /**
              * Füllstand der Zisterne in %
-             * @type {ioBroker.GetStatePromise}
+             * @type {ioBroker.State | void}
              * @private
              */
-            const _actualValueLevel = adapter.getForeignStateAsync(adapter.config.actualValueLevel).catch((e) => adapter.log.warn(e));
+            const _actualValueLevel = await adapter.getForeignStateAsync(
+                adapter.config.actualValueLevel
+            ).catch((e) => adapter.log.warn(e));
             if (_actualValueLevel && typeof _actualValueLevel.val !== undefined) {
                 valveControl.setFillLevelCistern(parseFloat(_actualValueLevel.val));
             }
@@ -520,6 +522,8 @@ async function checkActualStates () {
         /**
          * return the saved objects under sprinkle.*
          * rückgabe der gespeicherten Objekte unter sprinkle.*
+         * @type {ioBroker.NonNullCallbackReturnTypeOf<(err?: (Error | null), objects?: Record<string, ioBroker.AnyObject & {type: "channel"}>) => void> | void}
+         * @private
          */
         const _list = await adapter.getForeignObjectsAsync(adapter.namespace + '.sprinkle.*', 'channel').catch((e) => adapter.log.warn(e));
             if (_list) {
@@ -1082,14 +1086,14 @@ async function createSprinklers() {
                             'type':  'boolean',
                             'read':  true,
                             'write': true,
-                            'def':   false
+                            'def':   true
                         },
                         'native': {},
                     }).catch((e) => adapter.log.warn(`${objectName}.autoOn ${e}`));
                     // Create Object for .actualSoilMoisture
                     const _actualSoilMoistureNotExist = await adapter.setObjectNotExistsAsync(objPfad + '.actualSoilMoisture',
                         objMetConSM
-                    ).catch((e) => adapter.log.warn(`${objectName}.autoOn ${e}`));
+                    ).catch((e) => adapter.log.warn(`${objectName}.actualSoilMoisture ${e}`));
                     // Create Object for .countdown => Countdown des Ventils
                     const _countdownNotExist = adapter.setObjectNotExistsAsync(objPfad + '.countdown', {
                         'type': 'state',
