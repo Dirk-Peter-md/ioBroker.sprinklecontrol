@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.9",
+    "version": "0.2.10",
     "news": {
+      "0.2.10": {
+        "en": "- manual watering limited to a maximum of 100%; - Error whatsapp message fixed",
+        "de": "- manuelle Bewässerung begrenzt auf maximal 100 %; - Fehler WhatsApp-Nachricht behoben",
+        "ru": "- ручной полив ограничен максимум 100%; - Исправлено сообщение об ошибке WhatsApp",
+        "pt": "- rega manual limitada a um máximo de 100%; - Mensagem de erro do whatsapp corrigida",
+        "nl": "- handmatige bewatering beperkt tot maximaal 100%; - Fout whatsapp-bericht opgelost",
+        "fr": "- arrosage manuel limité à 100% maximum ; - Message d'erreur WhatsApp corrigé",
+        "it": "- irrigazione manuale limitata ad un massimo del 100%; - Errore messaggio whatsapp risolto",
+        "es": "- riego manual limitado a un máximo del 100%; - Mensaje de error de whatsapp arreglado",
+        "pl": "- nawadnianie ręczne ograniczone do maksymalnie 100%; - Naprawiono błąd wiadomości WhatsApp",
+        "zh-cn": "- 手动浇水限制为最大 100%； - 错误whatsapp消息已修复"
+      },
       "0.2.9": {
         "en": "Bug initialization routine",
         "de": "Bug-Initialisierungsroutine",

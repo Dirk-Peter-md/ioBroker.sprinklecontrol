@@ -116,7 +116,7 @@ function startAdapter(options) {
                         err && adapter.log.error(err);
                         if (state && state.val) {
                             try {
-                                adapter.log.info('getTelegramUser:' + state.val);
+                                adapter.log.debug('getTelegramUser:' + state.val);
                                 adapter.sendTo(obj.from, obj.command, JSON.parse(state.val), obj.callback);
                             } catch (err) {
                                 err && adapter.log.error(err);
@@ -953,6 +953,22 @@ async function createSprinklers() {
                         break;
                     default:
                         adapter.log.warn(`sprinkleControl cannot created ... Please check your sprinkleControl config ${objectName} methodControl`);
+                        nameMetConSM = objectName + ' => Emergency program! start on a fixed day';
+                        objMetConSM = {
+                            'type': 'state',
+                            'common': {
+                                'role':  'state',
+                                'name':  nameMetConSM,
+                                'type':  'number',
+                                'min': 0,
+                                'max': 7,
+                                'states': {"0":"Sun", "1":"Mon", "2":"Tue", "3":"Wed", "4":"Thur", "5":"Fri", "6":"Sat", "7":"off"},
+                                'read':  true,
+                                'write': false,
+                                'def': 7
+                            },
+                            'native': {},
+                        };
                 }
             }
             // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //

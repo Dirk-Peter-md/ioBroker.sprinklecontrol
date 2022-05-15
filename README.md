@@ -7,7 +7,6 @@
 ![Number of Installations](http://iobroker.live/badges/sprinklecontrol-stable.svg)
 [![NPM version](http://img.shields.io/npm/v/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
-[![Dependency Status](https://img.shields.io/david/Dirk-Peter-md/iobroker.sprinklecontrol.svg)](https://david-dm.org/Dirk-Peter-md/iobroker.sprinklecontrol)
 [![Known Vulnerabilities](https://snyk.io/test/github/Dirk-Peter-md/ioBroker.sprinklecontrol/badge.svg)](https://snyk.io/test/github/Dirk-Peter-md/ioBroker.sprinklecontrol)
 [![Build Status](https://travis-ci.com/Dirk-Peter-md/ioBroker.sprinklecontrol.svg?branch=master)](https://travis-ci.com/Dirk-Peter-md/ioBroker.sprinklecontrol)
 
@@ -35,6 +34,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### 0.2.10 (2022-05-15)
+* (Dirk-Peter-md) manual watering limited to a maximum of 100%
+* (Dirk-Peter-md) Error whatsapp message fixed
+
 ### 0.2.9 (2022-04-10)
 * (Dirk-Peter-md) Bug-Initialisierungsroutine
 
