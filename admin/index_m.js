@@ -59,7 +59,7 @@ function load(settings, onChange) {
             $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val('200').trigger('change');
             $('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val('0').trigger('change');
             $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val('8').trigger('change');
-            $('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val('10').trigger('change');
+            $('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val('120').trigger('change');
             $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
             $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val('700').trigger('change');
             $('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').val('calculation').trigger('change');
