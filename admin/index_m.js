@@ -59,7 +59,7 @@ function load(settings, onChange) {
             $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val('200').trigger('change');
             $('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val('0').trigger('change');
             $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val('8').trigger('change');
-            $('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val('10').trigger('change');
+            $('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val('10').trigger('change');
             $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
             $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val('700').trigger('change');
             $('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').val('calculation').trigger('change');
@@ -331,7 +331,7 @@ function tableOnReady() {
         $('#wateringAdd').val($('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val());
         $('#wateringInterval').val($('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val());
         $('#maxSoilMoistureIrrigation').val($('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val());
-        $('#maxSoilMoistureRain').val($('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val());
+        $('#maxSoilMoistureRainPct').val($('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val());
         $('#triggersIrrigation').val($('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val());
         $('#pipeFlow').val($('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val());
         $('#methodControlSM').val($('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').val());
@@ -362,7 +362,7 @@ function tableOnReady() {
                 let newWateringAdd = $('#wateringAdd').val();
                 let newWateringInterval = $('#wateringInterval').val();
                 let newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
-                let newMaxSoilMoistureRain = $('#maxSoilMoistureRain').val();
+                let newMaxSoilMoistureRainPct = $('#maxSoilMoistureRainPct').val();
                 let newTriggersIrrigation = $('#triggersIrrigation').val();
                 let newPipeFlow = $('#pipeFlow').val();
                 let newMethodControlSM = $('#methodControlSM').val();
@@ -387,7 +387,7 @@ function tableOnReady() {
                 $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val(newWateringAdd).trigger('change');
                 $('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val(newWateringInterval).trigger('change');
                 $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val(newMaxSoilMoistureIrrigation).trigger('change');
-                $('#events .values-input[data-name="maxSoilMoistureRain"][data-index="' + id + '"]').val(newMaxSoilMoistureRain).trigger('change');
+                $('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val(newMaxSoilMoistureRainPct).trigger('change');
                 $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val(newTriggersIrrigation).trigger('change');
                 $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val(newPipeFlow).trigger('change');
                 $('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').val(newMethodControlSM).trigger('change');

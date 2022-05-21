@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.10",
+    "version": "0.2.11",
     "news": {
+      "0.2.11": {
+        "en": "Bug fixed => analogue soil moisture sensor with negative characteristic; Attention => maximum soil moisture in rain now in %",
+        "de": "Fehler behoben => analoger Bodenfeuchtesensor mit negativer Kennlinie; Achtung => maximale Bodenfeuchte bei Regen jetzt in %",
+        "ru": "Исправлена ошибка => аналоговый датчик влажности почвы с отрицательной характеристикой; Внимание => максимальная влажность почвы в дождь теперь в %",
+        "pt": "Bug corrigido => sensor analógico de umidade do solo com característica negativa; Atenção => umidade máxima do solo na chuva agora em %",
+        "nl": "Bug opgelost => analoge bodemvochtsensor met negatieve karakteristiek; Let op => maximale bodemvochtigheid bij regen nu in %",
+        "fr": "Bug corrigé => capteur d'humidité du sol analogique avec caractéristique négative ; Attention => humidité maximale du sol sous la pluie maintenant en %",
+        "it": "Bug risolto => sensore di umidità del suolo analogico con caratteristica negativa; Attenzione => umidità massima del suolo sotto la pioggia ora in %",
+        "es": "Error solucionado => sensor de humedad del suelo analógico con característica negativa; Atención => humedad máxima del suelo en lluvia ahora en %",
+        "pl": "Poprawiony błąd => analogowy czujnik wilgotności gleby o charakterystyce ujemnej; Uwaga => maksymalna wilgotność gleby w deszczu teraz w %",
+        "zh-cn": "错误修复 => 具有负特性的模拟土壤湿度传感器；注意 => 现在雨中的最大土壤水分百分比"
+      },
       "0.2.10": {
         "en": "- manual watering limited to a maximum of 100%; - Error whatsapp message fixed",
         "de": "- manuelle Bewässerung begrenzt auf maximal 100 %; - Fehler WhatsApp-Nachricht behoben",
@@ -230,18 +242,6 @@
         "es": "Riego mediante segunda bomba (cisterna con control prioritario) en función del nivel.",
         "pl": "Nawadnianie przez drugą pompę (cysterna z priorytetem sterowania) w zależności od poziomu.",
         "zh-cn": "根据液位，通过第二个泵（带优先控制的水箱）进行灌溉。"
-      },
-      "0.0.11": {
-        "en": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "de": "Fehler bei der Lösung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "ru": "Fehler bei der Verarbeitung der Regenvorhersage vom Адаптер \"Das Wetter\"",
-        "pt": "Fehler bei der Verarbeitung der Regenvorhersage vom Adaptador \"Das Wetter\"",
-        "nl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "fr": "Adaptateur pour Fehler bei der Verarbeitung der Regenvorhersage vom \"Das Wetter\"",
-        "it": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter \"Das Wetter\"",
-        "es": "Adaptador \"Das Wetter\" Fehler bei der Verarbeitung der Regenvorhersage vom",
-        "pl": "Fehler bei der Verarbeitung der Regenvorhersage vom Adapter „Das Wetter”",
-        "zh-cn": "Fehler bei der Verarbeitung der Regenvorhersage vom适配器“ Das Wetter”"
       }
     },
     "title": "Sprinkle Control",
@@ -368,7 +368,7 @@
         "wateringAdd": "200",
         "wateringInterval": "0",
         "maxSoilMoistureIrrigation": "8",
-        "maxSoilMoistureRain": "10",
+        "maxSoilMoistureRainPct": "120",
         "triggersIrrigation": "50",
         "pipeFlow": "1100",
         "booster": false,
