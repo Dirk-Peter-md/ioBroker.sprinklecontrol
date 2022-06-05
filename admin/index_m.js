@@ -203,6 +203,16 @@ function load(settings, onChange) {
         });
     });
 
+    $('#pathRainForecastDialogPopUp').on('click', function () {
+        initSelectId(function (sid) {
+            sid.selectId('show', $('#pathRainForecast').val(), function (newId) {
+                if (newId) {
+                    $('#pathRainForecast').val(newId).trigger('change');
+                }
+            });
+        });
+    });
+
     onChange(false);
     // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
     // Initialisieren Sie alle Materialise-Beschriftungen auf der Seite neu, wenn Sie dynamisch Eingaben hinzufügen:
@@ -493,12 +503,24 @@ function showHideSettings(callback) {
         $('.weatherFor').hide();
     }
 
+    // individuelle Wettervorhersage
+    $('#weatherForecastService').on('change', function () {
+        if ($(this).val() === 'ownDataPoint') {
+            $('.showOwnDataPoint').show();
+            $('.showDasWetter').hide();
+        } else if ($(this).val() === 'dasWetter') {
+            $('.showOwnDataPoint').hide();
+            $('.showDasWetter').show();
+        }
+    }).trigger('change');
+
     // Benachrichtigung Karte Ein / Aus
     if ($('#notificationEnabled').prop('checked')) {
         $('.tab-notification').show();
     } else {
         $('.tab-notification').hide();
     }
+
 
     // Benachrichtigung - Typ auswahl
     $('#notificationsType').on('change', function () {

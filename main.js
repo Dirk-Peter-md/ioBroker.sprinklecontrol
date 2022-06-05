@@ -29,7 +29,10 @@ const adapterName = require('./package.json').name.split('.').pop();
 let publicHolidayStr;
 /** @type {any} */
 let publicHolidayTomorrowStr;
-/* DasWetter.com */
+/* Regenvorhersage - DasWetter.com */
+/** @type {string}
+ * - Pfad zur Regenvorhersage in mm */
+let weatherForecastTodayPfadStr;
 /** @type {number}
  * - heutige Regenvorhersage in mm */
 let weatherForecastTodayNum = 0;
@@ -267,7 +270,7 @@ function startAdapter(options) {
             }
             // Wettervorhersage
             if (adapter.config.weatherForecast === true) {
-                if (id === adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value') {
+                if (id === weatherForecastTodayPfadStr) {
                     if (typeof state.val == 'string') {
                         weatherForecastTodayNum = parseFloat(state.val);
                     } else if (typeof state.val == 'number') {
@@ -472,7 +475,7 @@ async function checkActualStates () {
              * @private
              */
             const _weatherForInstanceToday = await adapter.getForeignStateAsync(
-                adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value'
+                weatherForecastTodayPfadStr
             ).catch((e) => adapter.log.warn(e));
                 if (_weatherForInstanceToday && _weatherForInstanceToday.val) {
                     if (typeof _weatherForInstanceToday.val == 'string') {
@@ -1518,11 +1521,17 @@ function main(adapter) {
     if (adapter.config.publicHolidays === true && (adapter.config.publicHolInstance + '.morgen.*')) {
         adapter.subscribeForeignStates(adapter.config.publicHolInstance + '.morgen.*');
     }
-    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.*')) {
-        adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value');
-    }
-    if ((adapter.config.weatherForecast === true) && (adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.*')) {
-        adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value');
+    if (adapter.config.weatherForecast === true) {
+        if (adapter.config.weatherForecastService === 'ownDataPoint') {
+            weatherForecastTodayPfadStr = adapter.config.pathRainForecast;
+            adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
+        } else if (adapter.config.weatherForecastService === 'dasWetter' && adapter.config.weatherForInstance) {
+            weatherForecastTodayPfadStr = adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_1.rain_value';
+            adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
+            adapter.subscribeForeignStates(adapter.config.weatherForInstance + '.NextDaysDetailed.Location_1.Day_2.rain_value');
+        } else {
+            adapter.log.warn('There is no valid data record stored in the weather forecast, please correct it!')
+        }
     }
     if (adapter.config.actualValueLevel !== '') {
         adapter.subscribeForeignStates(adapter.config.actualValueLevel);
