@@ -269,9 +269,7 @@ function fillPosition() {
         }
     });
 }
-/*
-{"1312509684":{"firstName":"Dirk","userName":"Dirk_Peter"}}
-*/
+
 /**
  *
  * @param id
@@ -279,7 +277,7 @@ function fillPosition() {
  */
 function fillTelegramUser(id, obj) {
     /*let user = str.replace(/[{}"\\]/g,"").split(',');*/
-    /*obj = {"1312509684":{"firstName":"Dirk","userName":"Dirk_Peter"}};*/
+    /*obj = {"0123456789":{"firstName":"Dirk","userName":"Dirk_Peter"}};*/
     let $sel = $('#telegramUser');
     $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
     for(let key in obj){
