@@ -79,7 +79,13 @@ function startAdapter(options) {
     adapter = new utils.Adapter(options);
 
     // start here!
-    adapter.on('ready', () => main(adapter));
+    adapter.on('ready', () => {
+        // init createConfig
+        myConfig.createConfig(adapter);
+        // Hauptpumpe zur Bewässerung setzen
+        valveControl.initValveControl(adapter);
+        main(adapter)
+    });
 
     /**
      * +++++++++++++++++++++++++ is called when adapter shuts down +++++++++++++++++++++++++
@@ -1575,8 +1581,6 @@ function main(adapter) {
 	adapter.config:
 	*/
     adapter.log.debug(`adapter.config.events: ${JSON.stringify(adapter.config.events)}`);
-    // init createConfig
-    myConfig.createConfig(adapter);
     /**
      * The adapters' config (in the instance object everything under the attribute "native") is accessible via adapter.config:
      * => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über adapter.config:
@@ -1596,8 +1600,6 @@ function main(adapter) {
         checkActualStates().then();
         // init evaporation
         evaporation.initEvaporation(adapter);
-        // Hauptpumpe zur Bewässerung setzen
-        valveControl.initValveControl(adapter);
         sunPos();
     }, 2000);
 
