@@ -58,6 +58,8 @@ function load(settings, onChange) {
             $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val('20').trigger('change');
             $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val('200').trigger('change');
             $('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val('0').trigger('change');
+            $('#events .values-input[data-name="addWateringTime"][data-index="' + id + '"]').val('0').trigger('change');
+            $('#events .values-input[data-name="addTriggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
             $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val('8').trigger('change');
             $('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val('120').trigger('change');
             $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
@@ -338,6 +340,8 @@ function tableOnReady() {
         $('#wateringTime').val($('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val());
         $('#wateringAdd').val($('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val());
         $('#wateringInterval').val($('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val());
+        $('#addWateringTime').val($('#events .values-input[data-name="addWateringTime"][data-index="' + id + '"]').val());
+        $('#addTriggersIrrigation').val($('#events .values-input[data-name="addTriggersIrrigation"][data-index="' + id + '"]').val());
         $('#maxSoilMoistureIrrigation').val($('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val());
         $('#maxSoilMoistureRainPct').val($('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val());
         $('#triggersIrrigation').val($('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val());
@@ -369,6 +373,8 @@ function tableOnReady() {
                 let newWateringTime = $('#wateringTime').val();
                 let newWateringAdd = $('#wateringAdd').val();
                 let newWateringInterval = $('#wateringInterval').val();
+                let newAddWateringTime = $('#addWateringTime').val();
+                let newAddTriggersIrrigation = $('#addTriggersIrrigation').val();
                 let newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
                 let newMaxSoilMoistureRainPct = $('#maxSoilMoistureRainPct').val();
                 let newTriggersIrrigation = $('#triggersIrrigation').val();
@@ -394,6 +400,8 @@ function tableOnReady() {
                 $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
                 $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val(newWateringAdd).trigger('change');
                 $('#events .values-input[data-name="wateringInterval"][data-index="' + id + '"]').val(newWateringInterval).trigger('change');
+                $('#events .values-input[data-name="addWateringTime"][data-index="' + id + '"]').val(newAddWateringTime).trigger('change');
+                $('#events .values-input[data-name="addTriggersIrrigation"][data-index="' + id + '"]').val(newAddTriggersIrrigation).trigger('change');
                 $('#events .values-input[data-name="maxSoilMoistureIrrigation"][data-index="' + id + '"]').val(newMaxSoilMoistureIrrigation).trigger('change');
                 $('#events .values-input[data-name="maxSoilMoistureRainPct"][data-index="' + id + '"]').val(newMaxSoilMoistureRainPct).trigger('change');
                 $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val(newTriggersIrrigation).trigger('change');
@@ -455,6 +463,11 @@ function save(callback) {
  * @param callback
  */
 function showHideSettings(callback) {
+    /** additional irrigation activated =>
+     * zusätzliche Bewässerung aktiviert
+     * @type {boolean}
+     */
+    let selAddStartTime = false;
 
     // Zeiteinstellungen => Feiertagseinstellung sichtbar bei combobox
     $('#wateringStartTime').on('change', function () {
@@ -476,6 +489,32 @@ function showHideSettings(callback) {
     } else {
         $('.cisternObjekt').hide();
     }
+
+
+    // Additional start time => sichtbar je nach auswahl
+    $('#selectAddStartTime').on('change',function(){
+        if ($(this).val() === 'noAddStartTime') {
+            selAddStartTime = false;
+            $('.showGreaterETpCur').hide();
+            $('.showAddStartTime').hide();
+            $('.showExtSig').hide();
+        } else if ($(this).val() === 'greaterETpCurrent') {
+            selAddStartTime = true;
+            $('.showGreaterETpCur').show();
+            $('.showAddStartTime').show();
+            $('.showExtSig').hide();
+        } else if ($(this).val() === 'withExternalSignal') {
+            selAddStartTime = true;
+            $('.showGreaterETpCur').hide();
+            $('.showAddStartTime').show();
+            $('.showExtSig').show();
+        } else {
+            selAddStartTime = false;
+            $('.showGreaterETpCur').hide();
+            $('.showAddStartTime').hide();
+            $('.showExtSig').hide();
+        }
+    }).trigger('change');
 
     // Zeiteinstellungen => Feiertagseinstellung sichtbar bei checkbox
     let mPublicWeekend = $('#publicWeekend').prop('checked');
@@ -549,6 +588,13 @@ function showHideSettings(callback) {
     $('#methodControlSM').on('change',function(){
 
         if ($(this).val() === 'calculation') {
+            if (selAddStartTime) {
+                $('.showAddWateringTime').show();
+                $('.showAddTriggersIrrigation').show();
+            }else{
+                $('.showAddWateringTime').hide();
+                $('.showAddTriggersIrrigation').hide();
+            }
             $('.visInGreenhouse').show()
             $('.visSensor').hide();
             $('.visAnalog').hide();
@@ -562,6 +608,13 @@ function showHideSettings(callback) {
             } else {
                 $('.visInGreenhouse').hide()
             }
+            if (selAddStartTime) {
+                $('.showAddWateringTime').show();
+                $('.showAddTriggersIrrigation').hide();
+            }else{
+                $('.showAddWateringTime').hide();
+                $('.showAddTriggersIrrigation').hide();
+            }
             $('.visSensor').show();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
@@ -573,6 +626,13 @@ function showHideSettings(callback) {
                 $('.visInGreenhouse').show()
             } else {
                 $('.visInGreenhouse').hide()
+            }
+            if (selAddStartTime) {
+                $('.showAddWateringTime').show();
+                $('.showAddTriggersIrrigation').show();
+            }else{
+                $('.showAddWateringTime').hide();
+                $('.showAddTriggersIrrigation').hide();
             }
             $('.visSensor').show();
             $('.visAnalog').show();
@@ -586,6 +646,13 @@ function showHideSettings(callback) {
             } else {
                 $('.visInGreenhouse').hide()
             }
+            if (selAddStartTime) {
+                $('.showAddWateringTime').show();
+                $('.showAddTriggersIrrigation').hide();
+            }else{
+                $('.showAddWateringTime').hide();
+                $('.showAddTriggersIrrigation').hide();
+            }
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').hide();
@@ -593,6 +660,13 @@ function showHideSettings(callback) {
             $('.visFixDay').show();
         } else {
             $(this).val('calculation');
+            if (selAddStartTime) {
+                $('.showAddWateringTime').show();
+                $('.showAddTriggersIrrigation').show();
+            }else{
+                $('.showAddWateringTime').hide();
+                $('.showAddTriggersIrrigation').hide();
+            }
             $('.visInGreenhouse').show()
             $('.visSensor').hide();
             $('.visAnalog').hide();

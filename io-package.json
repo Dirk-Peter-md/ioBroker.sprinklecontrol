@@ -303,7 +303,8 @@
       {
         "js-controller": ">=2.0.0"
       }
-    ]
+    ],
+    "installedFrom": "C:\\iobroker\\node_entwicklung\\ioBroker.sprinklecontrol"
   },
   "native": {
     "triggerControlVoltage": "",
@@ -319,6 +320,9 @@
     "wateringStartTime": "livingGoldenHourEnd",
     "timeShift": "0",
     "weekLiving": "06:30",
+    "selectAddStartTime": "noAddStartTime",
+    "triggerAddStartTimeETpCur": "3.5",
+    "addWateringStartTime": "18:00",
     "publicWeekend": true,
     "weekEndLiving": "07:30",
     "publicHolidays": false,
@@ -369,6 +373,8 @@
         "wateringTime": "10",
         "wateringAdd": "200",
         "wateringInterval": "0",
+        "addWateringTime": "0",
+        "addTriggersIrrigation": "30",
         "maxSoilMoistureIrrigation": "8",
         "maxSoilMoistureRainPct": "120",
         "triggersIrrigation": "50",

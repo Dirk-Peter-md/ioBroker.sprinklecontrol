@@ -80,25 +80,27 @@
                                             <th data-name="wateringTime" id="events_col_6" data-type="number" style="width: 0" class="translate"></th>
                                             <th data-name="wateringAdd" id="events_col_7" data-type="number" style="width: 0" class="translate"></th>
                                             <th data-name="wateringInterval" id="events_col_8" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="maxSoilMoistureIrrigation" id="events_col_9" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="maxSoilMoistureRainPct" id="events_col_10" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="triggersIrrigation" id="events_col_11" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="pipeFlow" id="events_col_12" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="booster" id="events_col_13" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="endIrrigation" id="events_col_14" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="methodControlSM" id="events_col_15" data-type="text" style="width: 0" class="translate"></th>
-                                            <th data-name="inGreenhouse" id="events_col_16" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="triggerSM" id="events_col_17" data-type="text" style="width: 0" class="translate"></th>
-                                            <th data-name="analogZPct" id="events_col_18" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="analogOHPct" id="events_col_19" data-type="number" style="width: 0" class="translate"></th>
-                                            <th data-name="startDay" id="events_col_20" data-type="text" style="width: 0" class="translate"></th>
-                                            <th data-name="sun" id="events_col_21" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="mon" id="events_col_22" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="tue" id="events_col_23" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="wed" id="events_col_24" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="thur" id="events_col_25" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="fri" id="events_col_26" data-type="checkbox" style="width: 0" class="translate"></th>
-                                            <th data-name="sat" id="events_col_27" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="addWateringTime" id="events_col_9" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="addTriggersIrrigation" id="events_col_10" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="maxSoilMoistureIrrigation" id="events_col_11" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="maxSoilMoistureRainPct" id="events_col_12" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="triggersIrrigation" id="events_col_13" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="pipeFlow" id="events_col_14" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="booster" id="events_col_15" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="endIrrigation" id="events_col_16" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="methodControlSM" id="events_col_17" data-type="text" style="width: 0" class="translate"></th>
+                                            <th data-name="inGreenhouse" id="events_col_18" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="triggerSM" id="events_col_19" data-type="text" style="width: 0" class="translate"></th>
+                                            <th data-name="analogZPct" id="events_col_20" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="analogOHPct" id="events_col_21" data-type="number" style="width: 0" class="translate"></th>
+                                            <th data-name="startDay" id="events_col_22" data-type="text" style="width: 0" class="translate"></th>
+                                            <th data-name="sun" id="events_col_23" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="mon" id="events_col_24" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="tue" id="events_col_25" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="wed" id="events_col_26" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="thur" id="events_col_27" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="fri" id="events_col_28" data-type="checkbox" style="width: 0" class="translate"></th>
+                                            <th data-name="sat" id="events_col_29" data-type="checkbox" style="width: 0" class="translate"></th>
                                             <!-- ****************************************   ***   ********************   ***   **************************************** -->
                                         </tr>
                                         </thead>
@@ -195,9 +197,10 @@
                     </div>
                     <!-- time settings -->
                     <div id="tab-time" class="col s12 page">
+                        <!-- Start Time -->
                         <div class="row">
                             <div class="col s12">
-                                <h6 class="translate sub-title">Settings for start time</h6>
+                                <h6 class="translate sub-title">Start time</h6>
                             </div>
                         </div>
                         <div class="row">
@@ -223,9 +226,46 @@
                                 <span class="translate">Start time in the week</span>
                             </div>
                         </div>
+                        <!-- Additional start time -->
                         <div class="row">
                             <div class="col s12">
-                                <h6 class="translate sub-title">Settings for start time on weekends</h6>
+                                <h6 class="translate sub-title">Additional start time</h6>
+                            </div>
+                        </div>
+                        <div class="input-field col s12 m4 l3">
+                            <select class="value" id="selectAddStartTime">
+                                <option value="noAddStartTime" class="translate">No additional start time</option>
+                                <option value="greaterETpCurrent" class="translate">Start at ETpCurrent greater than</option>
+                                <option value="withExternalSignal" class="translate">Start, with external signal</option>
+                            </select>
+                            <label for="selectAddStartTime" class="translate"></label>
+                            <span class="translate">Start time for additional irrigation</span>
+                        </div>
+                        <div class="col s12 m4 l2 showGreaterETpCur input-field">
+                            <input type="number" class="value" id="triggerAddStartTimeETpCur" min=0 max=10 placeholder="0-10.0" step="0.1" />
+                            <label for="triggerAddStartTimeETpCur" class="translate"></label>
+                            <span class="translate">Start at ETpCurrent greater than</span>
+                        </div>
+                        <div class="row">
+                            <div class="col s12 m4 l3 showExtSig">
+                                <div class="card-panel" style="background-color:#46a0e9; border-radius:15px;border-bottom: medium solid #174475;">
+                                    <span class="white-text translate">Activation of additional watering under objects:</span>
+                                    <br>
+                                    <span class="white-text translate">sprinklecontrol. ... .control.addStartTimeSwitch</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 m4 l2 showAddStartTime">
+                                <input type="time" class="timepicker value" id="addWateringStartTime" />
+                                <label for="addWateringStartTime" class="translate"></label>
+                                <span class="translate">Additional start time</span>
+                            </div>
+                        </div>
+                        <!-- Weekend start time -->
+                        <div class="row">
+                            <div class="col s12">
+                                <h6 class="translate sub-title">Weekend start time</h6>
                             </div>
                         </div>
                         <div class="row">
@@ -671,12 +711,12 @@
                             </div>
                             <!-- Sprinkler - Main settings -->
                             <div id="tab-settingsPopUp" class="col s12 page">
+                                <!-- Irrigation settings → Bewässerungseinstellungen -->
                                 <div class="row">
                                     <div class="col s12">
                                         <h6 class="translate sub-title">Irrigation settings</h6>
                                     </div>
                                 </div>
-                                <!-- Irrigation settings → Bewässerungseinstellungen -->
                                 <div class="row">
                                     <div class="col s12 l4 input-field">
                                         <input type="number" class="form-control" id="wateringTime" min=5 max=90 />
@@ -693,6 +733,22 @@
                                         <label for="wateringInterval" class="translate"></label>
                                         <span class="translate">Watering interval in min</span>
                                     </div>
+                                </div>
+                                <!-- Additional Irrigation settings -->
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h6 class="translate sub-title">Additional irrigation in case of high evaporation</h6>
+                                    </div>
+                                </div>
+                                <div class="col s12 l4 showAddWateringTime input-field">
+                                    <input type="number" class="form-control" id="addWateringTime" min=0 max=90 />
+                                    <label for="addWateringTime" class="translate"></label>
+                                    <span class="translate">Additional watering time in min</span>
+                                </div>
+                                <div class="col s12 l4 showAddTriggersIrrigation input-field">
+                                    <input type="number" class="form-control" id="addTriggersIrrigation" min=5 max="triggersIrrigation" />
+                                    <label for="addTriggersIrrigation" class="translate"></label>
+                                    <span class="translate">Switch-on point (soil moisture) of the additional irrigation valves in %</span>
                                 </div>
                                 <!-- Method of controlling soil moisture → Methode zur Kontrolle der Bodenfeuchtigkeit -->
                                 <div class="row">
