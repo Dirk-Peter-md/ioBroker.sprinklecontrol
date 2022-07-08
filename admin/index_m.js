@@ -590,7 +590,7 @@ function showHideSettings(callback) {
         if ($(this).val() === 'calculation') {
             if (selAddStartTime) {
                 $('.showAddWateringTime').show();
-                $('.showAddTriggersIrrigation').show();
+                $('.showAddTriggersIrrigation').hide();
             }else{
                 $('.showAddWateringTime').hide();
                 $('.showAddTriggersIrrigation').hide();

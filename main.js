@@ -382,7 +382,6 @@ function curNextFixDay (sprinkleID, returnOn) {
  * → Setzt den Status beim Start auf einen definierten Wert
  */
 function checkStates() {
-    //
     /**
      * control.Holiday
      * @param {string|null} err
@@ -524,16 +523,40 @@ async function checkActualStates () {
                 );
             }
         }
+
+        // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
+        //   bei false nicht automatisch gestartet
+        /**
+         * Abfrage von ...sprinkleName.autoOn
+         * @type {[myConfig.config]}
+         */
+        const result = myConfig.config;
+        if (result) {
+            for (const res of result) {
+                /**
+                 * Abfrage ... .autoOn beim Start
+                 * @type {ioBroker.State | void}
+                 * @private
+                 */
+                const _autoOn = await adapter.getForeignStateAsync(
+                    res.autoOnID
+                ).catch((e) => adapter.log.warn(e));
+                if (typeof _autoOn.val === 'boolean') {
+                    res.autoOn = _autoOn.val;
+                }
+            }
+        }
+
         if (adapter.config.actualValueLevel){
             /**
-             * Füllstand der Zisterne in %
+             * Füllstand der Zisterne in % holen
              * @type {ioBroker.State | void}
              * @private
              */
             const _actualValueLevel = await adapter.getForeignStateAsync(
                 adapter.config.actualValueLevel
             ).catch((e) => adapter.log.warn(e));
-            if (_actualValueLevel && typeof _actualValueLevel.val !== undefined) {
+            if (_actualValueLevel && typeof parseFloat(_actualValueLevel.val) === "number") {
                 valveControl.setFillLevelCistern(parseFloat(_actualValueLevel.val));
             }
         }
@@ -654,6 +677,8 @@ function addStartTimeSprinkle() {
                             && (res.addWateringTime > 0)                // zusätzliche Bewässerung aktiv time > 0
                             && (resRain(res.inGreenhouse) <= 0)) {      // keine Regenvorhersage
 
+
+
                             switch (res.methodControlSM) {
                                 case 'bistable':
                                     if (res.soilMoisture.bool) {
@@ -676,6 +701,17 @@ function addStartTimeSprinkle() {
                                     });
                                     break;
                                 case 'calculation':
+                                    let addCountdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation) - res.addWateringTime;
+                                    if (addCountdown > 0) {
+                                        messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctTriggerIrrigation}%)\\n
+                                                                START => ${addTime(addCountdown, '')}\\n`;
+                                        memAddList.push({
+                                            auto: true,
+                                            sprinkleID: res.sprinkleID,
+                                            wateringTime: addCountdown
+                                        });
+                                    }
+                                    break;
                                 case 'analog':
                                     if (res.soilMoisture.pct < res.soilMoisture.pctAddTriggersIrrigation) {
                                         messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctAddTriggersIrrigation}%)\\n
@@ -688,12 +724,12 @@ function addStartTimeSprinkle() {
                                     }
                                     break;
                             }
+                            valveControl.addList(memAddList);
                         }
                     }
-                valveControl.addList(memAddList);
-                }
-                if(!sendMessageText.onlySendError()){
-                    sendMessageText.sendMessage(messageText);
+                    if(!sendMessageText.onlySendError() && messageText !== ''){
+                        sendMessageText.sendMessage(messageText);
+                    }
                 }
             }
         });
@@ -1317,7 +1353,8 @@ async function createSprinklers() {
                         'native': {},
                     });
                     // Object created
-                    await Promise.all([
+                    let value = true;
+                    await (await Promise.all([
                         _sprinkleNotExist,
                         _historyNotExist,
                         _curCalWeekConsumedNotExist,
@@ -1332,9 +1369,12 @@ async function createSprinklers() {
                         _runningTimeNotExist,
                         _sprinklerStateNotExists,
                         _triggerPointNotExist
-                    ]).then(() => {
+                    ])).forEach((val) => {
+                        value &= val;
+                    });
+                    if(value) {
                         adapter.log.info(`sprinkleControl [sprinkle.${objectName}] was created`);
-                    })
+                    }
 
                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
                     // +++++                            zustände der States aktualisieren                       +++++ //
@@ -1587,7 +1627,7 @@ function main(adapter) {
      * @param {any} err
      * @param {any} obj
      */
-    adapter.getForeignObject('system.config', (obj) => {
+    adapter.getForeignObject('system.config', (err, obj) => {
         if (obj) {
             checkStates();
         }
