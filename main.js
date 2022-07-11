@@ -166,7 +166,7 @@ function startAdapter(options) {
     adapter.on('stateChange', (id, state) => {
         if (state) {
             // The state was changed → Der Zustand wurde geändert
-            adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+            adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 
             // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
             if (id === adapter.namespace + '.control.Holiday') {
@@ -223,13 +223,22 @@ function startAdapter(options) {
                     }
                 }
             }
-
             // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
             //   bei false nicht automatisch gestartet
             if (myConfig.config && (typeof state.val === 'boolean')) {
                 const found = myConfig.config.find(d => d.autoOnID === id);
                 if (found && id === myConfig.config[found.sprinkleID].autoOnID) { myConfig.config[found.sprinkleID].autoOn = state.val; }
             }
+
+            //  postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
+            let idSplit = id.split('.', 5);
+            if (idSplit[4] === `postponeByOneDay`) {
+                const found = myConfig.config.find(d => d.objectName === idSplit[3]);
+                if (found) {
+                    myConfig.postponeByOneDay(found.sprinkleID).catch((e) => {adapter.log.warn(`postponeByOneDay: ${e}`)});
+                }
+            }
+
             // Change in outside temperature → Änderung der Außentemperatur
             if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
                 if (!Number.isNaN(Number.parseFloat(state.val))) {
@@ -398,7 +407,7 @@ function checkStates() {
      * @param {ioBroker.State|null|undefined} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
-        if (state && (state.val == null)) {
+        if (state && (state.val == null) && (state.val === undefined)) {
             autoOnOffStr = true;
             adapter.setState('control.autoOnOff', {
                 val: autoOnOffStr,
@@ -569,10 +578,6 @@ async function checkActualStates () {
         const _list = await adapter.getForeignObjectsAsync(adapter.namespace + '.sprinkle.*', 'channel').catch((e) => adapter.log.warn(e));
             if (_list) {
                 ObjSprinkle = _list;
-                await createSprinklers();
-                await sleep(100);
-                startTimeSprinkle();
-                addStartTimeSprinkle();
             }
 
     } catch (e) {
@@ -701,8 +706,8 @@ function addStartTimeSprinkle() {
                                     });
                                     break;
                                 case 'calculation':
-                                    let addCountdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation) - res.addWateringTime;
-                                    if (addCountdown > 0) {
+                                    let addCountdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation) - res.wateringTime;
+                                    if ((addCountdown - res.addWateringTime) > 0) {
                                         messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctTriggerIrrigation}%)\\n
                                                                 START => ${addTime(addCountdown, '')}\\n`;
                                         memAddList.push({
@@ -746,7 +751,7 @@ function startTimeSprinkle() {
 
     // if autoOnOff == false => keine auto Start
     if (!autoOnOffStr) {
-        adapter.log.info(`Sprinkle: autoOnOff == Aus( ${autoOnOffStr} )`);
+        adapter.log.info(`Sprinkle: autoOnOff == Aus ( ${autoOnOffStr} )`);
         adapter.setState('info.nextAutoStart', {
             val: 'autoOnOff = off(0)',
             ack: true
@@ -928,9 +933,10 @@ function startTimeSprinkle() {
                         // --- fixDay  --  Start an festen Tagen ohne Sensoren  --- //
                         //  --              Bewässerungstag erreicht                //
                         case 'fixDay':
-                            if (res.startFixDay[today]) {
-                                /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                                if (resRain(false) <= 0) {
+                            /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
+                            if (resRain(false) <= 0) {
+                                // Bewässerungstag erreicht
+                                if (res.startFixDay[today]) {
                                     const curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
                                     memAddList.push({
                                         auto: true,
@@ -945,14 +951,14 @@ function startTimeSprinkle() {
                                         res.startFixDay[today] = false;
                                         res.startFixDay[(+ today + 2 > 6) ? (+ today-5) : (+ today+2)] = true;
                                     }
-                                } else if (adapter.config.weatherForecast){
-                                    messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(false)} > 0 ]`);
-                                    res.startFixDay[today] = false;
-                                    res.startFixDay[(+ today + 1 > 6) ? (+ today-6) : (+ today+1)] = true;
                                 }
-                                curNextFixDay(res.sprinkleID, false);
+                            } else if (adapter.config.weatherForecast){
+                                messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
+                                adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(false)} > 0 ]`);
+                                res.startFixDay[today] = false;
+                                res.startFixDay[(+ today + 1 > 6) ? (+ today-6) : (+ today+1)] = true;
                             }
+                            curNextFixDay(res.sprinkleID, false);
                             break;
                         // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
                         //  --             Bodenfeuchte zu gering              --  //
@@ -1288,6 +1294,45 @@ async function createSprinklers() {
                         ).catch((e) => adapter.log.warn(e));
                         adapter.log.info(`sprinkleControl [sprinkle.${objectName}.actualSoilMoisture] was updated`);
                     }
+
+                    // postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
+                    const _postponeByOneDay = await adapter.findForeignObjectAsync(`${adapter.namespace}.${objPfad}.postponeByOneDay`, `boolean`);
+                    adapter.log.info(`_postponeByOneDay: ${JSON.stringify(_postponeByOneDay)}`);
+
+                    if (_postponeByOneDay.id !== `${adapter.namespace}.${objPfad}.postponeByOneDay`
+                        && res.methodControlSM === "fixDay"
+                        && (res.startDay === "twoNd"
+                        || res.startDay === "threeRd")) {
+                        await adapter.setObjectNotExistsAsync(objPfad + '.postponeByOneDay', {
+                            'type': 'state',
+                            'common': {
+                                "role": 'button',
+                                "name": objectName + 'Postpone start by one day',
+                                "type": 'boolean',
+                                "read": true,
+                                "write": true,
+                                "def": false
+                            },
+                            'native': {
+                                "UNIT": "",
+                                "TAB_ORDER": 0,
+                                "OPERATIONS": 6,
+                                "FLAGS": 1,
+                                "TYPE": "ACTION",
+                                "MIN": false,
+                                "MAX": true,
+                                "DEFAULT": false
+                            }
+                        });
+                        adapter.subscribeStates(`${adapter.namespace}.${objPfad}.postponeByOneDay`);
+                    } else if (res.methodControlSM === "fixDay"
+                        && (res.startDay === "twoNd"
+                        || res.startDay === "threeRd")) {
+                        adapter.subscribeStates(`${adapter.namespace}.${objPfad}.postponeByOneDay`);
+                    } else {
+                        await adapter.delObjectAsync(`${adapter.namespace}.${objPfad}.postponeByOneDay`);                  // "sprinklecontrol.0.sprinkle.???.actualSoilMoisture"
+                    }
+
                     // Create Object for .countdown => Countdown des Ventils
                     const _countdownNotExist = adapter.setObjectNotExistsAsync(objPfad + '.countdown', {
                         'type': 'state',
@@ -1597,17 +1642,20 @@ async function createSprinklers() {
     }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  *
  * @param {number} ms  => Waiting time in ms
  * @return {Promise<unknown>}
  */
+/*
 async function sleep(ms) {
     return new Promise(async (resolve) => {
         // @ts-ignore
         timerSleep = setTimeout(async () => resolve(), ms);
     });
 }
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *
@@ -1632,15 +1680,15 @@ function main(adapter) {
             checkStates();
         }
     });
-
+    createSprinklers().catch((e) => adapter.log.warn(e));
     GetSystemData().catch((e) => adapter.log.warn(e));
     sendMessageText.initConfigMessage(adapter);
-
+    evaporation.initEvaporation(adapter);        // init evaporation
+    checkActualStates().catch((e) => adapter.log.warn(e));
+    sunPos();
     timer = setTimeout(() => {
-        checkActualStates().then();
-        // init evaporation
-        evaporation.initEvaporation(adapter);
-        sunPos();
+        startTimeSprinkle();
+        addStartTimeSprinkle()
     }, 2000);
 
     /*
