@@ -166,7 +166,7 @@ function startAdapter(options) {
     adapter.on('stateChange', (id, state) => {
         if (state) {
             // The state was changed → Der Zustand wurde geändert
-            adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+            adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 
             // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
             if (id === adapter.namespace + '.control.Holiday') {
@@ -1276,9 +1276,13 @@ async function createSprinklers() {
                     const _autoOnNotExist = adapter.setObjectNotExistsAsync(objPfad + '.autoOn', {
                             'type': 'state',
                             'common': {
-                                'role':  'state',
+                                'role':  'Switch',
                                 'name':  objectName + ' => Switch automatic mode on / off',
                                 'type':  'boolean',
+                                "states": {
+                                    "false": "off",
+                                    "true": "on"
+                                },
                                 'read':  true,
                                 'write': true,
                                 'def':   true
