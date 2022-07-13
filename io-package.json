@@ -1,8 +1,20 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.11",
+    "version": "0.2.12",
     "news": {
+      "0.2.12": {
+        "en": "fixDay(twoNd,threeRd) => postpone by one day; Bug fixed => autoOn; Additional post-watering => in case of high evaporation / switchable externally",
+        "de": "fixDay(twoNd,threeRd) => Verschiebung um einen Tag; Bug fix => autoOn; Zusätzliche Nachbewässerung => bei hoher Verdampfung / schaltbar extern",
+        "ru": "fixDay(дваNd,триRd) => откладываться на один день; Bug Fixed => autoOn; Дополнительный пост-вода => в случае высокой испарения / переключаемый внешне",
+        "pt": "fixDay(twoNd,threeRd) => adiar por um dia; Bug corrigido => autoOn; Post-watering adicional => em caso de alta evaporação / comutável externamente",
+        "nl": "fixDay(tweeNd,drieRd) => één dag uitstellen; Bug opgelost => autoAan; Extra nabewatering => bij hoge verdamping / extern schakelbaar",
+        "fr": "correctionDay(twoNd, threeRd) = repousser d'un jour; Bug corrigé = vaccin autoOn; Additionnel post-arrosage = clinique en cas d'évaporation élevée / commutable extérieurement",
+        "it": "fixDay(twoNd,treRd) => rinviare entro un giorno; Bug fisso => autoOn; Ulteriori post-irrigazione => in caso di alta evaporazione / commutabile esternamente",
+        "es": "fixDay(twoNd,threeRd) = confianza posponer por un día; Bug fijo = prenda autoOn; Pos-aguas adicionales = prenda en caso de alta evaporación / conmutable externamente",
+        "pl": "fixDay(twoNd, tripleRd) =>. Odroczony przez jeden dzień; Bug fixed => autoOn; dodatkowy post-watering => w przypadku dużego odparowania i przełącznika zewnętrznego",
+        "zh-cn": "fix Day(两名Nd,三Rd)=> 一天推迟;Bug固定=汽车;额外的水事后=在高度疏散/外部可转换的情况下。"
+      },
       "0.2.11": {
         "en": "Bug fixed => analogue soil moisture sensor with negative characteristic; Attention => maximum soil moisture in rain now in %",
         "de": "Fehler behoben => analoger Bodenfeuchtesensor mit negativer Kennlinie; Achtung => maximale Bodenfeuchte bei Regen jetzt in %",
@@ -159,18 +171,6 @@
         "pl": "Dodano opis w języku angielskim",
         "zh-cn": "添加英文说明"
       },
-      "0.1.6": {
-        "en": "AutoOn switch added per irrigation circuit, Bug fixed (js-controller), Precipitation counter detached from evaporation",
-        "de": "AutoOn-Schalter pro Bewässerungskreis hinzugefügt, Fehler behoben (js-Controller), Niederschlagszähler von der Verdunstung getrennt",
-        "ru": "Добавлен переключатель AutoOn для каждого контура орошения, исправлена ошибка (js-контроллер), счетчик осадков отключен от испарения",
-        "pt": "Interruptor AutoOn adicionado por circuito de irrigação, bug corrigido (controlador js), contador de precipitação separado da evaporação",
-        "nl": "AutoOn-schakelaar toegevoegd per irrigatiecircuit, Bug opgelost (js-controller), Neerslagteller losgekoppeld van verdamping",
-        "fr": "Commutateur AutoOn ajouté par circuit d'irrigation, bug corrigé (contrôleur js), compteur de précipitations détaché de l'évaporation",
-        "it": "Interruttore AutoOn aggiunto per circuito di irrigazione, Bug risolto (js-controller), Contatore di precipitazioni staccato dall'evaporazione",
-        "es": "Interruptor AutoOn agregado por circuito de riego, error corregido (controlador js), contador de precipitación separado de la evaporación",
-        "pl": "Dodano przełącznik AutoOn dla każdego obwodu irygacyjnego, naprawiono błąd (kontroler js), licznik opadów odłączony od parowania",
-        "zh-cn": "为每个灌溉回路添加了AutoOn开关，已修复错误（js控制器），降水计数器与蒸发分离"
-      },
       "0.1.5": {
         "en": "Resetting the amount of rain in 24-hour mode added",
         "de": "Zurücksetzen der Regenmenge im 24-Stunden-Modus hinzugefügt",
@@ -195,18 +195,6 @@
         "pl": "Naprawiono błąd z wyłączoną prognozą pogody",
         "zh-cn": "修复了停用天气预报的错误"
       },
-      "0.1.3": {
-        "en": "Switching distance built in between the valves, main.js split",
-        "de": "Schaltabstand zwischen den Ventilen eingebaut, main.js aufgeteilt",
-        "ru": "Расстояние переключения между клапанами, main.js split",
-        "pt": "Distância de comutação construída entre as válvulas, divisão main.js",
-        "nl": "Schakelafstand ingebouwd tussen de kleppen, main.js split",
-        "fr": "Distance de commutation intégrée entre les vannes, main.js split",
-        "it": "Distanza di commutazione incorporata tra le valvole, main.js split",
-        "es": "Distancia de conmutación integrada entre las válvulas, main.js split",
-        "pl": "Odległość przełączania wbudowana między zaworami, podział main.js.",
-        "zh-cn": "阀门之间内置的切换距离，main.js已拆分"
-      },
       "0.1.2": {
         "en": "Description of SprinkleControl revised",
         "de": "Beschreibung von SprinkleControl überarbeitet",
@@ -218,18 +206,6 @@
         "es": "Descripción de SprinkleControl revisada",
         "pl": "Poprawiony opis SprinkleControl",
         "zh-cn": "SprinkleControl的说明已修订"
-      },
-      "0.1.1": {
-        "en": "Integration of messages via telegram, e-mail, pushover and WhatsApp",
-        "de": "Integration von Nachrichten per Telegramm, E-Mail, Pushover und WhatsApp",
-        "ru": "Интеграция сообщений через Telegram, e-mail, pushover и WhatsApp",
-        "pt": "Integração de mensagens via telegrama, e-mail, pushover e WhatsApp",
-        "nl": "Integratie van berichten via telegram, e-mail, pushover en WhatsApp",
-        "fr": "Intégration de messages via télégramme, e-mail, pushover et WhatsApp",
-        "it": "Integrazione di messaggi tramite telegramma, e-mail, pushover e WhatsApp",
-        "es": "Integración de mensajes vía telegrama, correo electrónico, pushover y WhatsApp",
-        "pl": "Integracja wiadomości przez telegram, e-mail, pushover i WhatsApp",
-        "zh-cn": "通过电报，电子邮件，推送和WhatsApp集成消息"
       },
       "0.0.12": {
         "en": "Irrigation via a second pump (cistern with priority control) depending on the level.",
@@ -303,8 +279,7 @@
       {
         "js-controller": ">=2.0.0"
       }
-    ],
-    "installedFrom": "C:\\iobroker\\node_entwicklung\\ioBroker.sprinklecontrol"
+    ]
   },
   "native": {
     "triggerControlVoltage": "",
