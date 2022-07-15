@@ -24,7 +24,7 @@ function load(settings, onChange) {
         // do not call onChange direct, because onChange could expect some arguments
         // Rufen Sie onChange nicht direkt auf, da onChange einige Argumente erwarten kann
         if ($key.attr('type') === 'checkbox') {
-            $key.prop('checked', settings[id])  // read setting value from adapter config object and set checkbox in config page => Lesen Sie den Einstellungswert aus dem Adapterkonfigurationsobjekt und setzen Sie das Kontrollkästchen auf der Konfigurationsseite
+            $key.prop('checked', settings[id])  // read setting value from adapter config object and set checkbox in config page → Lesen Sie den Einstellungswert aus dem Adapterkonfigurationsobjekt und setzen Sie das Kontrollkästchen auf der Konfigurationsseite
                 .on('change', () => {
                     showHideSettings();
                     onChange(); // set listener to checkbox and call onChange if the value has changed => setze listener auf checkbox und rufe onChange auf, wenn sich der Wert geändert hat
@@ -480,10 +480,13 @@ function showHideSettings(callback) {
         } else if ($(this).val() === 'livingGoldenHourEnd') {   /*Start mit dem Ende der Golden hour*/
             $('.visTimeShift').hide();
             $('.visWeekLiving').hide();
+        } else if ($(this).val() === 'livingSunset') {         /*Start mit Sonnenaufgang*/
+            $('.visTimeShift').show();
+            $('.visWeekLiving').hide();
         }
     }).trigger('change');
 
-    // Pumpeneinstellungen => Zisterne sichtbar bei checkbox
+    // Pumpeneinstellungen → Zisterne sichtbar bei checkbox
     if ($('#cisternSettings').prop('checked')) {
         $('.cisternObjekt').show();
     } else {

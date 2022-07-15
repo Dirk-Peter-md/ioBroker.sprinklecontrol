@@ -1,6 +1,22 @@
 {
   "common": {
     "name": "sprinklecontrol",
+    "title": "sprinklecontrol",
+    "titleLang": {
+      "en": "Sprinkle Control",
+      "de": "Sprinkle Control",
+      "ru": "Управление дождеванием",
+      "pt": "Controle de aspersão",
+      "nl": "Strooi controle",
+      "fr": "Contrôle de l'arrosage",
+      "it": "Spruzzare il controllo",
+      "es": "Control de aspersión",
+      "pl": "Kontrola zraszania",
+      "zh-cn": "洒水控制"
+    },
+    "authors": [
+      "Dirk Peter <dirk.peter@freenet.de>"
+    ],
     "version": "0.2.12",
     "news": {
       "0.2.12": {
@@ -220,19 +236,7 @@
         "zh-cn": "根据液位，通过第二个泵（带优先控制的水箱）进行灌溉。"
       }
     },
-    "title": "Sprinkle Control",
-    "titleLang": {
-      "en": "Sprinkle Control",
-      "de": "Sprinkle Control",
-      "ru": "Управление дождеванием",
-      "pt": "Controle de aspersão",
-      "nl": "Strooi controle",
-      "fr": "Contrôle de l'arrosage",
-      "it": "Spruzzare il controllo",
-      "es": "Control de aspersión",
-      "pl": "Kontrola zraszania",
-      "zh-cn": "洒水控制"
-    },
+
     "desc": {
       "en": "Control of several sprinklers depending on weather conditions and pump performance.",
       "de": "Steuerung mehrerer Sprinkler je nach Witterung und Pumpenleistung.",
@@ -245,15 +249,11 @@
       "pl": "Kontrola kilku tryskaczy w zależności od warunków pogodowych i wydajności pompy.",
       "zh-cn": "根据天气条件和泵的性能控制多个喷头。"
     },
-    "authors": [
-      "Dirk Peter <dirk.peter@freenet.de>"
-    ],
     "keywords": [
       "Sprinkle",
       "Irrigation",
       "Bewässerung",
-      "Steuerung",
-      "ioBroker"
+      "Steuerung"
     ],
     "docs": {
       "en": "docs/en/sprinklecontrol.md",

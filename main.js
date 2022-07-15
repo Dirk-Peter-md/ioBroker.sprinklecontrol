@@ -48,6 +48,8 @@ let startTimeStr;
 /** @type {string} */
 let sunriseStr;
 /** @type {string} */
+let sunsetStr;
+/** @type {string} */
 let goldenHourEnd;
 /** switch => sprinklecontrol.*.control.Holiday
  *  - Wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
@@ -227,7 +229,15 @@ function startAdapter(options) {
             //   bei false nicht automatisch gestartet
             if (myConfig.config && (typeof state.val === 'boolean')) {
                 const found = myConfig.config.find(d => d.autoOnID === id);
-                if (found && id === myConfig.config[found.sprinkleID].autoOnID) { myConfig.config[found.sprinkleID].autoOn = state.val; }
+                if (found && id === myConfig.config[found.sprinkleID].autoOnID) {
+                    myConfig.config[found.sprinkleID].autoOn = state.val;
+                    valveControl.addList(
+                        [{
+                        auto: false,
+                        sprinkleID: found.sprinkleID,
+                        wateringTime: 0
+                    }]);
+                }
             }
 
             //  postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
@@ -643,15 +653,19 @@ function sunPos() {
     // format sunrise time from the Date object → Formatieren Sie die Sonnenaufgangszeit aus dem Date-Objekt
     sunriseStr = ('0' + times.sunrise.getHours()).slice(-2) + ':' + ('0' + times.sunrise.getMinutes()).slice(-2);
 
-    // format golden hour end time from the Date object => Formatiere golden hour end time aus dem Date-Objekt
+    // format golden hour end time from the Date object → Formatiere golden hour end time aus dem Date-Objekt
     goldenHourEnd = ('0' + times.goldenHourEnd.getHours()).slice(-2) + ':' + ('0' + times.goldenHourEnd.getMinutes()).slice(-2);
+
+    // format sunset time from the Date object → formatieren Sie die Sonnenuntergangszeit aus dem Date-Objekt
+    sunsetStr = sunsetStr = ('0' + times.sunset.getHours()).slice(-2) + ':' + ('0' + times.sunset.getMinutes()).slice(-2);
 	
 }
 
 function addStartTimeSprinkle() {
     if (adapter.config.selectAddStartTime === 'greaterETpCurrent' || adapter.config.selectAddStartTime === 'withExternalSignal') {
         let addStartTimeSplit = adapter.config.addWateringStartTime.split(':');
-        const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', addStartTimeSplit[1] + ' ' + addStartTimeSplit[0] + ' * * *', async function() {
+        const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', addStartTimeSplit[1] + ' ' + addStartTimeSplit[0] + ' * * *', function() {
+            adapter.log.info(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
             if (((adapter.config.selectAddStartTime === 'greaterETpCurrent') && (adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum()))
                 || (adapter.config.selectAddStartTime === 'withExternalSignal' && addStartTimeSwitch)) {
                 let messageText = '';
@@ -678,6 +692,7 @@ function addStartTimeSprinkle() {
                     }
 
                     for(const res of result) {
+                        adapter.log.info(`${res.objectName}: ${res.autoOn}, ${res.addWateringTime}, ${resRain(res.inGreenhouse)} <= 0, if(${res.autoOn && (res.addWateringTime > 0) && (resRain(res.inGreenhouse) <= 0)})`);
                         if (res.autoOn                                  // Ventil aktiv
                             && (res.addWateringTime > 0)                // zusätzliche Bewässerung aktiv time > 0
                             && (resRain(res.inGreenhouse) <= 0)) {      // keine Regenvorhersage
@@ -698,33 +713,34 @@ function addStartTimeSprinkle() {
                                     break;
                                 case 'fixDay':
                                     messageText += `<b>${res.objectName}</b>\\n
-                                                                START => ${addTime(res.addWateringTime, '')}\\n`;
+                                                                START => ${addTime(Math.round(60 * res.addWateringTime), '')}\\n`;
                                     memAddList.push({
                                         auto: true,
                                         sprinkleID: res.sprinkleID,
-                                        wateringTime: res.addWateringTime
+                                        wateringTime: Math.round(60 * res.addWateringTime)
                                     });
                                     break;
                                 case 'calculation':
                                     let addCountdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation) - res.wateringTime;
+                                    adapter.log.info(`addCountdown: ${addCountdown}, addWateringTime: ${res.addWateringTime}, if(${(addCountdown - res.addWateringTime) > 0})`);
                                     if ((addCountdown - res.addWateringTime) > 0) {
                                         messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctTriggerIrrigation}%)\\n
-                                                                START => ${addTime(addCountdown, '')}\\n`;
+                                                                START => ${addTime(Math.round(60 * addCountdown), '')}\\n`;
                                         memAddList.push({
                                             auto: true,
                                             sprinkleID: res.sprinkleID,
-                                            wateringTime: addCountdown
+                                            wateringTime: Math.round(60 * addCountdown)
                                         });
                                     }
                                     break;
                                 case 'analog':
                                     if (res.soilMoisture.pct < res.soilMoisture.pctAddTriggersIrrigation) {
                                         messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctAddTriggersIrrigation}%)\\n
-                                                                START => ${addTime(res.addWateringTime, '')}\\n`;
+                                                                START => ${addTime(Math.round(60 * res.addWateringTime), '')}\\n`;
                                         memAddList.push({
                                             auto: true,
                                             sprinkleID: res.sprinkleID,
-                                            wateringTime: res.addWateringTime
+                                            wateringTime: Math.round(60 * res.addWateringTime)
                                         });
                                     }
                                     break;
@@ -732,7 +748,7 @@ function addStartTimeSprinkle() {
                             valveControl.addList(memAddList);
                         }
                     }
-                    if(!sendMessageText.onlySendError() && messageText !== ''){
+                    if(!sendMessageText.onlySendError() && messageText.length > 0){
                         sendMessageText.sendMessage(messageText);
                     }
                 }
@@ -795,13 +811,18 @@ function startTimeSprinkle() {
                     break;
                 case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
                     infoMessage = 'Start mit Sonnenaufgang ';
-                    // format sunset/sunrise time from the Date object
+                    // format sunrise time from the Date object
                     newStartTime = addTime(sunriseStr, parseInt(adapter.config.timeShift));
                     break;
                 case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Hour*/
                     infoMessage = 'Start zum Ende der Golden Hour ';
                     // format goldenHourEnd time from the Date object
                     newStartTime = goldenHourEnd;
+                    break;
+                case 'livingSunset' :           /*Startauswahl = Sonnenuntergang*/
+                    infoMessage = 'Start mit Sonnenuntergang ';
+                    // format sunset time from the Date object
+                    newStartTime = addTime(sunsetStr, parseInt(adapter.config.timeShift));
                     break;
             }
             // Start am Wochenende →, wenn andere Zeiten verwendet werden soll
@@ -1301,8 +1322,6 @@ async function createSprinklers() {
 
                     // postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
                     const _postponeByOneDay = await adapter.findForeignObjectAsync(`${adapter.namespace}.${objPfad}.postponeByOneDay`, `boolean`);
-                    adapter.log.info(`_postponeByOneDay: ${JSON.stringify(_postponeByOneDay)}`);
-
                     if (_postponeByOneDay.id !== `${adapter.namespace}.${objPfad}.postponeByOneDay`
                         && res.methodControlSM === "fixDay"
                         && (res.startDay === "twoNd"
