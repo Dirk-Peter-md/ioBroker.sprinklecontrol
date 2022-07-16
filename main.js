@@ -665,7 +665,7 @@ function addStartTimeSprinkle() {
     if (adapter.config.selectAddStartTime === 'greaterETpCurrent' || adapter.config.selectAddStartTime === 'withExternalSignal') {
         let addStartTimeSplit = adapter.config.addWateringStartTime.split(':');
         const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', addStartTimeSplit[1] + ' ' + addStartTimeSplit[0] + ' * * *', function() {
-            adapter.log.info(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
+            adapter.log.debug(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
             if (((adapter.config.selectAddStartTime === 'greaterETpCurrent') && (adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum()))
                 || (adapter.config.selectAddStartTime === 'withExternalSignal' && addStartTimeSwitch)) {
                 let messageText = '';
@@ -692,7 +692,7 @@ function addStartTimeSprinkle() {
                     }
 
                     for(const res of result) {
-                        adapter.log.info(`${res.objectName}: ${res.autoOn}, ${res.addWateringTime}, ${resRain(res.inGreenhouse)} <= 0, if(${res.autoOn && (res.addWateringTime > 0) && (resRain(res.inGreenhouse) <= 0)})`);
+                        adapter.log.debug(`${res.objectName}: ${res.autoOn}, ${res.addWateringTime}, ${resRain(res.inGreenhouse)} <= 0, if(${res.autoOn && (res.addWateringTime > 0) && (resRain(res.inGreenhouse) <= 0)})`);
                         if (res.autoOn                                  // Ventil aktiv
                             && (res.addWateringTime > 0)                // zusätzliche Bewässerung aktiv time > 0
                             && (resRain(res.inGreenhouse) <= 0)) {      // keine Regenvorhersage
@@ -702,8 +702,8 @@ function addStartTimeSprinkle() {
                             switch (res.methodControlSM) {
                                 case 'bistable':
                                     if (res.soilMoisture.bool) {
-                                        messageText += `<b>${res.objectName}</b> (${res.soilMoisture.bool})\\n
-                                                                START => ${addTime(res.addWateringTime, '')}\\n`;
+                                        messageText += `<b>${res.objectName}</b> (${res.soilMoisture.bool})\n`
+                                                    +  `   START => ${addTime(res.addWateringTime, '')}\n`;
                                         memAddList.push({
                                             auto: true,
                                             sprinkleID: res.sprinkleID,
@@ -712,8 +712,8 @@ function addStartTimeSprinkle() {
                                     }
                                     break;
                                 case 'fixDay':
-                                    messageText += `<b>${res.objectName}</b>\\n
-                                                                START => ${addTime(Math.round(60 * res.addWateringTime), '')}\\n`;
+                                    messageText += `<b>${res.objectName}</b>\n`
+                                                +  `   START => ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                     memAddList.push({
                                         auto: true,
                                         sprinkleID: res.sprinkleID,
@@ -722,10 +722,10 @@ function addStartTimeSprinkle() {
                                     break;
                                 case 'calculation':
                                     let addCountdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation) - res.wateringTime;
-                                    adapter.log.info(`addCountdown: ${addCountdown}, addWateringTime: ${res.addWateringTime}, if(${(addCountdown - res.addWateringTime) > 0})`);
+                                    adapter.log.debug(`addCountdown: ${addCountdown}, addWateringTime: ${res.addWateringTime}, if(${(addCountdown - res.addWateringTime) > 0})`);
                                     if ((addCountdown - res.addWateringTime) > 0) {
-                                        messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctTriggerIrrigation}%)\\n
-                                                                START => ${addTime(Math.round(60 * addCountdown), '')}\\n`;
+                                        messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct}% (${res.soilMoisture.pctTriggerIrrigation}%)\n`
+                                                     + `   START => ${addTime(Math.round(60 * addCountdown), '')}\n`;
                                         memAddList.push({
                                             auto: true,
                                             sprinkleID: res.sprinkleID,
@@ -735,8 +735,8 @@ function addStartTimeSprinkle() {
                                     break;
                                 case 'analog':
                                     if (res.soilMoisture.pct < res.soilMoisture.pctAddTriggersIrrigation) {
-                                        messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctAddTriggersIrrigation}%)\\n
-                                                                START => ${addTime(Math.round(60 * res.addWateringTime), '')}\\n`;
+                                        messageText += `<b>${res.objectName}</b> ${res.soilMoisture.pct} %(${res.soilMoisture.pctAddTriggersIrrigation}%)\n`
+                                                    +  `   START => ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                         memAddList.push({
                                             auto: true,
                                             sprinkleID: res.sprinkleID,
