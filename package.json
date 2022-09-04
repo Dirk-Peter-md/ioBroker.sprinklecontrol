@@ -55,7 +55,9 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
-    "release": "release-script"
+    "release": "release-script patch --yes",
+    "release-minor": "release-script minor --yes",
+    "release-mojor": "release-script major --yes"
   },
   "bugs": {
     "url": "https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol/issues"
