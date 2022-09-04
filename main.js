@@ -1,7 +1,5 @@
 'use strict';
-/*
- info:  log aufbau main.js: #0.*
- */
+
 // Load your modules here, e.g.: => // Laden Sie Ihre Module hier, z.B.
 // const fs = require("fs");
 
