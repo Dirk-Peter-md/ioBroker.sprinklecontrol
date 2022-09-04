@@ -28,8 +28,7 @@ function load(settings, onChange) {
                 .on('change', () => {
                     showHideSettings();
                     onChange(); // set listener to checkbox and call onChange if the value has changed => setze listener auf checkbox und rufe onChange auf, wenn sich der Wert geändert hat
-                })
-            ;
+                });
         } else {
             $key.val(settings[id])
                 .on('change', () => onChange())

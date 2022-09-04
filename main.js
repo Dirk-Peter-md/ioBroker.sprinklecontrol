@@ -171,19 +171,30 @@ function startAdapter(options) {
             adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 
             // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
-            if (id === adapter.namespace + '.control.Holiday') {
+            if (id === adapter.namespace + '.control.Holiday' && state.ack === false) {
                 holidayStr = state.val;
+                adapter.setState(id, {
+                    val: state.val,
+                    ack: true
+                });
                 startTimeSprinkle();
             }
             // wenn (addStartTimeSwitch == true) wird die zusätzliche Bewässerung aktiviert
-            if (id === `${adapter.namespace}.control.addStartTimeSwitch`
-                && typeof state.val === 'boolean') {
+            if (id === `${adapter.namespace}.control.addStartTimeSwitch` && typeof state.val === 'boolean' && state.ack === false) {
                 addStartTimeSwitch = state.val;
+                adapter.setState(id, {
+                    val: state.val,
+                    ack: true
+                });
             }
             // wenn (autoOnOff == false) so werden alle Sprenger nicht mehr automatisch gestartet.
-            if (id === adapter.namespace + '.control.autoOnOff') {
+            if ((id === adapter.namespace + '.control.autoOnOff') && (state.ack === false)) {
                 autoOnOffStr = state.val;
                 adapter.log.info(`startAdapter: control.autoOnOff: ${state.val}`);
+                adapter.setState(id, {
+                    val: state.val,
+                    ack: true
+                });
                 if (!state.val) {
                     valveControl.clearEntireList();
                 }
@@ -202,11 +213,15 @@ function startAdapter(options) {
                                     sprinkleID: found.sprinkleID,
                                     wateringTime: (state.val <= 0) ? state.val : Math.round(60 * state.val)
                                 }]);
+                            adapter.setState(id, {
+                                val: state.val,
+                                ack: true
+                            });
                         }
                     }
                 }
             }
-            // wenn in der config unter methodControlSM !== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
+            // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
             if (myConfig.config) {
                 function filterByID(obj){
                     return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
@@ -227,25 +242,37 @@ function startAdapter(options) {
             }
             // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
             //   bei false nicht automatisch gestartet
-            if (myConfig.config && (typeof state.val === 'boolean')) {
+            if (myConfig.config && (typeof state.val === 'boolean') && (state.ack === false)) {
                 const found = myConfig.config.find(d => d.autoOnID === id);
                 if (found && id === myConfig.config[found.sprinkleID].autoOnID) {
                     myConfig.config[found.sprinkleID].autoOn = state.val;
-                    valveControl.addList(
-                        [{
-                        auto: false,
-                        sprinkleID: found.sprinkleID,
-                        wateringTime: 0
-                    }]);
+                    adapter.setState(id, {     // Bestätigung
+                        val: state.val,
+                        ack: true
+                    });
+                    adapter.log.info(`set ${found.objectName}.autoOn = ${state.val}, id: ${id}`);
+                    if (state.val === false) {
+                        valveControl.addList(
+                            [{
+                                auto: false,
+                                sprinkleID: found.sprinkleID,
+                                wateringTime: 0
+                            }]
+                        );
+                    }
                 }
             }
 
             //  postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
             let idSplit = id.split('.', 5);
-            if (idSplit[4] === `postponeByOneDay`) {
+            if (idSplit[4] === `postponeByOneDay` && state.ack === false) {
                 const found = myConfig.config.find(d => d.objectName === idSplit[3]);
                 if (found) {
                     myConfig.postponeByOneDay(found.sprinkleID).catch((e) => {adapter.log.warn(`postponeByOneDay: ${e}`)});
+                    adapter.setState(id, {
+                        val: false,
+                        ack: true
+                    });
                 }
             }
 
@@ -377,11 +404,12 @@ function curNextFixDay (sprinkleID, returnOn) {
     const weekDayArray = myConfig.config[sprinkleID].startFixDay;
     const objPfad = 'sprinkle.' + myConfig.config[sprinkleID].objectName;
     const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
+    let found = false;
     let curDay = formatTime(adapter, '', 'day');
     for ( let i=0; i<7; i++ ) {
-        curDay++;
         if (curDay > 6) {curDay = curDay - 7;}
         if (weekDayArray[curDay] === true) {
+            found = true;
             if (returnOn) {
                 return weekday[curDay];
             } else {
@@ -392,7 +420,9 @@ function curNextFixDay (sprinkleID, returnOn) {
             }
             break;
         }
+        curDay++;
     }
+    if (returnOn && found === false) {return 'off'}
 }
 
 //
@@ -417,7 +447,9 @@ function checkStates() {
      * @param {ioBroker.State|null|undefined} state
      */
     adapter.getState('control.autoOnOff', (err, state) => {
-        if (state && (state.val == null) && (state.val === undefined)) {
+        if (state && (typeof state.val === "boolean")) {
+            autoOnOffStr = state.val;
+        } else {
             autoOnOffStr = true;
             adapter.setState('control.autoOnOff', {
                 val: autoOnOffStr,
@@ -462,7 +494,7 @@ async function checkActualStates () {
          * @private
          */
         const _holiday = await adapter.getStateAsync('control.Holiday');
-            if (_holiday && _holiday.val) {
+            if (_holiday && _holiday.val && typeof _holiday.val === "boolean") {
                 holidayStr = _holiday.val;
             }
 
@@ -472,7 +504,7 @@ async function checkActualStates () {
          * @private
          */
         const _autoOnOff = await adapter.getStateAsync('control.autoOnOff');
-            if (_autoOnOff && _autoOnOff.val) {
+            if (_autoOnOff && _autoOnOff.val && typeof _autoOnOff.val === "boolean") {
                 autoOnOffStr = _autoOnOff.val;
             }
 
@@ -560,8 +592,9 @@ async function checkActualStates () {
                 const _autoOn = await adapter.getForeignStateAsync(
                     res.autoOnID
                 ).catch((e) => adapter.log.warn(e));
-                if (typeof _autoOn.val === 'boolean') {
+                if (_autoOn && typeof _autoOn.val === 'boolean') {
                     res.autoOn = _autoOn.val;
+                    if (_autoOn.val === false) {adapter.log.info(`get ${res.objectName}.autoOn = ${res.autoOn}`)}
                 }
             }
         }
@@ -662,10 +695,15 @@ function sunPos() {
 }
 
 function addStartTimeSprinkle() {
+    schedule.cancelJob('sprinkleAddStartTime');
     if (adapter.config.selectAddStartTime === 'greaterETpCurrent' || adapter.config.selectAddStartTime === 'withExternalSignal') {
         let addStartTimeSplit = adapter.config.addWateringStartTime.split(':');
         const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', addStartTimeSplit[1] + ' ' + addStartTimeSplit[0] + ' * * *', function() {
-            adapter.log.debug(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
+            // if (autoOnOff == false) => keine auto Start
+            if (!autoOnOffStr) {
+                schedule.cancelJob('sprinkleAddStartTime');
+                return;
+            }
             if (((adapter.config.selectAddStartTime === 'greaterETpCurrent') && (adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum()))
                 || (adapter.config.selectAddStartTime === 'withExternalSignal' && addStartTimeSwitch)) {
                 let messageText = '';
@@ -692,12 +730,9 @@ function addStartTimeSprinkle() {
                     }
 
                     for(const res of result) {
-                        adapter.log.debug(`${res.objectName}: ${res.autoOn}, ${res.addWateringTime}, ${resRain(res.inGreenhouse)} <= 0, if(${res.autoOn && (res.addWateringTime > 0) && (resRain(res.inGreenhouse) <= 0)})`);
                         if (res.autoOn                                  // Ventil aktiv
                             && (res.addWateringTime > 0)                // zusätzliche Bewässerung aktiv time > 0
                             && (resRain(res.inGreenhouse) <= 0)) {      // keine Regenvorhersage
-
-
 
                             switch (res.methodControlSM) {
                                 case 'bistable':
@@ -745,14 +780,21 @@ function addStartTimeSprinkle() {
                                     }
                                     break;
                             }
-                            valveControl.addList(memAddList);
+                        } else {
+                            adapter.log.debug(`${res.objectName}: autoOn (${res.autoOn}) && addWateringTime (${res.addWateringTime} > 0) && resRain (${resRain(res.inGreenhouse)}) <= 0, if(${res.autoOn && (res.addWateringTime > 0) && (resRain(res.inGreenhouse) <= 0)})`);
                         }
                     }
-                    if(!sendMessageText.onlySendError() && messageText.length > 0){
-                        sendMessageText.sendMessage(messageText);
-                    }
+                    valveControl.addList(memAddList);
                 }
+                if(!sendMessageText.onlySendError() && messageText.length > 0){
+                    sendMessageText.sendMessage(messageText);
+                }
+            } else {
+                adapter.log.debug(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
             }
+            setTimeout(()=>{
+                    schedule.cancelJob('sprinkleAddStartTime');
+                }, 200);
         });
     }
 }
@@ -765,7 +807,7 @@ function startTimeSprinkle() {
 
     schedule.cancelJob('sprinkleStartTime'); 
 
-    // if autoOnOff == false => keine auto Start
+    // if (autoOnOff == false) => keine auto Start
     if (!autoOnOffStr) {
         adapter.log.info(`Sprinkle: autoOnOff == Aus ( ${autoOnOffStr} )`);
         adapter.setState('info.nextAutoStart', {
@@ -826,7 +868,7 @@ function startTimeSprinkle() {
                     break;
             }
             // Start am Wochenende →, wenn andere Zeiten verwendet werden soll
-            if((adapter.config.publicWeekend) && ((myWeekday) === 6 || (myWeekday) === 0)){
+            if((adapter.config.publicWeekend) && ((myWeekday === 6) || (myWeekday === 0))){
                 infoMessage = 'Start am Wochenende ';
                 newStartTime = adapter.config.weekEndLiving;
             }
@@ -976,8 +1018,16 @@ function startTimeSprinkle() {
                             } else if (adapter.config.weatherForecast){
                                 messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
                                 adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(false)} > 0 ]`);
-                                res.startFixDay[today] = false;
-                                res.startFixDay[(+ today + 1 > 6) ? (+ today-6) : (+ today+1)] = true;
+                                if ((res.startDay === 'threeRd') || (res.startDay === 'twoNd')) {
+                                    let startDay = -1;
+                                    res.startFixDay.forEach((item, index) => {if (item) {startDay = index}});
+                                    if (startDay !== -1) {
+                                        res.startFixDay[startDay] = false;
+                                        res.startFixDay[(+ startDay + 1 > 6) ? (+ startDay-6) : (+ startDay+1)] = true;
+                                    } else {
+                                        adapter.log.warn(`${res.objectName}: no start day found`)
+                                    }
+                                }
                             }
                             curNextFixDay(res.sprinkleID, false);
                             break;
@@ -1000,7 +1050,7 @@ function startTimeSprinkle() {
                                 } else if (adapter.config.weatherForecast) {
                                     /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += '   ' + '<i>' + 'Start verschoben, da heute ' + weatherForecastTodayNum + 'mm Niederschlag' + '</i> ' + '\n';
-                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${res.soilMoisture.val} (${resMoisture}) <= ${res.soilMoisture.triggersIrrigation} ]`);
+                                    adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${res.soilMoisture.val.toFixed(1)} (${resMoisture.toFixed(1)}) <= ${res.soilMoisture.triggersIrrigation} ]`);
                                 }
                             }
                             break;
@@ -1309,7 +1359,7 @@ async function createSprinklers() {
                                 'def':   true
                             },
                             'native': {},
-                        }).catch((e) => adapter.log.warn(`set .autoOn ${e}`));
+                        }).catch((e) => adapter.log.warn(`setObjectNotExistsAsync ${objectName}.autoOn ${e}`));
                     // Create Object for .actualSoilMoisture
                     const _actualSoilMoistureFind = await adapter.findForeignObjectAsync(`${adapter.namespace}.${objPfad}.actualSoilMoisture`, `${objMetConSM.common.type}`);
                     if (_actualSoilMoistureFind.id !== `${adapter.namespace}.${objPfad}.actualSoilMoisture` || _actualSoilMoistureFind.name !== nameMetConSM) {
@@ -1532,7 +1582,7 @@ async function createSprinklers() {
                              *     false → Zweitage-modus (twoNd)
                              */
                             async function setNewDay (threeRd) {
-                                const today = formatTime(adapter,'', 'day');
+                                const today = await formatTime(adapter,'', 'day');
                                 /**
                                  *
                                  * @type {ioBroker.GetStatePromise} _actualSoilMoisture
@@ -1564,7 +1614,6 @@ async function createSprinklers() {
                             } else if (myConfig.config[j].startDay === 'twoNd') {
                                 await setNewDay(false);
                             } else if (myConfig.config[j].startDay === 'fixDay') {
-                                adapter.log.info(`set Day (fixDay): ${myConfig.config[j].objectName}`);
                                 curNextFixDay(myConfig.config[j].sprinkleID, false);
                             }
 
@@ -1636,27 +1685,44 @@ async function createSprinklers() {
             if (fullRes.indexOf(resultID) === -1) {
                 try {
                     // object deleted
+                    /**
+                     * del when exist Object Async
+                     * @param id - the id of the object
+                     * @param type - common.type of the state
+                     * @returns {Promise<void>}
+                     */
+                    const delWhenExistObjectAsync = async (id, type) => {
+                        const _find = await adapter.findForeignObjectAsync(`${id}`, `${type}`);
+                        if (_find && _find.id === `${id}`) {
+                            await adapter.delObjectAsync(`${id}`).catch((e) => adapter.log.warn(e));  // "sprinklecontrol.0.sprinkle.???.postponeByOneDay"
+                        }
+                    }
+
                     Promise.all([
                         adapter.delObjectAsync(resID + '.actualSoilMoisture'),                  // "sprinklecontrol.0.sprinkle.???.actualSoilMoisture"
                         adapter.delObjectAsync(resID + '.triggerPoint'),                        // "sprinklecontrol.0.sprinkle.???.triggerPoint"
                         adapter.delObjectAsync(resID + '.sprinklerState'),                      // "sprinklecontrol.0.sprinkle.???.sprinklerState"
-                        adapter.delObjectAsync(resID + '.runningTime'),                         //	"sprinklecontrol.0.sprinkle.???.runningTime"
-                        adapter.delObjectAsync(resID + '.countdown'),                           //	"sprinklecontrol.0.sprinkle.???.countdown"
+                        adapter.delObjectAsync(resID + '.runningTime'),                         // "sprinklecontrol.0.sprinkle.???.runningTime"
+                        delWhenExistObjectAsync(`${resID}.postponeByOneDay`, `boolean`),          // "sprinklecontrol.0.sprinkle.???.postponeByOneDay" wenn vorhanden löschen
+                        adapter.delObjectAsync(resID + '.countdown'),                           // "sprinklecontrol.0.sprinkle.???.countdown"
                         adapter.delObjectAsync(resID + '.autoOn'),                              // "sprinklecontrol.0.sprinkle.???.autoOn"
-                        adapter.delObjectAsync(resID + '.history.lastOn'),                      //	"sprinklecontrol.0.sprinkle.???..history.lastOn"
-                        adapter.delObjectAsync(resID + '.history.lastConsumed'),                //	"sprinklecontrol.0.sprinkle.???..history.lastConsumed"
-                        adapter.delObjectAsync(resID + '.history.lastRunningTime'),             // "sprinklecontrol.0.sprinkle.???.history.lastRunningTime"
-                        adapter.delObjectAsync(resID + '.history.curCalWeekConsumed'),          //	"sprinklecontrol.0.sprinkle.???.history.curCalWeekConsumed"
-                        adapter.delObjectAsync(resID + '.history.lastCalWeekConsumed'),         //	"sprinklecontrol.0.sprinkle.???.history.lastCalWeekConsumed"
-                        adapter.delObjectAsync(resID + '.history.curCalWeekRunningTime'),       //	"sprinklecontrol.0.sprinkle.???.history.curCalWeekRunningTime"
-                        adapter.delObjectAsync(resID + '.history.lastCalWeekRunningTime'),      //	"sprinklecontrol.0.sprinkle.???.history.lastCalWeekRunningTime"
+                        adapter.delObjectAsync(resID + '.history.lastOn'),                      //  "sprinklecontrol.0.sprinkle.???.history.lastOn"
+                        adapter.delObjectAsync(resID + '.history.lastConsumed'),                //  "sprinklecontrol.0.sprinkle.???.history.lastConsumed"
+                        adapter.delObjectAsync(resID + '.history.lastRunningTime'),             //  "sprinklecontrol.0.sprinkle.???.history.lastRunningTime"
+                        adapter.delObjectAsync(resID + '.history.curCalWeekConsumed'),          //  "sprinklecontrol.0.sprinkle.???.history.curCalWeekConsumed"
+                        adapter.delObjectAsync(resID + '.history.lastCalWeekConsumed'),         //  "sprinklecontrol.0.sprinkle.???.history.lastCalWeekConsumed"
+                        adapter.delObjectAsync(resID + '.history.curCalWeekRunningTime'),       //  "sprinklecontrol.0.sprinkle.???.history.curCalWeekRunningTime"
+                        adapter.delObjectAsync(resID + '.history.lastCalWeekRunningTime')      //  "sprinklecontrol.0.sprinkle.???.history.lastCalWeekRunningTime"
+                        ]
+                    ).then(async ()=>{
                         // History - Objekt(Ordner.history) löschen
-                        await adapter.delObjectAsync(resID + '.history'),
+                        await adapter.delObjectAsync(resID + '.history');
+                    }).then(async ()=>{
                         // Objekt(Ordner) löschen
-                        await adapter.delObjectAsync(resID)
-                    ]).then((resultID)=>{
-                        adapter.log.info(`sprinkleControl [${resultID}] was deleted`);
-                    })
+                        await adapter.delObjectAsync(resID);
+                    }).then(()=>{
+                        adapter.log.info(`sprinkleControl [${resID}] was deleted`);
+                    });
                 } catch (e) {
                     adapter.log.warn(e);
                 }
