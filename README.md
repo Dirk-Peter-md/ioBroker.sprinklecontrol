@@ -32,7 +32,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.13 (2022-09-06)
 * (Dirk-Peter-md) various bugs fixed
 * (Dirk-Peter-md) Preparing the stable release
 
