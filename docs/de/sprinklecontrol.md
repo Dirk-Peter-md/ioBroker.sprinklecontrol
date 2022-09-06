@@ -196,6 +196,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: [**Haupteinstellungen**](#42
 
 ---
 
+
 <a id="einschaltpunkt-berechnung"></a>
 #### **Berechnung der Verdunstung**
         
@@ -233,6 +234,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: [**Haupteinstellungen**](#42
 
 ---
 
+
 <a id="einschaltpunkt-bistabil"></a>
 + **Bodenfeuchte-Sensor bistabil** 
 
@@ -251,6 +253,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: [**Haupteinstellungen**](#42
       + **Sensor im Gewächshaus** bei true (Auswahl) wird die Regenvorhersage nicht berücksichtigt
 
 ---
+
 
 <a id="einschaltpunkt-analog"></a>
 + **Bodenfeuchte-Sensor analog**
@@ -361,8 +364,8 @@ In diesem Abschnitt wird die Startzeiten von SprinkleControl festgelegt.
     * **Zeitverschiebung** – Eingabe der Zeitverschiebung bei Sonnenaufgang. (+/- 120 min)
 * **Startzeit am Ende der goldenen Stunde** – Hier startet die Bewässerung zum Ende der Golden Hour.
 
-
 ---
+
 
 ## Zusätzliche Startzeit
 * **Startbedingungen**
