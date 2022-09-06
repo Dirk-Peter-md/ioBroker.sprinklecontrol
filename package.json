@@ -56,7 +56,7 @@
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
     "release": "release-script patch --yes",
-    "release-test": "release patch -- --dry",
+    "release-test": "release-script patch -- --dry",
     "release-minor": "release-script minor --yes",
     "release-mojor": "release-script major --yes"
   },
