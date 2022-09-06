@@ -16,8 +16,20 @@
     "authors": [
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
-    "version": "0.2.12",
+    "version": "0.2.13",
     "news": {
+      "0.2.13": {
+        "en": "various bugs fixed; Preparing the stable release",
+        "de": "verschiedene Fehler behoben; Vorbereitung der stabilen Freigabe",
+        "ru": "исправлены различные баги; Подготовка стабильного релиза",
+        "pt": "vários bugs corrigidos; Preparando a liberação estável",
+        "nl": "diverse insecten gerepareerd. De stabiele vrijlating voorbereiden",
+        "fr": "divers bugs corrigés; Préparation de la libération stable",
+        "it": "vari bug fissi; Preparazione del rilascio stabile",
+        "es": "varios errores fijos; Preparación de la liberación estable",
+        "pl": "różne trąbki ustalono; Preparowanie stabilnego wydania",
+        "zh-cn": "(a) 固定地点; 准备稳定释放"
+      },
       "0.2.12": {
         "en": "fixDay(twoNd,threeRd) => postpone by one day; Bug fixed => autoOn; Additional post-watering => in case of high evaporation / switchable externally",
         "de": "fixDay(twoNd,threeRd) => Verschiebung um einen Tag; Bug fix => autoOn; Zusätzliche Nachbewässerung => bei hoher Verdampfung / schaltbar extern",
