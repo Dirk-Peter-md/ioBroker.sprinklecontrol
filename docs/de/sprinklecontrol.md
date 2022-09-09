@@ -200,7 +200,7 @@ Diese Konfigurationsebene besteht aus zwei Reitern: [**Haupteinstellungen**](#42
 <a id="einschaltpunkt-berechnung"></a>
 #### **Berechnung der Verdunstung**
         
-    ![Berechnung der Verdunstung](img/ber-verdunstung.jpg)
+  ![Berechnung der Verdunstung](img/ber-verdunstung.jpg)
   + ***Zusätzliche Bewässerung bei hoher Verdunstung***
     + **Zusätzliche Bewässerungszeit in min** Diese Zeile wird unter ZEIT EINSTELLUNGEN => Zusätzliche Startzeit aktiviert und ist für Gebiete mit Sandigen Boden gedacht, wo **eine Wassergabe** pro Tag nicht ausreichen würde.
       > **Tipp** -> maximale Bodenfeuchte nach der Bewässerung in (mm) <= 6; Bodenfeuchte = 100 % nach der Bewässerung = deaktiviert; Einschaltpunkt (Bodenfeuchte) der Bewässerungsventile in % >= 60
