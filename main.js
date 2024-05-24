@@ -336,7 +336,7 @@ function startAdapter(options) {
                         weatherForecastTodayNum = state.val;
                     } else {
                         weatherForecastTodayNum = 0;
-                        console.log.info('StateChange => Wettervorhersage state.val ( ' + state.val + '; ' + typeof state.val + ' ) kann nicht als Number verarbeitet werden');
+                        adapter.log.info('StateChange => Wettervorhersage state.val ( ' + state.val + '; ' + typeof state.val + ' ) kann nicht als Number verarbeitet werden');
                     }
                     adapter.setState('info.rainToday', {
                         val: weatherForecastTodayNum,
@@ -547,7 +547,7 @@ async function checkActualStates () {
                         weatherForecastTodayNum = _weatherForInstanceToday.val;
                     } else {
                         weatherForecastTodayNum = 0;
-                        console.log.info('checkActualStates => Wettervorhersage state.val ( ' + _weatherForInstanceToday.val + '); ' + typeof _weatherForInstanceToday.val + ' kann nicht als Number verarbeitet werden');
+                        adapter.log.info('checkActualStates => Wettervorhersage state.val ( ' + _weatherForInstanceToday.val + '); ' + typeof _weatherForInstanceToday.val + ' kann nicht als Number verarbeitet werden');
                     }
                     await adapter.setStateAsync('info.rainToday',
                         weatherForecastTodayNum,
