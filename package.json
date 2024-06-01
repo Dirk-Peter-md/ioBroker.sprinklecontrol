@@ -32,7 +32,7 @@
     "@types/chai": "^4.3.10",
     "@types/chai-as-promised": "^7.1.8",
     "@types/eslint": "^8.56.5",
-    "@types/gulp": "^4.0.16",
+    "@types/gulp": "^4.0.17",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.11.24",
     "@types/node-schedule": "^2.1.7",
