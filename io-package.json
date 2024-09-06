@@ -288,7 +288,7 @@
     "dataSource": "assumption",
     "dependencies": [
       {
-        "js-controller": ">=2.0.0"
+        "js-controller": ">=5.0.19"
       }
     ]
   },
