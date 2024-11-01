@@ -270,7 +270,10 @@
       "en": "docs/en/sprinklecontrol.md",
       "de": "docs/de/sprinklecontrol.md"
     },
-    "license": "MIT",
+    "licenseInformation": {
+      "license": "MIT",
+      "type": "free"
+    },
     "platform": "Javascript/Node.js",
     "main": "main.js",
     "icon": "sprinklecontrol.png",
