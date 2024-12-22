@@ -17,8 +17,8 @@ function load(settings, onChange) {
     // Beispiel: Wählen Sie Elemente mit id = key und class = value aus und fügen Sie einen Wert ein
     if (!settings) return;
     $('.value').each(function () {
-        let $key = $(this);
-        let id = $key.attr('id');
+        const $key = $(this);
+        const id = $key.attr('id');
 
         // check which type of html element
         // do not call onChange direct, because onChange could expect some arguments
@@ -40,14 +40,14 @@ function load(settings, onChange) {
 
     //var events = [];
 
-    let events = settings.events    || [];
+    const events = settings.events    || [];
 
     showHideSettings();
 
     values2table('events', events, onChange, tableOnReady);
 
     $('#responseOIDDialog').on('click', function () {
-        let devices = table2values('events');
+        const devices = table2values('events');
         let id = 0;
         for (let i = 0; i < devices.length; i++) {
             id = id +1;
@@ -90,7 +90,7 @@ function load(settings, onChange) {
                 if (newId) {
                     $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(newId).trigger('change');
                     socket.emit('getObject', newId, function (err, obj) {
-                        let name = getName(obj);
+                        const name = getName(obj);
                         $('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val(name).trigger('change');
                     });
                 }
@@ -219,7 +219,7 @@ function load(settings, onChange) {
     // Initialisieren Sie alle Materialise-Beschriftungen auf der Seite neu, wenn Sie dynamisch Eingaben hinzufügen:
 
     $('.timepicker').timepicker({
-        "twelveHour": false
+        'twelveHour': false
     });
 
     if (M) M.updateTextFields();
@@ -260,11 +260,11 @@ function load(settings, onChange) {
  */
 function fillPosition() {
     socket.emit('getObject', 'system.config', function (err, obj) {
-        let $mLongitude = $('#longitude');
+        const $mLongitude = $('#longitude');
         if ($mLongitude.val() === '') {
             $mLongitude.val(obj.common.longitude).trigger('change');
         }
-        let $mLatitude = $('#latitude');
+        const $mLatitude = $('#latitude');
         if ($mLatitude.val() === '') {
             $mLatitude.val(obj.common.latitude).trigger('change');
         }
@@ -279,18 +279,18 @@ function fillPosition() {
 function fillTelegramUser(id, obj) {
     /*let user = str.replace(/[{}"\\]/g,"").split(',');*/
     /*obj = {"0123456789":{"firstName":"Dirk","userName":"Dirk_Peter"}};*/
-    let $sel = $('#telegramUser');
+    const $sel = $('#telegramUser');
     $sel.html('<option value="allTelegramUsers">' + _('All Receiver') + '</option>');
-    for(let key in obj){
+    for(const key in obj){
         if (obj.hasOwnProperty (key)) {
-            let names = [];
+            const names = [];
             let userName;
             obj[key].userName && names.push(obj[key].userName);
             obj[key].firstName && names.push(obj[key].firstName);
             if (obj[key].userName) {
                 userName = obj[key].userName;
             } else {
-                userName = obj[key].firstName
+                userName = obj[key].firstName;
             }
             $sel.append('<option value="' + userName + '"' + (id === userName ? ' selected' : '') + '>' + names.join(' / ') +'</option>');
         }
@@ -305,10 +305,10 @@ function fillTelegramUser(id, obj) {
  * @param val
  */
 function fillInstances(id, arr, val) {
-    let $sel = $('#' + id);
+    const $sel = $('#' + id);
     $sel.html('<option value="">' + _('none') + '</option>');
     for (let i = 0; i < arr.length; i++) {
-        let _id = arr[i]._id.replace('system.adapter.', '');
+        const _id = arr[i]._id.replace('system.adapter.', '');
         $sel.append('<option value="' + _id + '"' + (_id === val ? ' selected' : '') + '>' + _id + '</option>');
     }
     $sel.select();
@@ -319,13 +319,13 @@ function fillInstances(id, arr, val) {
  */
 function tableOnReady() {
     $('#events .table-values-div .table-values .values-buttons[data-command="edit2"]').on('click', function () {
-        let id = $(this).data('index');
+        const id = $(this).data('index');
         initSelectId(function (sid) {
             sid.selectId('show', $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(), function (newId) {
                 if (newId) {
                     $('#events .values-input[data-name="name"][data-index="' + id + '"]').val(newId).trigger('change');
                     socket.emit('getObject', newId, function (err, obj) {
-                        let name = getName(obj);
+                        const name = getName(obj);
                         $('#events .values-input[data-name="sprinkleName"][data-index="' + id + '"]').val(name).trigger('change');
                     });
                 }
@@ -334,7 +334,7 @@ function tableOnReady() {
     });
 
     $('#events .table-values-div .table-values .values-buttons[data-command="edit"]').on('click', function () {
-        let id = $(this).data('index');
+        const id = $(this).data('index');
         $('#triggerID').val($('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val());
         $('#wateringTime').val($('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val());
         $('#wateringAdd').val($('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val());
@@ -368,32 +368,32 @@ function tableOnReady() {
 
         setTimeout(function () {
             initDialogSprinkle(function (sid) {
-                let newTriggerID = $('#triggerID').val();
-                let newWateringTime = $('#wateringTime').val();
-                let newWateringAdd = $('#wateringAdd').val();
-                let newWateringInterval = $('#wateringInterval').val();
-                let newAddWateringTime = $('#addWateringTime').val();
-                let newAddTriggersIrrigation = $('#addTriggersIrrigation').val();
-                let newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
-                let newMaxSoilMoistureRainPct = $('#maxSoilMoistureRainPct').val();
-                let newTriggersIrrigation = $('#triggersIrrigation').val();
-                let newPipeFlow = $('#pipeFlow').val();
-                let newMethodControlSM = $('#methodControlSM').val();
-                let newTriggerSM = $('#triggerSM').val();
-                let newAnalogZPct = $('#analogZPct').val();
-                let newAnalogOHPct = $('#analogOHPct').val();
-                let newStartDay = $('#startDay').val();
+                const newTriggerID = $('#triggerID').val();
+                const newWateringTime = $('#wateringTime').val();
+                const newWateringAdd = $('#wateringAdd').val();
+                const newWateringInterval = $('#wateringInterval').val();
+                const newAddWateringTime = $('#addWateringTime').val();
+                const newAddTriggersIrrigation = $('#addTriggersIrrigation').val();
+                const newMaxSoilMoistureIrrigation = $('#maxSoilMoistureIrrigation').val();
+                const newMaxSoilMoistureRainPct = $('#maxSoilMoistureRainPct').val();
+                const newTriggersIrrigation = $('#triggersIrrigation').val();
+                const newPipeFlow = $('#pipeFlow').val();
+                const newMethodControlSM = $('#methodControlSM').val();
+                const newTriggerSM = $('#triggerSM').val();
+                const newAnalogZPct = $('#analogZPct').val();
+                const newAnalogOHPct = $('#analogOHPct').val();
+                const newStartDay = $('#startDay').val();
                 // boolean
-                let newBooster = $('#booster').prop('checked');
-                let newEndIrrigation = $('#endIrrigation').prop('checked');
-                let newInGreenhouse = $('#inGreenhouse').prop('checked');
-                let newSun = $('#sun').prop('checked');
-                let newMon = $('#mon').prop('checked');
-                let newTue = $('#tue').prop('checked');
-                let newWed = $('#wed').prop('checked');
-                let newThur = $('#thur').prop('checked');
-                let newFri = $('#fri').prop('checked');
-                let newSat = $('#sat').prop('checked');
+                const newBooster = $('#booster').prop('checked');
+                const newEndIrrigation = $('#endIrrigation').prop('checked');
+                const newInGreenhouse = $('#inGreenhouse').prop('checked');
+                const newSun = $('#sun').prop('checked');
+                const newMon = $('#mon').prop('checked');
+                const newTue = $('#tue').prop('checked');
+                const newWed = $('#wed').prop('checked');
+                const newThur = $('#thur').prop('checked');
+                const newFri = $('#fri').prop('checked');
+                const newSat = $('#sat').prop('checked');
 
                 $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
                 $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
@@ -423,7 +423,7 @@ function tableOnReady() {
                 $('#events .values-input[data-name="sat"][data-index="' + id + '"]').prop('checked',newSat);
 
             });
-        }, 20)
+        }, 20);
     });
 }
 
@@ -436,9 +436,9 @@ function tableOnReady() {
 function save(callback) {
     // example: select elements with class=value and build settings object
     // Beispiel: Wählen Sie Elemente mit class = value aus und erstellen Sie das Einstellungsobjekt
-    let obj = {};
+    const obj = {};
     $('#mainSettings .value').each(function () {
-        let $this = $(this);
+        const $this = $(this);
         if ($this.attr('type') === 'checkbox') {
             obj[$this.attr('id')] = $this.prop('checked');
         } else if ($this.attr('type') === 'number') {
@@ -519,7 +519,7 @@ function showHideSettings(callback) {
     }).trigger('change');
 
     // Zeiteinstellungen => Feiertagseinstellung sichtbar bei checkbox
-    let mPublicWeekend = $('#publicWeekend').prop('checked');
+    const mPublicWeekend = $('#publicWeekend').prop('checked');
     if (mPublicWeekend) {
         $('.publicWeek').show();
         $('.publicWeekHol').show();
@@ -535,7 +535,7 @@ function showHideSettings(callback) {
     }
 
     // zusätzliche Einstellungen => Wettervorhersage
-    let mWeatherForecast = $('#weatherForecast').prop('checked');
+    const mWeatherForecast = $('#weatherForecast').prop('checked');
     if (mWeatherForecast) {
         $('.weatherFor').show();
     } else {
@@ -597,7 +597,7 @@ function showHideSettings(callback) {
                 $('.showAddWateringTime').hide();
                 $('.showAddTriggersIrrigation').hide();
             }
-            $('.visInGreenhouse').show()
+            $('.visInGreenhouse').show();
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
@@ -606,9 +606,9 @@ function showHideSettings(callback) {
 
         } else if ($(this).val() === 'bistable') {
             if (mWeatherForecast) {
-                $('.visInGreenhouse').show()
+                $('.visInGreenhouse').show();
             } else {
-                $('.visInGreenhouse').hide()
+                $('.visInGreenhouse').hide();
             }
             if (selAddStartTime) {
                 $('.showAddWateringTime').show();
@@ -625,9 +625,9 @@ function showHideSettings(callback) {
 
         } else if ($(this).val() === 'analog') {
             if (mWeatherForecast) {
-                $('.visInGreenhouse').show()
+                $('.visInGreenhouse').show();
             } else {
-                $('.visInGreenhouse').hide()
+                $('.visInGreenhouse').hide();
             }
             if (selAddStartTime) {
                 $('.showAddWateringTime').show();
@@ -644,9 +644,9 @@ function showHideSettings(callback) {
 
         } else if ($(this).val() === 'fixDay') {
             if (mWeatherForecast) {
-                $('.visInGreenhouse').show()
+                $('.visInGreenhouse').show();
             } else {
-                $('.visInGreenhouse').hide()
+                $('.visInGreenhouse').hide();
             }
             if (selAddStartTime) {
                 $('.showAddWateringTime').show();
@@ -669,7 +669,7 @@ function showHideSettings(callback) {
                 $('.showAddWateringTime').hide();
                 $('.showAddTriggersIrrigation').hide();
             }
-            $('.visInGreenhouse').show()
+            $('.visInGreenhouse').show();
             $('.visSensor').hide();
             $('.visAnalog').hide();
             $('.visCalculation').show();
@@ -750,8 +750,8 @@ function getName(obj) {
         }
         return name;
     } else {
-        let parts = obj.id.split('.');
-        let last = parts.pop();
+        const parts = obj.id.split('.');
+        const last = parts.pop();
         return last[0].toUpperCase() + last.substring(1).toLowerCase();
     }
 }
@@ -761,7 +761,7 @@ function getName(obj) {
  * @param callback
  */
 function initDialogSprinkle(callback) {
-    let $editDialog = $('#dialog-sprinkle-edit');
+    const $editDialog = $('#dialog-sprinkle-edit');
     if (!$editDialog.data('inited')) {
         $editDialog.data('inited', true);
         $editDialog.modal({
@@ -769,8 +769,8 @@ function initDialogSprinkle(callback) {
         });
 
         $editDialog.find('.btn-set').on('click', function () {
-            let $editDialog = $('#dialog-sprinkle-edit');
-            let callback = $editDialog.data('callback');
+            const $editDialog = $('#dialog-sprinkle-edit');
+            const callback = $editDialog.data('callback');
             if (typeof callback === 'function') callback();
             $editDialog.data('callback', null);
         });

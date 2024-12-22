@@ -31,3 +31,6 @@ admin/i18n
 
 # maintenance scripts
 maintenance/**
+
+# ioBroker dev-server
+.dev-server/

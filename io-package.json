@@ -11,7 +11,8 @@
       "it": "Spruzzare il controllo",
       "es": "Control de aspersión",
       "pl": "Kontrola zraszania",
-      "zh-cn": "洒水控制"
+      "zh-cn": "洒水控制",
+      "uk": "Контроль обприскування"
     },
     "authors": [
       "Dirk Peter <dirk.peter@freenet.de>"
@@ -28,7 +29,8 @@
         "it": "vari bug fissi; Preparazione del rilascio stabile",
         "es": "varios errores fijos; Preparación de la liberación estable",
         "pl": "różne trąbki ustalono; Preparowanie stabilnego wydania",
-        "zh-cn": "(a) 固定地点; 准备稳定释放"
+        "zh-cn": "(a) 固定地点; 准备稳定释放",
+        "uk": "виправлено різні помилки; Підготовка стабільного випуску"
       },
       "0.2.12": {
         "en": "fixDay(twoNd,threeRd) => postpone by one day; Bug fixed => autoOn; Additional post-watering => in case of high evaporation / switchable externally",
@@ -40,7 +42,8 @@
         "it": "fixDay(twoNd,treRd) => rinviare entro un giorno; Bug fisso => autoOn; Ulteriori post-irrigazione => in caso di alta evaporazione / commutabile esternamente",
         "es": "fixDay(twoNd,threeRd) = confianza posponer por un día; Bug fijo = prenda autoOn; Pos-aguas adicionales = prenda en caso de alta evaporación / conmutable externamente",
         "pl": "fixDay(twoNd, tripleRd) =>. Odroczony przez jeden dzień; Bug fixed => autoOn; dodatkowy post-watering => w przypadku dużego odparowania i przełącznika zewnętrznego",
-        "zh-cn": "fix Day(两名Nd,三Rd)=> 一天推迟;Bug固定=汽车;额外的水事后=在高度疏散/外部可转换的情况下。"
+        "zh-cn": "fix Day(两名Nd,三Rd)=> 一天推迟;Bug固定=汽车;额外的水事后=在高度疏散/外部可转换的情况下。",
+        "uk": "fixDay(twoNd,threeRd) => відкласти на один день; Виправлено помилку => autoOn; Додатковий дополив => у разі високого випаровування / перемикається зовні"
       },
       "0.2.11": {
         "en": "Bug fixed => analogue soil moisture sensor with negative characteristic; Attention => maximum soil moisture in rain now in %",
@@ -52,7 +55,8 @@
         "it": "Bug risolto => sensore di umidità del suolo analogico con caratteristica negativa; Attenzione => umidità massima del suolo sotto la pioggia ora in %",
         "es": "Error solucionado => sensor de humedad del suelo analógico con característica negativa; Atención => humedad máxima del suelo en lluvia ahora en %",
         "pl": "Poprawiony błąd => analogowy czujnik wilgotności gleby o charakterystyce ujemnej; Uwaga => maksymalna wilgotność gleby w deszczu teraz w %",
-        "zh-cn": "错误修复 => 具有负特性的模拟土壤湿度传感器；注意 => 现在雨中的最大土壤水分百分比"
+        "zh-cn": "错误修复 => 具有负特性的模拟土壤湿度传感器；注意 => 现在雨中的最大土壤水分百分比",
+        "uk": "Виправлено помилку => аналоговий датчик вологості ґрунту з негативною характеристикою; Увага => максимальна вологість ґрунту під час дощу зараз у %"
       },
       "0.2.10": {
         "en": "- manual watering limited to a maximum of 100%; - Error whatsapp message fixed",
@@ -64,7 +68,8 @@
         "it": "- irrigazione manuale limitata ad un massimo del 100%; - Errore messaggio whatsapp risolto",
         "es": "- riego manual limitado a un máximo del 100%; - Mensaje de error de whatsapp arreglado",
         "pl": "- nawadnianie ręczne ograniczone do maksymalnie 100%; - Naprawiono błąd wiadomości WhatsApp",
-        "zh-cn": "- 手动浇水限制为最大 100%； - 错误whatsapp消息已修复"
+        "zh-cn": "- 手动浇水限制为最大 100%； - 错误whatsapp消息已修复",
+        "uk": "- ручний полив обмежений максимум на 100%; - Виправлено повідомлення про помилку WhatsApp"
       },
       "0.2.9": {
         "en": "Bug initialization routine",
@@ -76,7 +81,8 @@
         "it": "Routine di inizializzazione dei bug",
         "es": "Rutina de inicialización de errores",
         "pl": "Procedura inicjowania błędów",
-        "zh-cn": "错误初始化例程"
+        "zh-cn": "错误初始化例程",
+        "uk": "Процедура ініціалізації помилок"
       },
       "0.2.8": {
         "en": "Adaptation for js controller 4; switched main.js to async",
@@ -88,7 +94,8 @@
         "it": "Adattamento per js controller 4; cambiato main.js in asincrono",
         "es": "Adaptación para controlador js 4; cambió main.js a asíncrono",
         "pl": "Adaptacja pod kontroler js 4; przełączył main.js na asynchroniczny",
-        "zh-cn": "适配js控制器4；将 main.js 切换为异步"
+        "zh-cn": "适配js控制器4；将 main.js 切换为异步",
+        "uk": "Адаптація під js контролер 4; переключив main.js на асинхронний"
       },
       "0.2.7": {
         "en": "additional test messages deleted, Readme updated",
@@ -100,7 +107,8 @@
         "it": "messaggi di prova aggiuntivi eliminati, Leggimi aggiornato",
         "es": "mensajes de prueba adicionales eliminados, Léame actualizado",
         "pl": "usunięto dodatkowe wiadomości testowe, zaktualizowano plik Readme",
-        "zh-cn": "删除了其他测试消息，更新了自述文件"
+        "zh-cn": "删除了其他测试消息，更新了自述文件",
+        "uk": "додаткові тестові повідомлення видалено, Readme оновлено"
       },
       "0.2.6": {
         "en": "\"inGreenhouse\" added to \"Calculation\" irrigation method ",
@@ -112,7 +120,8 @@
         "it": "\"inGreenhouse\" aggiunto al metodo di irrigazione \"Calcolo\"",
         "es": "\"inGreenhouse\" agregado al método de riego \"Cálculo\"",
         "pl": "\"inGreenhouse\" dodane do metody nawadniania \"Calculation\"",
-        "zh-cn": "“inGreenhouse”添加到“计算”灌溉方法"
+        "zh-cn": "“inGreenhouse”添加到“计算”灌溉方法",
+        "uk": "«inGreenhouse» додано до методу поливу «Розрахунок»."
       },
       "0.2.5": {
         "en": "Multiple use of soil moisture sensors; Objects with \"def\": ... revised",
@@ -124,7 +133,8 @@
         "it": "Utilizzo multiplo di sensori di umidità del suolo; Oggetti con \"def\": ... rivisto",
         "es": "Uso múltiple de sensores de humedad del suelo; Objetos con \"def\": ... revisado",
         "pl": "Wielokrotne wykorzystanie czujników wilgotności gleby; Obiekty z \"def\": ... poprawione",
-        "zh-cn": "土壤水分传感器的多次使用；带有“def”的对象：...修订"
+        "zh-cn": "土壤水分传感器的多次使用；带有“def”的对象：...修订",
+        "uk": "Багаторазове використання датчиків вологості ґрунту; Об'єкти з \"def\": ... переглянуто"
       },
       "0.2.4": {
         "en": "Add trigger point indicator; Fixed a bug in the soil moisture analysis",
@@ -136,7 +146,8 @@
         "it": "Aggiungi indicatore del punto di trigger; Risolto un bug nell'analisi dell'umidità del suolo",
         "es": "Agregar indicador de punto de activación; Se corrigió un error en el análisis de humedad del suelo.",
         "pl": "Dodaj wskaźnik punktu wyzwalania; Naprawiono błąd w analizie wilgotności gleby",
-        "zh-cn": "增加触发点指示器；修复了土壤水分分析中的错误"
+        "zh-cn": "增加触发点指示器；修复了土壤水分分析中的错误",
+        "uk": "Додати індикатор точки запуску; Виправлено помилку в аналізі вологості ґрунту"
       },
       "0.2.3": {
         "en": "fixed index_m bug; timeExtension (FixDay, bistable) bug fixed",
@@ -148,7 +159,8 @@
         "it": "corretto bug index_m; bug timeExtension (FixDay, bistabile) risolto",
         "es": "error fijo index_m; error de timeExtension (FixDay, biestable) corregido",
         "pl": "naprawiony błąd index_m; naprawiono błąd timeExtension (FixDay, bistabilny)",
-        "zh-cn": "修复 index_m 错误； timeExtension（FixDay，双稳态）错误已修复"
+        "zh-cn": "修复 index_m 错误； timeExtension（FixDay，双稳态）错误已修复",
+        "uk": "виправлена ​​помилка index_m; Виправлено помилку timeExtension (FixDay, bistable)."
       },
       "0.2.2": {
         "en": "FixDay bug fixed, 'actualSoilMoisture' revised, information messages revised",
@@ -160,7 +172,8 @@
         "it": "FixDay bug risolto, 'actualSoilMoisture' rivisto, messaggi informativi rivisti",
         "es": "Error FixDay corregido, 'actualSoilMoisture' revisado, mensajes de información revisados",
         "pl": "Naprawiono błąd FixDay, poprawiono „actualSoilMoisture”, poprawiono komunikaty informacyjne",
-        "zh-cn": "FixDay 错误已修复，“actualSoilMoisture”已修改，信息消息已修改"
+        "zh-cn": "FixDay 错误已修复，“actualSoilMoisture”已修改，信息消息已修改",
+        "uk": "Виправлено помилку FixDay, переглянуто 'actualSoilMoisture', інформаційні повідомлення переглянуто"
       },
       "0.2.1": {
         "en": "Start on fixed weekdays (without sensors) added, bugs fixed",
@@ -172,7 +185,8 @@
         "it": "Inizia nei giorni feriali fissi (senza sensori) aggiunti, bug corretti",
         "es": "Comience en días de semana fijos (sin sensores) agregado, errores corregidos",
         "pl": "Dodano start w ustalone dni tygodnia (bez czujników), naprawiono błędy",
-        "zh-cn": "添加固定工作日（无传感器），修复错误"
+        "zh-cn": "添加固定工作日（无传感器），修复错误",
+        "uk": "Додано запуск у фіксовані дні тижня (без датчиків), виправлено помилки"
       },
       "0.2.0": {
         "en": "Soil moisture sensor added, Weather forecast threshold added",
@@ -184,7 +198,8 @@
         "it": "Aggiunto sensore di umidità del suolo, aggiunta soglia per le previsioni del tempo",
         "es": "Sensor de humedad del suelo agregado, umbral de pronóstico del tiempo agregado",
         "pl": "Dodano czujnik wilgotności gleby, dodano próg prognozy pogody",
-        "zh-cn": "添加了土壤湿度传感器，添加了天气预报阈值"
+        "zh-cn": "添加了土壤湿度传感器，添加了天气预报阈值",
+        "uk": "Додано датчик вологості ґрунту, додано поріг прогнозу погоди"
       },
       "0.1.7": {
         "en": "Description in English added",
@@ -196,7 +211,8 @@
         "it": "Aggiunta descrizione in inglese",
         "es": "Descripción en inglés agregada",
         "pl": "Dodano opis w języku angielskim",
-        "zh-cn": "添加英文说明"
+        "zh-cn": "添加英文说明",
+        "uk": "Додано опис англійською"
       },
       "0.1.5": {
         "en": "Resetting the amount of rain in 24-hour mode added",
@@ -208,7 +224,8 @@
         "it": "Aggiunta la reimpostazione della quantità di pioggia nella modalità 24 ore",
         "es": "Restablecimiento de la cantidad de lluvia en el modo de 24 horas agregado",
         "pl": "Dodano resetowanie ilości deszczu w trybie 24-godzinnym",
-        "zh-cn": "在24小时模式下重置雨量"
+        "zh-cn": "在24小时模式下重置雨量",
+        "uk": "Додано скидання кількості дощу в 24-годинному режимі"
       },
       "0.1.4": {
         "en": "Fixed bug with deactivated weather forecast",
@@ -220,7 +237,8 @@
         "it": "Risolto bug con previsioni del tempo disattivate",
         "es": "Error corregido con pronóstico del tiempo desactivado",
         "pl": "Naprawiono błąd z wyłączoną prognozą pogody",
-        "zh-cn": "修复了停用天气预报的错误"
+        "zh-cn": "修复了停用天气预报的错误",
+        "uk": "Виправлена ​​помилка з деактивованим прогнозом погоди"
       },
       "0.1.2": {
         "en": "Description of SprinkleControl revised",
@@ -232,7 +250,8 @@
         "it": "Descrizione di SprinkleControl rivista",
         "es": "Descripción de SprinkleControl revisada",
         "pl": "Poprawiony opis SprinkleControl",
-        "zh-cn": "SprinkleControl的说明已修订"
+        "zh-cn": "SprinkleControl的说明已修订",
+        "uk": "Переглянуто опис SprinkleControl"
       },
       "0.0.12": {
         "en": "Irrigation via a second pump (cistern with priority control) depending on the level.",
@@ -244,10 +263,10 @@
         "it": "Irrigazione tramite una seconda pompa (cisterna con comando prioritario) a seconda del livello.",
         "es": "Riego mediante segunda bomba (cisterna con control prioritario) en función del nivel.",
         "pl": "Nawadnianie przez drugą pompę (cysterna z priorytetem sterowania) w zależności od poziomu.",
-        "zh-cn": "根据液位，通过第二个泵（带优先控制的水箱）进行灌溉。"
+        "zh-cn": "根据液位，通过第二个泵（带优先控制的水箱）进行灌溉。",
+        "uk": "Зрошення через другий насос (бачок з пріоритетним керуванням) залежно від рівня."
       }
     },
-
     "desc": {
       "en": "Control of several sprinklers depending on weather conditions and pump performance.",
       "de": "Steuerung mehrerer Sprinkler je nach Witterung und Pumpenleistung.",
@@ -258,7 +277,8 @@
       "it": "Controllo di più irrigatori a seconda delle condizioni meteorologiche e delle prestazioni della pompa.",
       "es": "Control de varios rociadores según las condiciones climáticas y el rendimiento de la bomba.",
       "pl": "Kontrola kilku tryskaczy w zależności od warunków pogodowych i wydajności pompy.",
-      "zh-cn": "根据天气条件和泵的性能控制多个喷头。"
+      "zh-cn": "根据天气条件和泵的性能控制多个喷头。",
+      "uk": "Управління декількома зрошувачами в залежності від погодних умов і продуктивності насоса."
     },
     "keywords": [
       "Sprinkle",

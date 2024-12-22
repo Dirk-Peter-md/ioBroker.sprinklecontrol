@@ -21,18 +21,17 @@
         <script type="text/javascript" src="actions.js"></script>
             -->
         <!-- Load our own files -->
-        <link rel="stylesheet" type="text/css" href="style.css" />
         <script type="text/javascript" src="words.js"></script>
-
-        <title>Sprinkle Control</title>
+        <script type="text/javascript" src="index_m.js"></script>
+        <link rel="stylesheet" type="text/css" href="style.css" />
 
     </head>
 
     <body>
         <div class="m adapter-container">
             <div id="header-area" class="row" >
-                <div id="header-logo-title" class="col s6" >
-                    <img class="logo" src="sprinklecontrol.png"  alt="logo SprinkleControl">
+                <div id="header-logo-title" class="col s10 l6" >
+                    <img class="logo" src="sprinklecontrol.png">
                     <p>
                         <span class="translate h-title">Sprinkler control</span><br />
                         <span class="translate h-sub-title">Controlling your Sprinkler …</span>
@@ -69,12 +68,12 @@
                                     <table class="table-values">
                                         <thead>
                                         <tr>
-                                            <th data-name="_index" id="events_col_0" style="width: 80px; background: #174475; text-align: center" data-style="text-align: center">Nr</th>
-                                            <th data-name="enabled" id="events_col_1" style="width: 70px; background: #174475" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
-                                            <th data-name="sprinkleName" id="events_col_2" data-type="text" style="width: 40%; background: #174475" class="translate">Name</th>
-                                            <th data-name="name" id="events_col_3" data-type="text" style="width: 40%; background: #174475" class="translate">Object-ID sprinkler</th>
-                                            <th data-buttons="edit2" id="events_col_4" style="width: 150px; background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
-                                            <th data-buttons="edit up down delete" style="width: 120px; background: #174475"></th>
+                                            <th data-name="_index" id="events_col_0" style="background: #174475; text-align: center" data-style="text-align: center">Nr</th>
+                                            <th data-name="enabled" id="events_col_1" style="background: #174475" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
+                                            <th data-name="sprinkleName" id="events_col_2" data-type="text" style="background: #174475" class="translate">Name</th>
+                                            <th data-name="name" id="events_col_3" data-type="text" style="background: #174475" class="translate">Object-ID sprinkler</th>
+                                            <th data-buttons="edit2" id="events_col_4" style="background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
+                                            <th data-buttons="edit copy up down delete" style="background: #174475"></th>
                                             <!-- ****************************************   ***   only for temp states   ***   **************************************** -->
                                             <th data-name="triggerID" id="events_col_5" data-type="text" style="width: 0; background: #174475" class="translate"></th>
                                             <th data-name="wateringTime" id="events_col_6" data-type="number" style="width: 0" class="translate"></th>
@@ -684,7 +683,7 @@
                                 </div>
                             </div>
                             <div class="col s12">
-                                <ul class="tabs blue lighten-4">
+                                <ul class="tabs">
                                     <li class="tab col s12 l6"><a href="#tab-settingsPopUp" class="translate active">Main settings</a></li>
                                     <li class="tab col s12 l6 tab-pumpPopUp"><a href="#tab-pumpPopUp" class="translate">Pump settings</a></li>
                                 </ul>
@@ -901,8 +900,6 @@
                 </div>
             </div>
         </div>
-        <!-- Load our own files when the Dom is loaded (jQuery) -->
-        <script type="text/javascript" src="index_m.js"></script>
     </body>
 
 </html>
