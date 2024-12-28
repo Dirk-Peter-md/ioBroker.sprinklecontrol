@@ -173,7 +173,7 @@ function startAdapter(options) {
                                 [{
                                     auto: false,  // Handbetrieb
                                     sprinkleID: found.sprinkleID,
-                                    wateringTime: (state.val <= 0) ? state.val : Math.round(60 * state.val)
+                                    wateringTime: (state.val <= 0) ? 0 : Math.round(60 * state.val)
                                 }]);
                             adapter.setState(id, {
                                 val: state.val,
@@ -231,8 +231,8 @@ function startAdapter(options) {
                 const found = myConfig.config.find(d => d.objectName === idSplit[3]);
                 if (found) {
                     myConfig.postponeByOneDay(found.sprinkleID).catch((e) => {
-adapter.log.warn(`postponeByOneDay: ${e}`);
-});
+                        adapter.log.warn(`postponeByOneDay: ${e}`);
+                    });
                     adapter.setState(id, {
                         val: false,
                         ack: true
@@ -560,8 +560,8 @@ async function checkActualStates () {
                 if (_autoOn && typeof _autoOn.val === 'boolean') {
                     res.autoOn = _autoOn.val;
                     if (_autoOn.val === false) {
-adapter.log.info(`get ${res.objectName}.autoOn = ${res.autoOn}`);
-}
+                        adapter.log.info(`get ${res.objectName}.autoOn = ${res.autoOn}`);
+                    }
                 }
             }
         }
@@ -821,8 +821,8 @@ function startTimeSprinkle() {
             myWeekday += run;
             run++;
             if (myWeekday>6){
-myWeekday=0;
-}
+                myWeekday=0;
+            }
             // Start time variant according to configuration => Startzeitvariante gemäß Konfiguration
             switch(adapter.config.wateringStartTime) {
                 case 'livingTime' :				/*Startauswahl = festen Zeit*/
@@ -960,8 +960,8 @@ myWeekday=0;
                                     let countdown = res.wateringTime * (100 - res.soilMoisture.pct) / (100 - res.soilMoisture.pctTriggerIrrigation); // in min
                                     // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                                     if (countdown > (res.wateringTime * res.wateringAdd / 100)) {
-countdown = res.wateringTime * res.wateringAdd / 100;
-}
+                                        countdown = res.wateringTime * res.wateringAdd / 100;
+                                    }
                                     memAddList.push({
                                         auto: true,
                                         sprinkleID: res.sprinkleID,
@@ -979,7 +979,7 @@ countdown = res.wateringTime * res.wateringAdd / 100;
                         //  --              Bewässerungstag erreicht                //
                         case 'fixDay':
                             /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet. */
-                            if (resRain(false) <= 0) {
+                            if (resRain(res.inGreenhouse) <= 0) {
                                 // Bewässerungstag erreicht
                                 if (res.startFixDay[today]) {
                                     const curWateringTime = Math.round(60 * res.wateringTime * evaporation.timeExtension(res.wateringAdd));
@@ -1003,10 +1003,10 @@ countdown = res.wateringTime * res.wateringAdd / 100;
                                 if ((res.startDay === 'threeRd') || (res.startDay === 'twoNd')) {
                                     let startDay = -1;
                                     res.startFixDay.forEach((item, index) => {
-if (item) {
-startDay = index;
-}
-});
+                                        if (item) {
+                                            startDay = index;
+                                        }
+                                    });
                                     if (startDay !== -1) {
                                         res.startFixDay[startDay] = false;
                                         res.startFixDay[(+ startDay + 1 > 6) ? (+ startDay-6) : (+ startDay+1)] = true;
@@ -1027,8 +1027,8 @@ startDay = index;
                                     let countdown = res.wateringTime * (res.soilMoisture.maxIrrigation - res.soilMoisture.val) / (res.soilMoisture.maxIrrigation - res.soilMoisture.triggersIrrigation); // in min
                                     // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
                                     if (countdown > (res.wateringTime * res.wateringAdd / 100)) {
-countdown = res.wateringTime * res.wateringAdd / 100;
-}
+                                        countdown = res.wateringTime * res.wateringAdd / 100;
+                                    }
                                     memAddList.push({
                                         auto: true,
                                         sprinkleID: res.sprinkleID,

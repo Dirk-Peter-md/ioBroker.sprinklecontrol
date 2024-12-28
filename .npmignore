@@ -11,14 +11,11 @@ Thumbs.db
 gulpfile.js
 
 test/
-travis/
-.travis.yml
 appveyor.yml
-.travis.yaml
 appveyor.yaml
 
-.eslintrc.json
-.eslintrc.js
+eslint.config.mjs
+prettier.config.mjs
 
 # npm package files
 iobroker.*.tgz
