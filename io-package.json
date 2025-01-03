@@ -1,6 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
+    "version": "0.2.13",
     "titleLang": {
       "en": "Sprinkle Control",
       "de": "Sprinkle Control",
@@ -17,7 +18,6 @@
     "authors": [
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
-    "version": "0.2.13",
     "news": {
       "0.2.13": {
         "en": "various bugs fixed; Preparing the stable release",
@@ -295,7 +295,6 @@
       "type": "free"
     },
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "sprinklecontrol.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/Dirk-Peter-md/ioBroker.sprinklecontrol/master/admin/sprinklecontrol.png",
@@ -304,16 +303,24 @@
     "mode": "daemon",
     "type": "garden",
     "compact": true,
-    "materialize": true,
-    "messagebox": true,
-    "stopBeforeUpdate": true,
     "connectionType": "local",
     "dataSource": "assumption",
+    "messagebox": true,
+    "tier": 2,
+    "stopBeforeUpdate": true,
     "dependencies": [
       {
         "js-controller": ">=5.0.19"
       }
-    ]
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=6.0.0"
+      }
+    ],
+    "adminUI": {
+      "config": "materialize"
+    }
   },
   "native": {
     "triggerControlVoltage": "",
