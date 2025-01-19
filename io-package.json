@@ -588,6 +588,31 @@
       "native": {}
     },
     {
+      "_id": "control.autoStart",
+      "type": "state",
+      "common": {
+        "role": "button",
+        "name": {
+          "en": "Start irrigation",
+          "de": "Bewässerung starten",
+          "ru": "Начать орошение",
+          "pt": "Iniciar irrigação",
+          "nl": "Begin met irrigatie",
+          "fr": "Démarrer l'irrigation",
+          "it": "Iniziare l'irrigazione",
+          "es": "Iniciar riego",
+          "pl": "Rozpocznij nawadnianie",
+          "uk": "Почати полив",
+          "zh-cn": "开始灌溉"
+        },
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    },
+    {
       "_id": "control.parallelOfMax",
       "type": "state",
       "common": {
