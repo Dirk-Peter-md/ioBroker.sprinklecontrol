@@ -69,9 +69,9 @@
                                         <thead>
                                         <tr>
                                             <th data-name="_index" id="events_col_0" style="background: #174475; text-align: center" data-style="text-align: center">Nr</th>
-                                            <th data-name="enabled" id="events_col_1" style="background: #174475" data-style="width: 70px" data-type="checkbox" class="translate">active</th>
-                                            <th data-name="sprinkleName" id="events_col_2" data-type="text" style="background: #174475" class="translate">Name</th>
-                                            <th data-name="name" id="events_col_3" data-type="text" style="background: #174475" class="translate">Object-ID sprinkler</th>
+                                            <th data-name="enabled" id="events_col_1" style="background: #174475" data-style="width: 70px" data-label="active" data-type="checkbox" class="translate">active</th>
+                                            <th data-name="sprinkleName" id="events_col_2" data-type="text" style="background: #174475" data-label="Name" class="translate">Name</th>
+                                            <th data-name="name" id="events_col_3" data-type="text" style="background: #174475" data-label="Object-ID sprinkler" class="translate">Object-ID sprinkler</th>
                                             <th data-buttons="edit2" id="events_col_4" style="background: #174475; height: 40px" data-style="width: 150px; text-align: left" ></th>
                                             <th data-buttons="edit copy up down delete" style="background: #174475"></th>
                                             <!-- ****************************************   ***   only for temp states   ***   **************************************** -->
@@ -221,7 +221,7 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s6 l2 visWeekLiving">
-                                <input type="time" class="timepicker value" id="weekLiving" />
+                                <input type="text" class="timepicker value" id="weekLiving" />
                                 <label for="weekLiving" class="translate"></label>
                                 <span class="translate">Start time in the week</span>
                             </div>
@@ -257,7 +257,7 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12 m4 l2 showAddStartTime">
-                                <input type="time" class="timepicker value" id="addWateringStartTime" />
+                                <input type="text" class="timepicker value" id="addWateringStartTime" />
                                 <label for="addWateringStartTime" class="translate"></label>
                                 <span class="translate">Additional start time</span>
                             </div>
@@ -274,7 +274,7 @@
                                 <span for="publicWeekend" class="translate">different start time on weekends</span>
                             </div>
                             <div class="input-field col s12 m6 l2 publicWeek">
-                                <input type="time" class="timepicker value" id="weekEndLiving" />
+                                <input type="text" class="timepicker value" id="weekEndLiving" />
                                 <label for="weekEndLiving" class="translate"></label>
                                 <span class="translate">Start time at the weekend</span>
                             </div>
