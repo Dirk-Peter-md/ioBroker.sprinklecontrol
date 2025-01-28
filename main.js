@@ -127,10 +127,11 @@ function startAdapter(options) {
      * --------- wird aufgerufen, wenn sich ein abonnierter Status ändert ----------
      */
     adapter.on('stateChange', (id, state) => {
-        if (state?.ack === false) {
-            // The state was changed → Der Zustand wurde geändert
-            adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+        // The state was changed → Der Zustand wurde geändert
+        adapter.log.debug(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
 
+        // Signale zum bestätigen (ack = true) - signals for confirmation
+        if (state?.ack === false) {
             // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
             if (id === `${adapter.namespace  }.control.Holiday`) {
                 // @ts-ignore
@@ -194,25 +195,6 @@ function startAdapter(options) {
                     }
                 }
             }
-            // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
-            if (myConfig.config) {
-                function filterByID(obj){
-                    return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
-                }
-                const filter = myConfig.config.filter(filterByID);
-                if (filter) {
-                    for (const fil of filter) {
-                        if (id === myConfig.config[fil.sprinkleID].triggerSM){
-                            // analog
-                            if (fil.methodControlSM === 'analog') {
-                                myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
-                            } else if (fil.methodControlSM === 'bistable') {   // bistable
-                                myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
-                            }
-                        }
-                    }
-                }
-            }
             // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
             //   bei false nicht automatisch gestartet
             if (myConfig.config && (typeof state.val === 'boolean')) {
@@ -235,7 +217,6 @@ function startAdapter(options) {
                     }
                 }
             }
-
             //  postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
             const idSplit = id.split('.', 5);
             if (idSplit[4] === `postponeByOneDay`) {
@@ -250,90 +231,110 @@ function startAdapter(options) {
                     });
                 }
             }
-
-            // Change in outside temperature → Änderung der Außentemperatur
-            if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
-                if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurTemperature(parseFloat(state.val), state.ts);
-                } else {
-                    adapter.log.warn(`sensorOutsideTemperature => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                }
+        }
+        // Signale ohne Bestätigung - signals without confirmation
+        
+        // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
+        if (myConfig.config) {
+            function filterByID(obj){
+                return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
             }
-            // LuftFeuchtigkeit
-            if (id === adapter.config.sensorOutsideHumidity) {
-                if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurHumidity(parseFloat(state.val), state.lc);
-                } else {
-                    adapter.log.warn(`sensorOutsideHumidity => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                }
-            }
-            // Helligkeit
-            if (id === adapter.config.sensorBrightness) {
-                if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurIllumination(parseFloat(state.val), state.lc);
-                } else {
-                    adapter.log.warn(`sensorBrightness => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                }
-            }
-            // Windgeschwindigkeit
-            if (id === adapter.config.sensorWindSpeed) {
-                if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
-                } else {
-                    adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                }
-            }
-            // Regencontainer
-            // If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
-            //	* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt.
-            if (id === adapter.config.sensorRainfall) {
-                if (!Number.isNaN(Number.parseFloat(state.val))) {
-                    evaporation.setCurAmountOfRain(parseFloat(state.val));
-                } else {
-                    adapter.log.warn(`sensorRainfall => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                }
-            }
-            // Feiertagskalender
-            if (adapter.config.publicHolidays === true) {
-                if (id === `${adapter.config.publicHolInstance  }.heute.boolean`) {
-                    publicHolidayStr = state.val;
-                    startTimeSprinkle();
-                }
-                if (id === `${adapter.config.publicHolInstance  }.morgen.boolean`) {     
-                    // @ts-ignore
-                    publicHolidayTomorrowStr = state.val;
-                    startTimeSprinkle();
-                }
-            }
-            // Wettervorhersage
-            if (adapter.config.weatherForecast === true) {
-                if (id === weatherForecastTodayPfadStr) {
-                    if (typeof state.val == 'string') {
-                        weatherForecastTodayNum = parseFloat(state.val);
-                    } else if (typeof state.val == 'number') {
-                        weatherForecastTodayNum = state.val;
-                    } else {
-                        weatherForecastTodayNum = 0;
-                        adapter.log.info(`StateChange => Wettervorhersage state.val ( ${  state.val  }; ${  typeof state.val  } ) kann nicht als Number verarbeitet werden`);
+            const filter = myConfig.config.filter(filterByID);
+            if (filter) {
+                for (const fil of filter) {
+                    if (id === myConfig.config[fil.sprinkleID].triggerSM){
+                        // analog
+                        if (fil.methodControlSM === 'analog') {
+                            myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
+                        } else if (fil.methodControlSM === 'bistable') {   // bistable
+                            myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
+                        }
                     }
-                    adapter.setState('info.rainToday', {
-                        val: weatherForecastTodayNum,
-                        ack: true
-                    });
-                }
-                if (id === `${adapter.config.weatherForInstance  }.NextDaysDetailed.Location_1.Day_2.rain_value`) {
-                    weatherForecastTomorrowNum = parseFloat(state.val);
-                    adapter.setState('info.rainTomorrow', {
-                        val: weatherForecastTomorrowNum,
-                        ack: true
-                    });
                 }
             }
-            // Füllstand der Zisterne bei Statusänderung
-            if (adapter.config.actualValueLevel && (id === adapter.config.actualValueLevel)) {
-                valveControl.setFillLevelCistern(parseFloat(state.val) || 0);
-                //fillLevelCistern = state.val || 0;
+        }
+        // Change in outside temperature → Änderung der Außentemperatur
+        if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
+            if (!Number.isNaN(Number.parseFloat(state.val))) {
+                evaporation.setCurTemperature(parseFloat(state.val), state.ts);
+            } else {
+                adapter.log.warn(`sensorOutsideTemperature => Wrong value: ${state.val}, Type: ${typeof state.val}`);
             }
+        }
+        // LuftFeuchtigkeit
+        if (id === adapter.config.sensorOutsideHumidity) {
+            if (!Number.isNaN(Number.parseFloat(state.val))) {
+                evaporation.setCurHumidity(parseFloat(state.val), state.lc);
+            } else {
+                adapter.log.warn(`sensorOutsideHumidity => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+            }
+        }
+        // Helligkeit
+        if (id === adapter.config.sensorBrightness) {
+            if (!Number.isNaN(Number.parseFloat(state.val))) {
+                evaporation.setCurIllumination(parseFloat(state.val), state.lc);
+            } else {
+                adapter.log.warn(`sensorBrightness => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+            }
+        }
+        // Windgeschwindigkeit
+        if (id === adapter.config.sensorWindSpeed) {
+            if (!Number.isNaN(Number.parseFloat(state.val))) {
+                evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
+            } else {
+                adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+            }
+        }
+        // Regencontainer
+        // If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
+        //	* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt.
+        if (id === adapter.config.sensorRainfall) {
+            if (!Number.isNaN(Number.parseFloat(state.val))) {
+                evaporation.setCurAmountOfRain(parseFloat(state.val));
+            } else {
+                adapter.log.warn(`sensorRainfall => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+            }
+        }
+        // Feiertagskalender
+        if (adapter.config.publicHolidays === true) {
+            if (id === `${adapter.config.publicHolInstance  }.heute.boolean`) {
+                publicHolidayStr = state.val;
+                startTimeSprinkle();
+            }
+            if (id === `${adapter.config.publicHolInstance  }.morgen.boolean`) {     
+                // @ts-ignore
+                publicHolidayTomorrowStr = state.val;
+                startTimeSprinkle();
+            }
+        }
+        // Wettervorhersage
+        if (adapter.config.weatherForecast === true) {
+            if (id === weatherForecastTodayPfadStr) {
+                if (typeof state.val == 'string') {
+                    weatherForecastTodayNum = parseFloat(state.val);
+                } else if (typeof state.val == 'number') {
+                    weatherForecastTodayNum = state.val;
+                } else {
+                    weatherForecastTodayNum = 0;
+                    adapter.log.info(`StateChange => Wettervorhersage state.val ( ${  state.val  }; ${  typeof state.val  } ) kann nicht als Number verarbeitet werden`);
+                }
+                adapter.setState('info.rainToday', {
+                    val: weatherForecastTodayNum,
+                    ack: true
+                });
+            }
+            if (id === `${adapter.config.weatherForInstance  }.NextDaysDetailed.Location_1.Day_2.rain_value`) {
+                weatherForecastTomorrowNum = parseFloat(state.val);
+                adapter.setState('info.rainTomorrow', {
+                    val: weatherForecastTomorrowNum,
+                    ack: true
+                });
+            }
+        }
+        // Füllstand der Zisterne bei Statusänderung
+        if (adapter.config.actualValueLevel && (id === adapter.config.actualValueLevel)) {
+            valveControl.setFillLevelCistern(parseFloat(state.val) || 0);
+            //fillLevelCistern = state.val || 0;
         }
     });
 }
