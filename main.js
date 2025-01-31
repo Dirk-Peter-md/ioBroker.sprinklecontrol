@@ -24,7 +24,7 @@ let weatherForecastTodayPfadStr = '';   //  Pfad zur Regenvorhersage in mm
 let weatherForecastTodayNum = 0;        //  heutige Regenvorhersage in mm
 let weatherForecastTomorrowNum = 0;     //  morgige Regenvorhersage in mm
 let addStartTimeSwitch = false;         //  Externer Schalter für Zusatzbewässerung
-let startTimeStr = '';
+let startTimeStr = '';                  //  06:00
 let sunriseStr = '';
 let sunsetStr = '';
 let goldenHourEnd = '';
@@ -384,10 +384,13 @@ function curNextFixDay (sprinkleID, returnOn) {
     const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
     let found = false;
     let curDay = formatTime(adapter, '', 'day');
+    if (startTimeStr <= formatTime(adapter, '', 'hh:mm')) {
+        curDay++
+    }
     for ( let i=0; i<7; i++ ) {
         if (curDay > 6) {
-curDay = curDay - 7;
-}
+            curDay = curDay - 7;
+        }
         if (weekDayArray[curDay] === true) {
             found = true;
             if (returnOn) {
@@ -795,7 +798,7 @@ function startTimeSprinkle() {
 
     // if (autoOnOff == false) => keine auto Start
     if (!autoOnOffStr) {
-        adapter.log.info(`Sprinkle: autoOnOff == Aus ( ${autoOnOffStr} )`);
+        adapter.log.info(`Sprinkle: autoOnOff == Aus ( ${ autoOnOffStr } )`);
         adapter.setState('info.nextAutoStart', {
             val: 'autoOnOff = off(0)',
             ack: true
@@ -817,7 +820,7 @@ function startTimeSprinkle() {
         const myMinutes = checkTime(curTime.getMinutes());
         let myWeekday = curTime.getDay();
         const myWeekdayStr = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-        const myTime = `${myHours  }:${  myMinutes}`;
+        const myTime = `${ myHours }:${ myMinutes }`;
 
         /**
          * aus 0...9 wird String 00...09
@@ -826,7 +829,7 @@ function startTimeSprinkle() {
          * @returns
          */
         function checkTime(i) {
-            return (+i < 10) ? `0${  i}` : i;
+            return (+i < 10) ? `0${ i }` : i;
         }
 
         do {
@@ -872,7 +875,7 @@ function startTimeSprinkle() {
             }
         } while ((newStartTime <= myTime) && (run === 1));
 
-        const newStartTimeLong = `${myWeekdayStr[myWeekday]  } ${  newStartTime}`;
+        const newStartTimeLong = `${ myWeekdayStr[myWeekday] } ${ newStartTime }`;
         /**
          * next Auto-Start
          *
@@ -1013,7 +1016,7 @@ const startOfIrrigation = () => {
                                     sprinkleID: res.sprinkleID,
                                     wateringTime: curWateringTime
                                 });
-                                messageText += `   START => ${  addTime(curWateringTime, '')  }\n`;
+                                messageText += `   START => ${ addTime(curWateringTime, '') }\n`;
                                 if (res.startDay === 'threeRd'){          // Next Start in 3 Tagen
                                     res.startFixDay[today] = false;
                                     res.startFixDay[(+ today + 3 > 6) ? (+ today-4) : (+ today+3)] = true;

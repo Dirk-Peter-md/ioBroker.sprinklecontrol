@@ -36,6 +36,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ### **WORK IN PROGRESS**
 * (Dirk-Peter-md) eslint-config added
 * (Dirk-Peter-md) Dependencies updated
+* (Dirk-Peter-md) Update License
+* (Dirk-Peter-md) issue #92 Sprinkler im Gewächshaus solved
+* (Dirk-Peter-md) add Button control.autoStart
 
 ### 0.2.13 (2022-09-06)
 * (Dirk-Peter-md) various bugs fixed
