@@ -406,8 +406,8 @@ function curNextFixDay (sprinkleID, returnOn) {
         curDay++;
     }
     if (returnOn && found === false) {
-return 'off';
-}
+        return 'off';
+    }
 }
 
 //
@@ -940,19 +940,21 @@ const startOfIrrigation = () => {
         }
 
         for(const res of result) {
-            messageText += `<b>${  res.objectName  }</b>`;
+            let messageTextZeile1 = '';
+            let messageTextZeile2 = '';
+            messageTextZeile1 = `<b>${ res.objectName }</b>`;
             switch (res.methodControlSM) {
                 case 'bistable':
-                    messageText += ` (${  res.soilMoisture.bool  })\n`;
+                    messageTextZeile1 += ` (${ res.soilMoisture.bool })`;
                     break;
                 case 'analog':
-                    messageText += ` ${  res.soilMoisture.pct  }% (${  res.soilMoisture.pctTriggerIrrigation  }%)\n`;
+                    messageTextZeile1 += ` ${res.soilMoisture.pct}% (${res.soilMoisture.pctTriggerIrrigation}%)`;
                     break;
                 case 'fixDay':
-                    messageText += ` (${  curNextFixDay(res.sprinkleID, true)  })\n`;
+                    //messageTextZeile1 += ` (${curNextFixDay(res.sprinkleID, true)})`;
                     break;
                 case 'calculation':
-                    messageText += ` ${  res.soilMoisture.pct  }% (${  res.soilMoisture.pctTriggerIrrigation  }%)\n`;
+                    messageTextZeile1 += ` ${res.soilMoisture.pct}% (${res.soilMoisture.pctTriggerIrrigation}%)`;
                     break;
             }
 
@@ -971,10 +973,10 @@ const startOfIrrigation = () => {
                                     sprinkleID: res.sprinkleID,
                                     wateringTime: curWateringTime
                                 });
-                                messageText += `   START => ${  addTime(curWateringTime, '')  }\n`;
+                                messageTextZeile2 += `START => ${addTime(curWateringTime, '')}`;
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
-                                messageText += `   ` + `<i>` + `Start verschoben, da heute ${  weatherForecastTodayNum  }mm Niederschlag` + `</i> ` + `\n`;
+                                messageTextZeile2 += `<i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i>`;
                                 adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
                             }
                         }
@@ -995,10 +997,10 @@ const startOfIrrigation = () => {
                                     sprinkleID: res.sprinkleID,
                                     wateringTime: Math.round(60* countdown)
                                 });
-                                messageText += `   START => ${  addTime(Math.round(60*countdown), '')  }\n`;
+                                messageTextZeile2 += `START => ${addTime(Math.round(60*countdown), '')}`;
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
-                                messageText += `   ` + `<i>` + `Start verschoben, da heute ${  weatherForecastTodayNum  }mm Niederschlag` + `</i> ` + `\n`;
+                                messageTextZeile2 += `<i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> `;
                                 adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
                             }
                         }
@@ -1016,7 +1018,7 @@ const startOfIrrigation = () => {
                                     sprinkleID: res.sprinkleID,
                                     wateringTime: curWateringTime
                                 });
-                                messageText += `   START => ${ addTime(curWateringTime, '') }\n`;
+                                messageTextZeile2 += `START => ${addTime(curWateringTime, '')}`;
                                 if (res.startDay === 'threeRd'){          // Next Start in 3 Tagen
                                     res.startFixDay[today] = false;
                                     res.startFixDay[(+ today + 3 > 6) ? (+ today-4) : (+ today+3)] = true;
@@ -1026,7 +1028,7 @@ const startOfIrrigation = () => {
                                 }
                             }
                         } else if (adapter.config.weatherForecast){
-                            messageText += `   ` + `<i>` + `Start verschoben, da heute ${  weatherForecastTodayNum  }mm Niederschlag` + `</i> ` + `\n`;
+                            messageTextZeile2 += `<i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i>`;
                             adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(false)} > 0 ]`);
                             if ((res.startDay === 'threeRd') || (res.startDay === 'twoNd')) {
                                 let startDay = -1;
@@ -1044,6 +1046,7 @@ const startOfIrrigation = () => {
                             }
                         }
                         curNextFixDay(res.sprinkleID, false);
+                        messageTextZeile1 += `( ${ curNextFixDay(res.sprinkleID, true) })`;
                         break;
                     // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
                     //  --             Bodenfeuchte zu gering              --  //
@@ -1062,18 +1065,19 @@ const startOfIrrigation = () => {
                                     sprinkleID: res.sprinkleID,
                                     wateringTime: Math.round(60*countdown)
                                 });
-                                messageText += `   START => ${  addTime(Math.round(60*countdown), '')  }\n`;
+                                messageTextZeile2 += `START => ${addTime(Math.round(60*countdown), '')}`;
                             } else if (adapter.config.weatherForecast) {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
-                                messageText += `   ` + `<i>` + `Start verschoben, da heute ${  weatherForecastTodayNum  }mm Niederschlag` + `</i> ` + `\n`;
+                                messageTextZeile2 += `<i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i>`;
                                 adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${res.soilMoisture.val.toFixed(1)} (${resMoisture.toFixed(1)}) <= ${res.soilMoisture.triggersIrrigation} ]`);
                             }
                         }
                         break;
                 }
             } else {
-                messageText += '   ' + '<i>' + 'Ventil auf Handbetrieb' + '</i>' + '\n';
+                messageTextZeile2 += `<i>Ventil auf Handbetrieb</i> `;
             }
+            messageText += (messageTextZeile2.length > 0) ? (`${ messageTextZeile1 }\n   ${ messageTextZeile2 }\n`) : (`${ messageTextZeile1 }\n`);
         }
         valveControl.addList(memAddList);
     }
