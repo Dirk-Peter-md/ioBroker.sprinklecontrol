@@ -77,10 +77,9 @@ function startAdapter(options) {
             schedule.cancelJob('sprinkleAddStartTime');
             /* alle Ventile und Aktoren deaktivieren */
             valveControl.clearEntireList();
-
             callback();
-        } catch (e) {
-            callback();
+        } catch (err) {
+            callback(err);
         }
     });
 
@@ -164,7 +163,7 @@ function startAdapter(options) {
                 startTimeSprinkle();
             }
             // wenn (autoStart == true) so die automatische Bewässerung von Hand gestartet
-            if (id === `${ adapter.namespace }.control.autoStart`) {
+            if (id === `${adapter.namespace}.control.autoStart`) {
                 adapter.setState(id, {
                     val: false,
                     ack: true
@@ -316,7 +315,7 @@ function startAdapter(options) {
                     weatherForecastTodayNum = state.val;
                 } else {
                     weatherForecastTodayNum = 0;
-                    adapter.log.info(`StateChange => Wettervorhersage state.val ( ${  state.val  }; ${  typeof state.val  } ) kann nicht als Number verarbeitet werden`);
+                    adapter.log.info(`StateChange => Wettervorhersage state.val ( ${state.val}; ${typeof state.val} ) kann nicht als Number verarbeitet werden`);
                 }
                 adapter.setState('info.rainToday', {
                     val: weatherForecastTodayNum,
@@ -531,7 +530,7 @@ async function checkActualStates () {
                     weatherForecastTodayNum = _weatherForInstanceToday.val;
                 } else {
                     weatherForecastTodayNum = 0;
-                    adapter.log.info(`checkActualStates => Wettervorhersage state.val ( ${  _weatherForInstanceToday.val  }); ${  typeof _weatherForInstanceToday.val  } kann nicht als Number verarbeitet werden`);
+                    adapter.log.info(`checkActualStates => Wettervorhersage state.val ( ${_weatherForInstanceToday.val}); ${typeof _weatherForInstanceToday.val} kann nicht als Number verarbeitet werden`);
                 }
                 await adapter.setStateAsync('info.rainToday',
                     weatherForecastTodayNum,
@@ -628,16 +627,16 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
             for(const i in result) {
                 if (Object.hasOwn(result, i)) {
                     const objectName = result[i].objectName;
-                    adapter.getState(`sprinkle.${  objectName  }.history.curCalWeekConsumed`, (err, state) => {
+                    adapter.getState(`sprinkle.${objectName}.history.curCalWeekConsumed`, (err, state) => {
                         if (state) {
-                            adapter.setState(`sprinkle.${  objectName  }.history.lastCalWeekConsumed`, { val: state.val, ack: true });
-                            adapter.setState(`sprinkle.${  objectName  }.history.curCalWeekConsumed`, { val: 0, ack: true });
+                            adapter.setState(`sprinkle.${objectName}.history.lastCalWeekConsumed`, { val: state.val, ack: true });
+                            adapter.setState(`sprinkle.${objectName}.history.curCalWeekConsumed`, { val: 0, ack: true });
                         }
                     });
-                    adapter.getState(`sprinkle.${  objectName  }.history.curCalWeekRunningTime`, (err, state) => {
+                    adapter.getState(`sprinkle.${objectName}.history.curCalWeekRunningTime`, (err, state) => {
                         if (state) {
-                            adapter.setState(`sprinkle.${  objectName  }.history.lastCalWeekRunningTime`, { val: state.val, ack: true });
-                            adapter.setState(`sprinkle.${  objectName  }.history.curCalWeekRunningTime`, { val: '00:00', ack: true });
+                            adapter.setState(`sprinkle.${objectName}.history.lastCalWeekRunningTime`, { val: state.val, ack: true });
+                            adapter.setState(`sprinkle.${objectName}.history.curCalWeekRunningTime`, { val: '00:00', ack: true });
                         }
                     });
                 }
@@ -664,13 +663,13 @@ function sunPos() {
     const times = SunCalc.getTimes(new Date(), adapter.config.latitude, adapter.config.longitude);
 
     // format sunrise time from the Date object → Formatieren Sie die Sonnenaufgangszeit aus dem Date-Objekt
-    sunriseStr = `${(`0${  times.sunrise.getHours()}`).slice(-2)  }:${  (`0${  times.sunrise.getMinutes()}`).slice(-2)}`;
+    sunriseStr = `${(`0${times.sunrise.getHours()}`).slice(-2)}:${(`0${times.sunrise.getMinutes()}`).slice(-2)}`;
 
     // format golden hour end time from the Date object → Formatiere golden hour end time aus dem Date-Objekt
-    goldenHourEnd = `${(`0${  times.goldenHourEnd.getHours()}`).slice(-2)  }:${  (`0${  times.goldenHourEnd.getMinutes()}`).slice(-2)}`;
+    goldenHourEnd = `${(`0${times.goldenHourEnd.getHours()}`).slice(-2)}:${(`0${times.goldenHourEnd.getMinutes()}`).slice(-2)}`;
 
     // format sunset time from the Date object → formatieren Sie die Sonnenuntergangszeit aus dem Date-Objekt
-    sunsetStr = sunsetStr = `${(`0${  times.sunset.getHours()}`).slice(-2)  }:${  (`0${  times.sunset.getMinutes()}`).slice(-2)}`;
+    sunsetStr = sunsetStr = `${(`0${times.sunset.getHours()}`).slice(-2)}:${(`0${times.sunset.getMinutes()}`).slice(-2)}`;
 
 }
 
@@ -678,7 +677,7 @@ function addStartTimeSprinkle() {
     schedule.cancelJob('sprinkleAddStartTime');
     if (adapter.config.selectAddStartTime === 'greaterETpCurrent' || adapter.config.selectAddStartTime === 'withExternalSignal') {
         const addStartTimeSplit = adapter.config.addWateringStartTime.split(':');
-        const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', `${ addStartTimeSplit[1]  } ${  addStartTimeSplit[0]  } * * *`, function() {
+        const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', `${addStartTimeSplit[1]} ${addStartTimeSplit[0]} * * *`, function() {
             // if (autoOnOff == false) => keine auto Start
             if (!autoOnOffStr) {
                 schedule.cancelJob('sprinkleAddStartTime');
@@ -798,7 +797,7 @@ function startTimeSprinkle() {
 
     // if (autoOnOff == false) => keine auto Start
     if (!autoOnOffStr) {
-        adapter.log.info(`Sprinkle: autoOnOff == Aus ( ${ autoOnOffStr } )`);
+        adapter.log.info(`Sprinkle: autoOnOff == Aus ( ${autoOnOffStr} )`);
         adapter.setState('info.nextAutoStart', {
             val: 'autoOnOff = off(0)',
             ack: true
@@ -820,7 +819,7 @@ function startTimeSprinkle() {
         const myMinutes = checkTime(curTime.getMinutes());
         let myWeekday = curTime.getDay();
         const myWeekdayStr = ['So','Mo','Di','Mi','Do','Fr','Sa'];
-        const myTime = `${ myHours }:${ myMinutes }`;
+        const myTime = `${myHours}:${myMinutes}`;
 
         /**
          * aus 0...9 wird String 00...09
@@ -829,7 +828,7 @@ function startTimeSprinkle() {
          * @returns
          */
         function checkTime(i) {
-            return (+i < 10) ? `0${ i }` : i;
+            return (+i < 10) ? `0${i}` : i;
         }
 
         do {
@@ -875,7 +874,7 @@ function startTimeSprinkle() {
             }
         } while ((newStartTime <= myTime) && (run === 1));
 
-        const newStartTimeLong = `${ myWeekdayStr[myWeekday] } ${ newStartTime }`;
+        const newStartTimeLong = `${myWeekdayStr[myWeekday]} ${newStartTime}`;
         /**
          * next Auto-Start
          *
@@ -891,7 +890,7 @@ function startTimeSprinkle() {
                     });
                     // next Start Message
                     if(!sendMessageText.onlySendError){
-                        sendMessageText.sendMessage(`${infoMessage  }(${  myWeekdayStr[myWeekday]  }) um ${  newStartTime}`);
+                        sendMessageText.sendMessage(`${infoMessage}(${myWeekdayStr[myWeekday]}) um ${newStartTime}`);
                     }
                     adapter.log.info(`${infoMessage} (${myWeekdayStr[myWeekday]}) um ${newStartTime}`);
                 }
@@ -903,7 +902,7 @@ function startTimeSprinkle() {
     startTimeStr = nextStartTime();
     startTimeSplit = startTimeStr.split(':');
 
-    const scheduleStartTime = schedule.scheduleJob('sprinkleStartTime', `${ startTimeSplit[1] } ${ startTimeSplit[0] } * * *`, function() {
+    const scheduleStartTime = schedule.scheduleJob('sprinkleStartTime', `${startTimeSplit[1]} ${startTimeSplit[0]} * * *`, function() {
         startOfIrrigation();
         setTimeout (() => {
             setTimeout(()=>{
@@ -942,10 +941,10 @@ const startOfIrrigation = () => {
         for(const res of result) {
             let messageTextZeile1 = '';
             let messageTextZeile2 = '';
-            messageTextZeile1 = `<b>${ res.objectName }</b>`;
+            messageTextZeile1 = `<b>${res.objectName}</b>`;
             switch (res.methodControlSM) {
                 case 'bistable':
-                    messageTextZeile1 += ` (${ res.soilMoisture.bool })`;
+                    messageTextZeile1 += ` (${res.soilMoisture.bool})`;
                     break;
                 case 'analog':
                     messageTextZeile1 += ` ${res.soilMoisture.pct}% (${res.soilMoisture.pctTriggerIrrigation}%)`;
@@ -1046,7 +1045,7 @@ const startOfIrrigation = () => {
                             }
                         }
                         curNextFixDay(res.sprinkleID, false);
-                        messageTextZeile1 += `( ${ curNextFixDay(res.sprinkleID, true) })`;
+                        messageTextZeile1 += ` (${curNextFixDay(res.sprinkleID, true)})`;
                         break;
                     // ---   calculation  --  Berechnung der Bodenfeuchte  --- //
                     //  --             Bodenfeuchte zu gering              --  //
@@ -1077,7 +1076,8 @@ const startOfIrrigation = () => {
             } else {
                 messageTextZeile2 += `<i>Ventil auf Handbetrieb</i> `;
             }
-            messageText += (messageTextZeile2.length > 0) ? (`${ messageTextZeile1 }\n   ${ messageTextZeile2 }\n`) : (`${ messageTextZeile1 }\n`);
+            if (adapter.config.cisternSettings === true) messageText += `${valveControl.getStatusCistern()}\n`;
+            messageText += (messageTextZeile2.length > 0) ? (`${messageTextZeile1}\n   ${messageTextZeile2}\n`) : (`${messageTextZeile1}\n`);
         }
         valveControl.addList(memAddList);
     }
@@ -1159,17 +1159,17 @@ async function createSprinklers() {
                 switch (res.methodControlSM) {
                     case 'calculation':
                         nameMetConSM = {
-                            en: `${ objectName } => Calculated soil moisture in %`,
-                            de: `${ objectName } => Berechnete Bodenfeuchte in%`,
-                            ru: `${ objectName } => Расчетная влажность почвы в%`,
-                            pt: `${ objectName } => Umidade do solo calculada em%`,
-                            nl: `${ objectName } => Berekend bodemvocht in%`,
-                            fr: `${ objectName } => Humidité du sol calculée en %`,
-                            it: `${ objectName } => Umidità del suolo in%`,
-                            es: `${ objectName } => Humedad del suelo calculada en%`,
-                            pl: `${ objectName } => Obliczona wilgotność gleby w%`,
-                            uk: `${ objectName } => Розрахована вологість ґрунту в%`,
-                            "zh-cn": `${ objectName } => 计算出的土壤湿度百分比`
+                            en: `${objectName} => Calculated soil moisture in %`,
+                            de: `${objectName} => Berechnete Bodenfeuchte in%`,
+                            ru: `${objectName} => Расчетная влажность почвы в%`,
+                            pt: `${objectName} => Umidade do solo calculada em%`,
+                            nl: `${objectName} => Berekend bodemvocht in%`,
+                            fr: `${objectName} => Humidité du sol calculée en %`,
+                            it: `${objectName} => Umidità del suolo in%`,
+                            es: `${objectName} => Humedad del suelo calculada en%`,
+                            pl: `${objectName} => Obliczona wilgotność gleby w%`,
+                            uk: `${objectName} => Розрахована вологість ґрунту в%`,
+                            "zh-cn": `${objectName} => 计算出的土壤湿度百分比`
                         };
                         objMetConSM = {
                             type: 'state',
@@ -1189,17 +1189,17 @@ async function createSprinklers() {
                         break;
                     case 'bistable':
                         nameMetConSM = {
-                            en: `${ objectName } => bistable soil moisture sensor`,
-                            de: `${ objectName } => Bistabiler Bodenfeuchtesensor`,
-                            ru: `${ objectName } => бистабильный датчик влажности почвы`,
-                            pt: `${ objectName } => sensor biestável de umidade`,
-                            nl: `${ objectName } => bistabiele bodemvochtsensor`,
-                            fr: `${ objectName } => capteur d'humidité du sol bistable`,
-                            it: `${ objectName } => sensore di umidità bistabile`,
-                            es: `${ objectName } => sensor biestable de humedad`,
-                            pl: `${ objectName } => bistabilny czujnik wilgotności gleby`,
-                            uk: `${ objectName } => бістабільний датчик вологості ґрунту`,
-                            "zh-cn": `${ objectName } => 双稳态土壤湿度传感器`
+                            en: `${objectName} => bistable soil moisture sensor`,
+                            de: `${objectName} => Bistabiler Bodenfeuchtesensor`,
+                            ru: `${objectName} => бистабильный датчик влажности почвы`,
+                            pt: `${objectName} => sensor biestável de umidade`,
+                            nl: `${objectName} => bistabiele bodemvochtsensor`,
+                            fr: `${objectName} => capteur d'humidité du sol bistable`,
+                            it: `${objectName} => sensore di umidità bistabile`,
+                            es: `${objectName} => sensor biestable de humedad`,
+                            pl: `${objectName} => bistabilny czujnik wilgotności gleby`,
+                            uk: `${objectName} => бістабільний датчик вологості ґрунту`,
+                            "zh-cn": `${objectName} => 双稳态土壤湿度传感器`
                         };
                         objMetConSM = {
                             type: 'state',
@@ -1216,17 +1216,17 @@ async function createSprinklers() {
                         break;
                     case 'analog':
                         nameMetConSM = {
-                            en: `${ objectName } => analog soil moisture sensor in %`,
-                            de: `${ objectName } => analoger Bodenfeuchtesensor in%`,
-                            ru: `${ objectName } => аналоговый датчик влажности почвы в%`,
-                            pt: `${ objectName } => sensor analógico de umidade em%`,
-                            nl: `${ objectName } => analoge bodemvochtsensor in%`,
-                            fr: `${ objectName } => capteur d'humidité du sol analogique en %`,
-                            it: `${ objectName } => sensore umidità analogico in%`,
-                            es: `${ objectName } => sensor analógico de humedad en%`,
-                            pl: `${ objectName } => analogowy czujnik wilgotności gleby w%`,
-                            uk: `${ objectName } => аналоговий датчик вологості ґрунту в%`,
-                            "zh-cn": `${ objectName } => 模拟土壤湿度传感器，单位为％`
+                            en: `${objectName} => analog soil moisture sensor in %`,
+                            de: `${objectName} => analoger Bodenfeuchtesensor in%`,
+                            ru: `${objectName} => аналоговый датчик влажности почвы в%`,
+                            pt: `${objectName} => sensor analógico de umidade em%`,
+                            nl: `${objectName} => analoge bodemvochtsensor in%`,
+                            fr: `${objectName} => capteur d'humidité du sol analogique en %`,
+                            it: `${objectName} => sensore umidità analogico in%`,
+                            es: `${objectName} => sensor analógico de humedad en%`,
+                            pl: `${objectName} => analogowy czujnik wilgotności gleby w%`,
+                            uk: `${objectName} => аналоговий датчик вологості ґрунту в%`,
+                            "zh-cn": `${objectName} => 模拟土壤湿度传感器，单位为％`
                         };
                         objMetConSM = {
                             type: 'state',
@@ -1245,17 +1245,17 @@ async function createSprinklers() {
                         break;
                     case 'fixDay':
                         nameMetConSM = {
-                            en: `${ objectName } => start on a fixed day`,
-                            de: `${ objectName } => start an einem festen Tag`,
-                            ru: `${ objectName } => начните в определенный день`,
-                            pt: `${ objectName } => começa em dia fixo`,
-                            nl: `${ objectName } => start op een vaste dag`,
-                            fr: `${ objectName } => commence un jour fixe`,
-                            it: `${ objectName } => inizio a un giorno`,
-                            es: `${ objectName } => empezar un día fijo`,
-                            pl: `${ objectName } => zacznij w ustalonym dniu`,
-                            uk: `${ objectName } => початок у фіксований день`,
-                            "zh-cn": `${ objectName } => 在固定的日期开始`
+                            en: `${objectName} => start on a fixed day`,
+                            de: `${objectName} => start an einem festen Tag`,
+                            ru: `${objectName} => начните в определенный день`,
+                            pt: `${objectName} => começa em dia fixo`,
+                            nl: `${objectName} => start op een vaste dag`,
+                            fr: `${objectName} => commence un jour fixe`,
+                            it: `${objectName} => inizio a un giorno`,
+                            es: `${objectName} => empezar un día fijo`,
+                            pl: `${objectName} => zacznij w ustalonym dniu`,
+                            uk: `${objectName} => початок у фіксований день`,
+                            "zh-cn": `${objectName} => 在固定的日期开始`
                         };
                         objMetConSM = {
                             type: 'state',
@@ -1276,17 +1276,17 @@ async function createSprinklers() {
                     default:
                         adapter.log.warn(`sprinkleControl cannot created ... Please check your sprinkleControl config ${objectName} methodControl`);
                         nameMetConSM = {
-                            en: `${ objectName } => Emergency program! start on a fixed day`,
-                            de: `${ objectName } => Notfallprogramm! start an einem festen Tag`,
-                            ru: `${ objectName } => Экстренная программа! начните в определенный день`,
-                            pt: `${ objectName } => Programa urgente! comece em dia fixo`,
-                            nl: `${ objectName } => Noodprogramma! op een vaste dag beginnen`,
-                            fr: `${ objectName } => Programme d'urgence ! commencer un jour fixe`,
-                            it: `${ objectName } => Emergenze! inizio a data fissa`,
-                            es: `${ objectName } => ¡Programa de emergencia! empezar un día fijo`,
-                            pl: `${ objectName } => Program awaryjny! zacznij w ustalonym dniu`,
-                            uk: `${ objectName } => Екстрена програма! початок у визначений день`,
-                            "zh-cn": `${ objectName } => 紧急计划！从固定的日子开始`
+                            en: `${objectName} => Emergency program! start on a fixed day`,
+                            de: `${objectName} => Notfallprogramm! start an einem festen Tag`,
+                            ru: `${objectName} => Экстренная программа! начните в определенный день`,
+                            pt: `${objectName} => Programa urgente! comece em dia fixo`,
+                            nl: `${objectName} => Noodprogramma! op een vaste dag beginnen`,
+                            fr: `${objectName} => Programme d'urgence ! commencer un jour fixe`,
+                            it: `${objectName} => Emergenze! inizio a data fissa`,
+                            es: `${objectName} => ¡Programa de emergencia! empezar un día fijo`,
+                            pl: `${objectName} => Program awaryjny! zacznij w ustalonym dniu`,
+                            uk: `${objectName} => Екстрена програма! початок у визначений день`,
+                            "zh-cn": `${objectName} => 紧急计划！从固定的日子开始`
                         };
                         objMetConSM = {
                             type: 'state',
@@ -1311,7 +1311,7 @@ async function createSprinklers() {
             if (objectName && objectName !== '') {
                 try {
                     // Create Object for sprinkle. (ID)
-                    const _sprinkleNotExist = await adapter.setObjectNotExistsAsync(`sprinkle.${ objectName }`, {
+                    const _sprinkleNotExist = await adapter.setObjectNotExistsAsync(`sprinkle.${objectName}`, {
                         type: 'channel',
                         common: {
                             name: res.sprinkleName
@@ -1319,21 +1319,21 @@ async function createSprinklers() {
                         native: {},
                     });
                     // Create Object for .history
-                    const _historyNotExist = await adapter.setObjectNotExistsAsync(`sprinkle.${ objectName }.history`, {
+                    const _historyNotExist = await adapter.setObjectNotExistsAsync(`sprinkle.${objectName}.history`, {
                         type: 'channel',
                         common: {
                             name: {
-                                en: `${ res.sprinkleName } => History`,
-                                de: `${ res.sprinkleName } => Verlauf`,
-                                ru: `${ res.sprinkleName } => История`,
-                                pt: `${ res.sprinkleName } => História`,
-                                nl: `${ res.sprinkleName } => Geschiedenis`,
-                                fr: `${ res.sprinkleName } => Histoire`,
-                                it: `${ res.sprinkleName } => Storia`,
-                                es: `${ res.sprinkleName } => Historia`,
-                                pl: `${ res.sprinkleName } => Historia`,
-                                uk: `${ res.sprinkleName } => Історія`,
-                                "zh-cn": `${ res.sprinkleName } => 历史`
+                                en: `${res.sprinkleName} => History`,
+                                de: `${res.sprinkleName} => Verlauf`,
+                                ru: `${res.sprinkleName} => История`,
+                                pt: `${res.sprinkleName} => História`,
+                                nl: `${res.sprinkleName} => Geschiedenis`,
+                                fr: `${res.sprinkleName} => Histoire`,
+                                it: `${res.sprinkleName} => Storia`,
+                                es: `${res.sprinkleName} => Historia`,
+                                pl: `${res.sprinkleName} => Historia`,
+                                uk: `${res.sprinkleName} => Історія`,
+                                "zh-cn": `${res.sprinkleName} => 历史`
                             }
                         },
                         native: {},
@@ -1345,17 +1345,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Sprinkler consumption of the current calendar week`,
-                                de: `${ objectName } => Verlauf — Sprinklerverbrauch der aktuellen Woche`,
-                                ru: `${ objectName } => История - потребление спринклеров за текущую календарную неделю`,
-                                pt: `${ objectName } => Histórico - Consumo de sprinklers na semana atual`,
-                                nl: `${ objectName } => Geschiedenis - Sprinklerverbruik van de huidige kalenderweek`,
-                                fr: `${ objectName } => Historique - Consommation de gicleurs de la semaine en cours`,
-                                it: `${ objectName } => Cronologia - Consumo di irrigatori nella settimana corrente`,
-                                es: `${ objectName } => Historial: consumo de rociadores en la semana natural actual`,
-                                pl: `${ objectName } => Historia - Zużycie tryskaczy w bieżącym tygodniu kalendarzowym`,
-                                uk: `${ objectName } => Історія - Споживання спринклерів поточного календарного тижня`,
-                                "zh-cn": `${ objectName } => 历史-当前日历周的洒水消耗量`
+                                en: `${objectName} => History - Sprinkler consumption of the current calendar week`,
+                                de: `${objectName} => Verlauf — Sprinklerverbrauch der aktuellen Woche`,
+                                ru: `${objectName} => История - потребление спринклеров за текущую календарную неделю`,
+                                pt: `${objectName} => Histórico - Consumo de sprinklers na semana atual`,
+                                nl: `${objectName} => Geschiedenis - Sprinklerverbruik van de huidige kalenderweek`,
+                                fr: `${objectName} => Historique - Consommation de gicleurs de la semaine en cours`,
+                                it: `${objectName} => Cronologia - Consumo di irrigatori nella settimana corrente`,
+                                es: `${objectName} => Historial: consumo de rociadores en la semana natural actual`,
+                                pl: `${objectName} => Historia - Zużycie tryskaczy w bieżącym tygodniu kalendarzowym`,
+                                uk: `${objectName} => Історія - Споживання спринклерів поточного календарного тижня`,
+                                "zh-cn": `${objectName} => 历史-当前日历周的洒水消耗量`
                             },
                             type:  'number',
                             unit:  'Liter',
@@ -1372,17 +1372,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Sprinkler running time of the current calendar week`,
-                                de: `${ objectName } => Verlauf — Sprinklerlaufzeit der aktuellen Woche`,
-                                ru: `${ objectName } => История - время работы спринклеров на текущей календарной неделе`,
-                                pt: `${ objectName } => Histórico - Tempo de operação do sprinkler na semana atual`,
-                                nl: `${ objectName } => Geschiedenis - De looptijd van de sprinkler in de huidige kalenderweek`,
-                                fr: `${ objectName } => Historique - Durée du gicleur pour la semaine civile en cours`,
-                                it: `${ objectName } => Cronologia - Durata dell'irrigatore nella settimana corrente`,
-                                es: `${ objectName } => Historia: duración de los rociadores de la semana actual`,
-                                pl: `${ objectName } => Historia - Czas pracy tryskacza bieżącego tygodnia kalendarzowego`,
-                                uk: `${ objectName } => Історія - Час роботи спринклера поточного календарного тижня`,
-                                "zh-cn": `${ objectName } => 历史-当前日历周的洒水器运行时间`
+                                en: `${objectName} => History - Sprinkler running time of the current calendar week`,
+                                de: `${objectName} => Verlauf — Sprinklerlaufzeit der aktuellen Woche`,
+                                ru: `${objectName} => История - время работы спринклеров на текущей календарной неделе`,
+                                pt: `${objectName} => Histórico - Tempo de operação do sprinkler na semana atual`,
+                                nl: `${objectName} => Geschiedenis - De looptijd van de sprinkler in de huidige kalenderweek`,
+                                fr: `${objectName} => Historique - Durée du gicleur pour la semaine civile en cours`,
+                                it: `${objectName} => Cronologia - Durata dell'irrigatore nella settimana corrente`,
+                                es: `${objectName} => Historia: duración de los rociadores de la semana actual`,
+                                pl: `${objectName} => Historia - Czas pracy tryskacza bieżącego tygodnia kalendarzowego`,
+                                uk: `${objectName} => Історія - Час роботи спринклера поточного календарного тижня`,
+                                "zh-cn": `${objectName} => 历史-当前日历周的洒水器运行时间`
                             },
                             type:  'string',
                             read:  true,
@@ -1398,17 +1398,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Sprinkler consumption of the last calendar week`,
-                                de: `${ objectName } => Verlauf — Sprinklerverbrauch der letzten Woche`,
-                                ru: `${ objectName } => История - потребление спринклеров за последнюю календарную неделю`,
-                                pt: `${ objectName } => Histórico - Consumo de sprinklers na última semana`,
-                                nl: `${ objectName } => Geschiedenis - Sprinklerverbruik van de laatste kalenderweek`,
-                                fr: `${ objectName } => Historique - Consommation de gicleurs la semaine dernière`,
-                                it: `${ objectName } => Cronologia - Consumo di irrigatori nell'ultima settimana`,
-                                es: `${ objectName } => Historia: consumo de rociadores de la última semana natural`,
-                                pl: `${ objectName } => Historia - Zużycie tryskaczy w ostatnim tygodniu kalendarzowym`,
-                                uk: `${ objectName } => Історія - Споживання спринклерів за останній календарний тиждень`,
-                                "zh-cn": `${ objectName } => 历史-上个日历周的洒水消耗量`
+                                en: `${objectName} => History - Sprinkler consumption of the last calendar week`,
+                                de: `${objectName} => Verlauf — Sprinklerverbrauch der letzten Woche`,
+                                ru: `${objectName} => История - потребление спринклеров за последнюю календарную неделю`,
+                                pt: `${objectName} => Histórico - Consumo de sprinklers na última semana`,
+                                nl: `${objectName} => Geschiedenis - Sprinklerverbruik van de laatste kalenderweek`,
+                                fr: `${objectName} => Historique - Consommation de gicleurs la semaine dernière`,
+                                it: `${objectName} => Cronologia - Consumo di irrigatori nell'ultima settimana`,
+                                es: `${objectName} => Historia: consumo de rociadores de la última semana natural`,
+                                pl: `${objectName} => Historia - Zużycie tryskaczy w ostatnim tygodniu kalendarzowym`,
+                                uk: `${objectName} => Історія - Споживання спринклерів за останній календарний тиждень`,
+                                "zh-cn": `${objectName} => 历史-上个日历周的洒水消耗量`
                             },
                             type:  'number',
                             unit:  'Liter',
@@ -1425,17 +1425,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Sprinkler running time of the last calendar week`,
-                                de: `${ objectName } => Verlauf — Sprinklerlaufzeit der letzten Woche`,
-                                ru: `${ objectName } => История - Время работы спринклеров за последнюю календарную неделю`,
-                                pt: `${ objectName } => Histórico - Tempo de operação do sprinkler na última semana`,
-                                nl: `${ objectName } => Geschiedenis - De looptijd van de sprinkler van de laatste kalenderweek`,
-                                fr: `${ objectName } => Historique - Durée de fonctionnement du gicleur la semaine dernière`,
-                                it: `${ objectName } => Storia - Durata dell'irrigatore nell'ultima settimana`,
-                                es: `${ objectName } => Historia: funcionamiento de los rociadores de la última semana`,
-                                pl: `${ objectName } => Historia - Czas pracy tryskacza w ostatnim tygodniu kalendarzowym`,
-                                uk: `${ objectName } => Історія - Час роботи спринклерів за останній календарний тиждень`,
-                                "zh-cn": `${ objectName } => 历史-上个日历周的洒水器运行时间`
+                                en: `${objectName} => History - Sprinkler running time of the last calendar week`,
+                                de: `${objectName} => Verlauf — Sprinklerlaufzeit der letzten Woche`,
+                                ru: `${objectName} => История - Время работы спринклеров за последнюю календарную неделю`,
+                                pt: `${objectName} => Histórico - Tempo de operação do sprinkler na última semana`,
+                                nl: `${objectName} => Geschiedenis - De looptijd van de sprinkler van de laatste kalenderweek`,
+                                fr: `${objectName} => Historique - Durée de fonctionnement du gicleur la semaine dernière`,
+                                it: `${objectName} => Storia - Durata dell'irrigatore nell'ultima settimana`,
+                                es: `${objectName} => Historia: funcionamiento de los rociadores de la última semana`,
+                                pl: `${objectName} => Historia - Czas pracy tryskacza w ostatnim tygodniu kalendarzowym`,
+                                uk: `${objectName} => Історія - Час роботи спринклерів за останній календарний тиждень`,
+                                "zh-cn": `${objectName} => 历史-上个日历周的洒水器运行时间`
                             },
                             type:  'string',
                             read:  true,
@@ -1451,17 +1451,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Last consumed of sprinkler`,
-                                de: `${ objectName } => Historie — Letzter Sprinklerverbrauch`,
-                                ru: `${ objectName } => История - Последнее потребление спринклера`,
-                                pt: `${ objectName } => Histórico - Último consumo do aspersor`,
-                                nl: `${ objectName } => Geschiedenis - Sprinkler voor het laatst verbruikt`,
-                                fr: `${ objectName } => Historique - Dernier gicleur consommé`,
-                                it: `${ objectName } => Storia - Ultimo uso di irrigatore`,
-                                es: `${ objectName } => Historia: rociador consumido por última vez`,
-                                pl: `${ objectName } => Historia - Ostatnie zużycie tryskacza`,
-                                uk: `${ objectName } => Історія - Останнє споживання спринклера`,
-                                "zh-cn": `${ objectName } => 历史-上次消耗的洒水器`
+                                en: `${objectName} => History - Last consumed of sprinkler`,
+                                de: `${objectName} => Historie — Letzter Sprinklerverbrauch`,
+                                ru: `${objectName} => История - Последнее потребление спринклера`,
+                                pt: `${objectName} => Histórico - Último consumo do aspersor`,
+                                nl: `${objectName} => Geschiedenis - Sprinkler voor het laatst verbruikt`,
+                                fr: `${objectName} => Historique - Dernier gicleur consommé`,
+                                it: `${objectName} => Storia - Ultimo uso di irrigatore`,
+                                es: `${objectName} => Historia: rociador consumido por última vez`,
+                                pl: `${objectName} => Historia - Ostatnie zużycie tryskacza`,
+                                uk: `${objectName} => Історія - Останнє споживання спринклера`,
+                                "zh-cn": `${objectName} => 历史-上次消耗的洒水器`
                             },
                             type:  'number',
                             unit:  'Liter',
@@ -1478,17 +1478,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Last On of sprinkler`,
-                                de: `${ objectName } => Historie — Letzter Start des Sprinkler`,
-                                ru: `${ objectName } => История - Последний включитель спринклера`,
-                                pt: `${ objectName } => História - Último aspersor`,
-                                nl: `${ objectName } => Geschiedenis - De laatste sprinkler`,
-                                fr: `${ objectName } => Histoire - Dernier gicleur`,
-                                it: `${ objectName } => Storia - Ultimo irrigatore`,
-                                es: `${ objectName } => Historia: el último rociador`,
-                                pl: `${ objectName } => Historia - Ostatnie włączenie tryskacza`,
-                                uk: `${ objectName } => Історія - Остання увімкнення спринклера`,
-                                "zh-cn": `${ objectName } => 历史-洒水器的最后一次`
+                                en: `${objectName} => History - Last On of sprinkler`,
+                                de: `${objectName} => Historie — Letzter Start des Sprinkler`,
+                                ru: `${objectName} => История - Последний включитель спринклера`,
+                                pt: `${objectName} => História - Último aspersor`,
+                                nl: `${objectName} => Geschiedenis - De laatste sprinkler`,
+                                fr: `${objectName} => Histoire - Dernier gicleur`,
+                                it: `${objectName} => Storia - Ultimo irrigatore`,
+                                es: `${objectName} => Historia: el último rociador`,
+                                pl: `${objectName} => Historia - Ostatnie włączenie tryskacza`,
+                                uk: `${objectName} => Історія - Остання увімкнення спринклера`,
+                                "zh-cn": `${objectName} => 历史-洒水器的最后一次`
                             },
                             type:  'string',
                             read:  true,
@@ -1504,17 +1504,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => History - Last running time`,
-                                de: `${ objectName } => Verlauf — Letzte Laufzeit`,
-                                ru: `${ objectName } => История - время последнего запуска`,
-                                pt: `${ objectName } => Histórico - Última execução`,
-                                nl: `${ objectName } => Geschiedenis - Laatste speeltijd`,
-                                fr: `${ objectName } => Historique - Dernière diffusion`,
-                                it: `${ objectName } => Storia - Ultima durata`,
-                                es: `${ objectName } => Historia: última edición`,
-                                pl: `${ objectName } => Historia - Ostatni czas trwania`,
-                                uk: `${ objectName } => Історія - Останній час роботи`,
-                                "zh-cn": `${ objectName } => 历史-上次运行时间`
+                                en: `${objectName} => History - Last running time`,
+                                de: `${objectName} => Verlauf — Letzte Laufzeit`,
+                                ru: `${objectName} => История - время последнего запуска`,
+                                pt: `${objectName} => Histórico - Última execução`,
+                                nl: `${objectName} => Geschiedenis - Laatste speeltijd`,
+                                fr: `${objectName} => Historique - Dernière diffusion`,
+                                it: `${objectName} => Storia - Ultima durata`,
+                                es: `${objectName} => Historia: última edición`,
+                                pl: `${objectName} => Historia - Ostatni czas trwania`,
+                                uk: `${objectName} => Історія - Останній час роботи`,
+                                "zh-cn": `${objectName} => 历史-上次运行时间`
                             },
                             type:  'string',
                             read:  true,
@@ -1529,17 +1529,17 @@ async function createSprinklers() {
                         common: {
                             role:  'Switch',
                             name:  {
-                                en: `${ objectName } => Switch automatic mode on / off`,
-                                de: `${ objectName } => Automatik ein-/ausschalten`,
-                                ru: `${ objectName } => Включить/выключить автоматический режим`,
-                                pt: `${ objectName } => Liga/desliga o modo automático`,
-                                nl: `${ objectName } => Automatische modus in- en uitschakelen`,
-                                fr: `${ objectName } => Activer/désactiver le mode automatique`,
-                                it: `${ objectName } => Attiva/spegne automaticamente`,
-                                es: `${ objectName } => Activar/desactivar el modo automático`,
-                                pl: `${ objectName } => Włączanie/wyłączanie trybu automatycznego`,
-                                uk: `${ objectName } => Увімкнути/вимкнути автоматичний режим`,
-                                "zh-cn": `${ objectName } => 开启/关闭自动模式`
+                                en: `${objectName} => Switch automatic mode on / off`,
+                                de: `${objectName} => Automatik ein-/ausschalten`,
+                                ru: `${objectName} => Включить/выключить автоматический режим`,
+                                pt: `${objectName} => Liga/desliga o modo automático`,
+                                nl: `${objectName} => Automatische modus in- en uitschakelen`,
+                                fr: `${objectName} => Activer/désactiver le mode automatique`,
+                                it: `${objectName} => Attiva/spegne automaticamente`,
+                                es: `${objectName} => Activar/desactivar el modo automático`,
+                                pl: `${objectName} => Włączanie/wyłączanie trybu automatycznego`,
+                                uk: `${objectName} => Увімкнути/вимкнути автоматичний режим`,
+                                "zh-cn": `${objectName} => 开启/关闭自动模式`
                             },
                             type:  'boolean',
                             states: {
@@ -1573,17 +1573,17 @@ async function createSprinklers() {
                             common: {
                                 role: 'button',
                                 name: {
-                                    en: `${ objectName } Postpone start by one day`,
-                                    de: `${ objectName } Start um einen Tag verschieben`,
-                                    ru: `${ objectName } Отложите начало на один день`,
-                                    pt: `${ objectName } Adie o início em um dia`,
-                                    nl: `${ objectName } Start met een dag uitstellen`,
-                                    fr: `${ objectName } Reporter le début d'un jour`,
-                                    it: `${ objectName } Rinviare l'inizio di un giorno`,
-                                    es: `${ objectName } Posponer un día el inicio`,
-                                    pl: `${ objectName } Odłóż początek o jeden dzień`,
-                                    uk: `${ objectName } Відкладіть початок на один день`,
-                                    "zh-cn": `${ objectName } 推迟一天开始`
+                                    en: `${objectName} Postpone start by one day`,
+                                    de: `${objectName} Start um einen Tag verschieben`,
+                                    ru: `${objectName} Отложите начало на один день`,
+                                    pt: `${objectName} Adie o início em um dia`,
+                                    nl: `${objectName} Start met een dag uitstellen`,
+                                    fr: `${objectName} Reporter le début d'un jour`,
+                                    it: `${objectName} Rinviare l'inizio di un giorno`,
+                                    es: `${objectName} Posponer un día el inicio`,
+                                    pl: `${objectName} Odłóż początek o jeden dzień`,
+                                    uk: `${objectName} Відкладіть початок на один день`,
+                                    "zh-cn": `${objectName} 推迟一天开始`
                                 },
                                 type: 'boolean',
                                 read: true,
@@ -1616,17 +1616,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => countdown of sprinkler`,
-                                de: `${ objectName } => Sprinkler-Countdown`,
-                                ru: `${ objectName } => обратный отсчет времени спринклера`,
-                                pt: `${ objectName } => contagem do aspersor`,
-                                nl: `${ objectName } => aftellen van de sprinkler`,
-                                fr: `${ objectName } => compte à rebours`,
-                                it: `${ objectName } => conto alla rovescia`,
-                                es: `${ objectName } => cuenta atrás del aspersor`,
-                                pl: `${ objectName } => odliczanie tryskacza`,
-                                uk: `${ objectName } => зворотний відлік спринклера`,
-                                "zh-cn": `${ objectName } => 洒水器倒计时`
+                                en: `${objectName} => countdown of sprinkler`,
+                                de: `${objectName} => Sprinkler-Countdown`,
+                                ru: `${objectName} => обратный отсчет времени спринклера`,
+                                pt: `${objectName} => contagem do aspersor`,
+                                nl: `${objectName} => aftellen van de sprinkler`,
+                                fr: `${objectName} => compte à rebours`,
+                                it: `${objectName} => conto alla rovescia`,
+                                es: `${objectName} => cuenta atrás del aspersor`,
+                                pl: `${objectName} => odliczanie tryskacza`,
+                                uk: `${objectName} => зворотний відлік спринклера`,
+                                "zh-cn": `${objectName} => 洒水器倒计时`
                             },
                             type:  'string',
                             read:  true,
@@ -1641,17 +1641,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => running time of sprinkler`,
-                                de: `${ objectName } => Laufzeit des Sprinklers`,
-                                ru: `${ objectName } => время работы спринклера`,
-                                pt: `${ objectName } => duração do aspersor`,
-                                nl: `${ objectName } => looptijd van de sprinkler`,
-                                fr: `${ objectName } => durée de fonctionnement du gicleur`,
-                                it: `${ objectName } => durata dell'irrigatore`,
-                                es: `${ objectName } => duración del rociador`,
-                                pl: `${ objectName } => czas pracy zraszacza`,
-                                uk: `${ objectName } => час роботи спринклера`,
-                                "zh-cn": `${ objectName } => 洒水器的运行时间`
+                                en: `${objectName} => running time of sprinkler`,
+                                de: `${objectName} => Laufzeit des Sprinklers`,
+                                ru: `${objectName} => время работы спринклера`,
+                                pt: `${objectName} => duração do aspersor`,
+                                nl: `${objectName} => looptijd van de sprinkler`,
+                                fr: `${objectName} => durée de fonctionnement du gicleur`,
+                                it: `${objectName} => durata dell'irrigatore`,
+                                es: `${objectName} => duración del rociador`,
+                                pl: `${objectName} => czas pracy zraszacza`,
+                                uk: `${objectName} => час роботи спринклера`,
+                                "zh-cn": `${objectName} => 洒水器的运行时间`
                             },
                             type:  'string',
                             read:  true,
@@ -1668,17 +1668,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => actual state of sprinkler`,
-                                de: `${ objectName } => Stand der Sprinkleranlage`,
-                                ru: `${ objectName } => фактическое состояние спринклера`,
-                                pt: `${ objectName } => estado real do aspersor`,
-                                nl: `${ objectName } => werkelijke toestand van de sprinkler`,
-                                fr: `${ objectName } => état actuel du gicleur`,
-                                it: `${ objectName } => stato attuale dell'irrigatore`,
-                                es: `${ objectName } => estado actual del rociador`,
-                                pl: `${ objectName } => rzeczywisty stan tryskacza`,
-                                uk: `${ objectName } => фактичний стан спринклера`,
-                                "zh-cn": `${ objectName } => 洒水器的实际状态`
+                                en: `${objectName} => actual state of sprinkler`,
+                                de: `${objectName} => Stand der Sprinkleranlage`,
+                                ru: `${objectName} => фактическое состояние спринклера`,
+                                pt: `${objectName} => estado real do aspersor`,
+                                nl: `${objectName} => werkelijke toestand van de sprinkler`,
+                                fr: `${objectName} => état actuel du gicleur`,
+                                it: `${objectName} => stato attuale dell'irrigatore`,
+                                es: `${objectName} => estado actual del rociador`,
+                                pl: `${objectName} => rzeczywisty stan tryskacza`,
+                                uk: `${objectName} => фактичний стан спринклера`,
+                                "zh-cn": `${objectName} => 洒水器的实际状态`
                             },
                             type:  'number',
                             min:	0,
@@ -1703,17 +1703,17 @@ async function createSprinklers() {
                         common: {
                             role:  'state',
                             name:  {
-                                en: `${ objectName } => Trigger point of sprinkler`,
-                                de: `${ objectName } => Schaltpunkt des Sprinklers`,
-                                ru: `${ objectName } => Точка срабатывания спринклера`,
-                                pt: `${ objectName } => Ponto de gatilho do aspersor`,
-                                nl: `${ objectName } => Triggerpunt van de sprinkler`,
-                                fr: `${ objectName } => Point de déclenchement du gicleur`,
-                                it: `${ objectName } => Punto di innesco`,
-                                es: `${ objectName } => Punto de activación del aspersor`,
-                                pl: `${ objectName } => Punkt spustowy zraszacza`,
-                                uk: `${ objectName } => Тригерна точка спринклера`,
-                                "zh-cn": `${ objectName } => 洒水器的触发点`
+                                en: `${objectName} => Trigger point of sprinkler`,
+                                de: `${objectName} => Schaltpunkt des Sprinklers`,
+                                ru: `${objectName} => Точка срабатывания спринклера`,
+                                pt: `${objectName} => Ponto de gatilho do aspersor`,
+                                nl: `${objectName} => Triggerpunt van de sprinkler`,
+                                fr: `${objectName} => Point de déclenchement du gicleur`,
+                                it: `${objectName} => Punto di innesco`,
+                                es: `${objectName} => Punto de activación del aspersor`,
+                                pl: `${objectName} => Punkt spustowy zraszacza`,
+                                uk: `${objectName} => Тригерна точка спринклера`,
+                                "zh-cn": `${objectName} => 洒水器的触发点`
                               },
                             type:  'string',
                             read:  true,
