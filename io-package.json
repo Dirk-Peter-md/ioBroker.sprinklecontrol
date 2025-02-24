@@ -3,17 +3,17 @@
     "name": "sprinklecontrol",
     "version": "0.2.13",
     "titleLang": {
-      "en": "Sprinkle Control",
-      "de": "Sprinkle Control",
-      "ru": "Управление дождеванием",
-      "pt": "Controle de aspersão",
-      "nl": "Strooi controle",
-      "fr": "Contrôle de l'arrosage",
-      "it": "Spruzzare il controllo",
-      "es": "Control de aspersión",
-      "pl": "Kontrola zraszania",
-      "uk": "Контроль обприскування",
-      "zh-cn": "洒水控制"
+        "en": "Sprinkler Control",
+        "de": "Sprinklersteuerung",
+        "ru": "Управление спринклером",
+        "pt": "Controle de aspersão",
+        "nl": "Sprinklerbesturing",
+        "fr": "Contrôle des arroseurs",
+        "it": "Controllo degli irrigatori",
+        "es": "Control de rociadores",
+        "pl": "Sterowanie zraszaczami",
+        "uk": "Спринклерний контроль",
+        "zh-cn": "洒水喷头控制"
     },
     "authors": [
       "Dirk Peter <dirk.peter@freenet.de>"
@@ -315,7 +315,7 @@
     ],
     "globalDependencies": [
       {
-        "admin": ">=6.0.0"
+        "admin": ">=7.4.10"
       }
     ],
     "adminUI": {
