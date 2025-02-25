@@ -937,6 +937,8 @@ const startOfIrrigation = () => {
         function resRain (inGreenhouse) {
             return (adapter.config.weatherForecast && !inGreenhouse) ? (((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)).toFixed(1)) : 0;
         }
+        // Bewässerung mit Zisterne? Füllstand anzeigen
+        if (adapter.config.cisternSettings === true) messageText += `${valveControl.getStatusCistern()}\n`;
 
         for(const res of result) {
             let messageTextZeile1 = '';
@@ -1076,7 +1078,6 @@ const startOfIrrigation = () => {
             } else {
                 messageTextZeile2 += `<i>Ventil auf Handbetrieb</i> `;
             }
-            if (adapter.config.cisternSettings === true) messageText += `${valveControl.getStatusCistern()}\n`;
             messageText += (messageTextZeile2.length > 0) ? (`${messageTextZeile1}\n   ${messageTextZeile2}\n`) : (`${messageTextZeile1}\n`);
         }
         valveControl.addList(memAddList);
