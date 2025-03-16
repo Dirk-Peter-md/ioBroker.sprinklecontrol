@@ -28,7 +28,7 @@ jobs:
       - name: Copy Docu to Wiki
         run: |
           cp docs/de/sprinklecontrol.md ./wiki/Sprinklecontrol-Wiki-Deutsch.md
-          cp docs/de/img/* ./wiki/img/
+          cp docs/de/img/* ./wiki/img/*
 
       - name: Commit and push changes
         env:
