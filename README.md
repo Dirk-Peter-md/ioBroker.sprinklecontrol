@@ -8,6 +8,7 @@
 [![NPM version](http://img.shields.io/npm/v/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.sprinklecontrol.svg)](https://www.npmjs.com/package/iobroker.sprinklecontrol)
 [![Known Vulnerabilities](https://snyk.io/test/github/Dirk-Peter-md/ioBroker.sprinklecontrol/badge.svg)](https://snyk.io/test/github/Dirk-Peter-md/ioBroker.sprinklecontrol)
+![Test and Release](https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol/workflows/Test%20and%20Release/badge.svg)
 [![NPM](https://nodei.co/npm/iobroker.sprinklecontrol.png?downloads=true)](https://nodei.co/npm/iobroker.sprinklecontrol/)
 
 
@@ -32,6 +33,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) autoOff error fixed
+* (Dirk-Peter-md) ioBroker-Bot [W028]
+
 ### 0.2.14 (2025-03-15)
 * (Dirk-Peter-md) eslint-config added
 * (Dirk-Peter-md) Dependencies updated
