@@ -189,7 +189,9 @@ Activate the Notifications tab. The communication settings are then made on the 
 
 ### control
 - **Holiday:** If the "Holiday" is set to true, watering will start like the weekend if the weekend setting is enabled. A connection with a calendar would also be possible here.
+- **addStartTimeSwitch** - Only displayed if a start with external signal has been selected under Configuration, Additional start time.
 - **autoOnOff:** When the setting is "Off", the automatic mode of the irrigation system is disabled.
+- **autoStart** - Start irrigation => All active circuits are started!
 - **parallelOfMax:** For example (3: 4). Three of four possible irrigation circles are active here. (This is just an ad!)
 - **restFlow:** Display of the possible residual flow of the pump. (This is just an ad!)
 

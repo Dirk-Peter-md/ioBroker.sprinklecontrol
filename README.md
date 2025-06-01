@@ -34,7 +34,8 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (Dirk-Peter-md) autoOff error fixed
+* (Dirk-Peter-md) Readme updated
+* (Dirk-Peter-md) Fixed an error when switching off with autoOnOff
 * (Dirk-Peter-md) ioBroker-Bot [W028]
 
 ### 0.2.14 (2025-03-15)

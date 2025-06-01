@@ -132,7 +132,7 @@ function startAdapter(options) {
         // Signale zum bestätigen (ack = true) - signals for confirmation
         if (state?.ack === false) {
             // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
-            if (id === `${adapter.namespace  }.control.Holiday`) {
+            if (id === `${adapter.namespace}.control.Holiday`) {
                 // @ts-ignore
                 holidayStr = state.val;
                 adapter.setState(id, {
@@ -150,7 +150,7 @@ function startAdapter(options) {
                 });
             }
             // wenn (autoOnOff == false) so werden alle Sprenger nicht mehr automatisch gestartet.
-            if ((id === `${adapter.namespace  }.control.autoOnOff`)) {
+            if ((id === `${adapter.namespace}.control.autoOnOff`)) {
                 autoOnOffStr = state.val;
                 adapter.log.info(`startAdapter: control.autoOnOff: ${state.val}`);
                 adapter.setState(id, {
@@ -423,7 +423,10 @@ function checkStates() {
      */
     adapter.getState('control.Holiday', (err, state) => {
         if (state && (state.val == null)) {
-            adapter.setState('control.Holiday', {val: false, ack: true});
+            adapter.setState('control.Holiday', {
+                val: false, 
+                ack: true
+            });
         }
     });
     /**
@@ -532,10 +535,10 @@ async function checkActualStates () {
                     weatherForecastTodayNum = 0;
                     adapter.log.info(`checkActualStates => Wettervorhersage state.val ( ${_weatherForInstanceToday.val}); ${typeof _weatherForInstanceToday.val} kann nicht als Number verarbeitet werden`);
                 }
-                await adapter.setStateAsync('info.rainToday',
-                    weatherForecastTodayNum,
-                    true
-                );
+                await adapter.setStateAsync('info.rainToday', {
+                    val: weatherForecastTodayNum,
+                    ack: true
+                });
             }
 
             /**
@@ -547,11 +550,10 @@ async function checkActualStates () {
             ).catch((e) => adapter.log.warn(e));
             if (_weatherForInstance && _weatherForInstance.val) {
                 weatherForecastTomorrowNum = _weatherForInstance.val;
-                await adapter.setStateAsync(
-                    'info.rainTomorrow',
-                    weatherForecastTomorrowNum,
-                    true
-                );
+                await adapter.setStateAsync('info.rainTomorrow', {
+                    val: weatherForecastTomorrowNum,
+                    ack: true
+                });
             }
         }
 
@@ -570,13 +572,35 @@ async function checkActualStates () {
                  */
                 const _autoOn = await adapter.getForeignStateAsync(
                     res.autoOnID
-                ).catch((e) => adapter.log.warn(e));
+                );
                 if (_autoOn && typeof _autoOn.val === 'boolean') {
                     res.autoOn = _autoOn.val;
                     if (_autoOn.val === false) {
                         adapter.log.info(`get ${res.objectName}.autoOn = ${res.autoOn}`);
                     }
                 }
+            
+                // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+                // +++++                            Zustände der States aktualisieren                       +++++ //
+                // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
+
+                // .countdown beim Start auf '0' setzen
+                adapter.setStateAsync(`sprinkle.${res.objectName}.countdown`,{
+                    val:'0',
+                    ack:true
+                });
+                
+                // .runningTime beim Start auf '00:00' setzen
+                adapter.setStateAsync(`sprinkle.${res.objectName}.runningTime`,{
+                    val:'00:00',
+                    ack:true
+                });
+                
+                // .countdown beim Start auf '0' für (off) setzen
+                adapter.setStateAsync(`sprinkle.${res.objectName}.sprinklerState`,{
+                    val:0,
+                    ack:true
+                });
             }
         }
 
@@ -629,14 +653,26 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
                     const objectName = result[i].objectName;
                     adapter.getState(`sprinkle.${objectName}.history.curCalWeekConsumed`, (err, state) => {
                         if (state) {
-                            adapter.setState(`sprinkle.${objectName}.history.lastCalWeekConsumed`, { val: state.val, ack: true });
-                            adapter.setState(`sprinkle.${objectName}.history.curCalWeekConsumed`, { val: 0, ack: true });
+                            adapter.setState(`sprinkle.${objectName}.history.lastCalWeekConsumed`, { 
+                                val: state.val,
+                                ack: true 
+                            });
+                            adapter.setState(`sprinkle.${objectName}.history.curCalWeekConsumed`, { 
+                                val: 0, 
+                                ack: true 
+                            });
                         }
                     });
                     adapter.getState(`sprinkle.${objectName}.history.curCalWeekRunningTime`, (err, state) => {
                         if (state) {
-                            adapter.setState(`sprinkle.${objectName}.history.lastCalWeekRunningTime`, { val: state.val, ack: true });
-                            adapter.setState(`sprinkle.${objectName}.history.curCalWeekRunningTime`, { val: '00:00', ack: true });
+                            adapter.setState(`sprinkle.${objectName}.history.lastCalWeekRunningTime`, { 
+                                val: state.val, 
+                                ack: true 
+                            });
+                            adapter.setState(`sprinkle.${objectName}.history.curCalWeekRunningTime`, { 
+                                val: '00:00', 
+                                ack: true 
+                            });
                         }
                     });
                 }
@@ -718,11 +754,11 @@ function addStartTimeSprinkle() {
                                 case 'bistable': {
                                     if (res.soilMoisture.bool) {
                                         messageText += `<b>${res.objectName}</b> (${res.soilMoisture.bool})\n`
-                                                    +  `   START => ${addTime(res.addWateringTime, '')}\n`;
+                                                    +  `   START => ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                         memAddList.push({
                                             auto: true,
                                             sprinkleID: res.sprinkleID,
-                                            wateringTime: res.addWateringTime
+                                            wateringTime: Math.round(60 * res.addWateringTime)
                                         });
                                     }
                                     break;
@@ -1747,41 +1783,6 @@ async function createSprinklers() {
                         adapter.log.info(`sprinkleControl [sprinkle.${objectName}] was created`);
                     }
 
-                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-                    // +++++                            zustände der States aktualisieren                       +++++ //
-                    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
-
-                    //
-                    if(await _countdownNotExist){
-                        const _countdown = await adapter.getStateAsync(`${objPfad}.countdown`).catch((e) => adapter.log.warn(`${objectName}.countdown ${e}`));
-                        if (_countdown && _countdown.val !== '0') {
-                            adapter.setStateAsync(
-                                `${objPfad}.countdown`,
-                                '0',
-                                true
-                            ).catch((e) => adapter.log.warn(e));
-                        }
-                    }
-                    //
-                    if (_runningTimeNotExist) {
-                        const _runningTime = await adapter.getStateAsync(`${objPfad}.runningTime`).catch((e) => adapter.log.warn(`${objectName}.runningTime ${e}`));
-                        if (_runningTime && _runningTime.val !== '00:00') {
-                            adapter.setStateAsync(`${objPfad}.runningTime`,
-                                '00:00',
-                                true
-                            ).catch((e) => adapter.log.warn(e));
-                        }
-                    }
-                    //
-                    if (_sprinklerStateNotExists){
-                        const _sprinklerState = await adapter.getStateAsync(`${objPfad}.sprinklerState`).catch((e) => adapter.log.warn(`${objectName}.sprinklerState ${e}`));
-                        if (_sprinklerState && _sprinklerState.val !== 0) {
-                            await adapter.setStateAsync(`${objPfad}.sprinklerState`,
-                                0,
-                                true
-                            ).catch((e) => adapter.log.warn(`${objectName}.sprinklerState ${e}`));
-                        }
-                    }
                     // Festlegen des Schaltpunktes für den nächsten Start
                     switch (myConfig.config[j].methodControlSM) {
                         case 'bistable': {
@@ -1794,10 +1795,10 @@ async function createSprinklers() {
                                 adapter.log.warn(`The bistable sensor ${myConfig.config[j].triggerSM} in ${objectName} does not deliver correct values!`);
                             }
 
-                            adapter.setStateAsync(`${objPfad}.triggerPoint`,
-                                '-',
-                                true
-                            ).catch((e) => adapter.log.warn(`${objectName}.triggerPoint ${e}`));
+                            adapter.setStateAsync(`${objPfad}.triggerPoint`, {
+                                val: '-',
+                                ack: true
+                            }).catch((e) => adapter.log.warn(`${objectName}.triggerPoint ${e}`));
                             break;
                         }
 
@@ -1807,16 +1808,16 @@ async function createSprinklers() {
                             if (_triggerSMAnalog && (typeof _triggerSMAnalog.val === 'number' || typeof _triggerSMAnalog.val === 'string')) {
                                 myConfig.setSoilMoistPct(myConfig.config[j].sprinkleID, _triggerSMAnalog.val);
                             } else {
-                                await adapter.setStateAsync(`${objPfad}.actualSoilMoisture`,
-                                    50,
-                                    true
-                                );
+                                await adapter.setStateAsync(`${objPfad}.actualSoilMoisture`, {
+                                    val: 50,
+                                    ack: true
+                                });
                                 adapter.log.warn(`The analoge sensor ${myConfig.config[j].triggerSM} in ${objectName} does not deliver correct values!`);
                             }
-                            adapter.setStateAsync(`${objPfad}.triggerPoint`,
-                                (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
-                                true
-                            ).catch((e) => adapter.log.warn(`${objectName}.triggerPoint setState ${e}`));
+                            adapter.setStateAsync(`${objPfad}.triggerPoint`, {
+                                val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
+                                ack: true
+                            }).catch((e) => adapter.log.warn(`${objectName}.triggerPoint setState ${e}`));
                             break;
                         }
 
@@ -1861,10 +1862,10 @@ async function createSprinklers() {
                                 curNextFixDay(myConfig.config[j].sprinkleID, false);
                             }
 
-                            adapter.setStateAsync(`${objPfad}.triggerPoint`,
-                                '-',
-                                true
-                            ).catch((e) => adapter.log.warn(`${objectName}.triggerPoint fixDay setState ${e}`));
+                            adapter.setStateAsync(`${objPfad}.triggerPoint`, {
+                                val: '-',
+                                ack: true
+                            }).catch((e) => adapter.log.warn(`${objectName}.triggerPoint fixDay setState ${e}`));
                             break;
                         }
 
@@ -1872,10 +1873,10 @@ async function createSprinklers() {
                             const _actualSoilMoisture = await adapter.getStateAsync(`${objPfad}.actualSoilMoisture`).catch((e) => adapter.log.warn(e));
                             if (_actualSoilMoisture) {
                                 if (await _actualSoilMoisture && typeof _actualSoilMoisture.val !== 'number' || _actualSoilMoisture.val === 0) {
-                                    adapter.setStateAsync(`${objPfad}.actualSoilMoisture`,
-                                        myConfig.config[j].soilMoisture.pct,
-                                        true
-                                    ).catch((e) => adapter.log.warn(e));
+                                    adapter.setStateAsync(`${objPfad}.actualSoilMoisture`, {
+                                        val: myConfig.config[j].soilMoisture.pct,
+                                        ack: true
+                                    }).catch((e) => adapter.log.warn(e));
                                 } else {
                                     // num Wert der Bodenfeuchte berechnen und in der config speichern, wenn Wert zwischen 0 und max liegt
                                     if ((0 < _actualSoilMoisture.val) && (_actualSoilMoisture.val <= (myConfig.config[j]).soilMoisture.maxRain*100/myConfig.config[j].soilMoisture.maxIrrigation)) {
@@ -1883,18 +1884,18 @@ async function createSprinklers() {
                                         myConfig.config[j].soilMoisture.pct = _actualSoilMoisture.val;
                                     } else {
                                         // Wert aus config übernehmen
-                                        adapter.setStateAsync(`${objPfad}.actualSoilMoisture`,
-                                            myConfig.config[j].soilMoisture.pct,
-                                            true
-                                        ).catch((e) => adapter.log.warn(e));
+                                        adapter.setStateAsync(`${objPfad}.actualSoilMoisture`, {
+                                            val: myConfig.config[j].soilMoisture.pct,
+                                            ack: true
+                                        }).catch((e) => adapter.log.warn(e));
                                     }
                                 }
                             }
 
-                            adapter.setStateAsync(`${objPfad}.triggerPoint`,
-                                (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
-                                true
-                            ).catch((e) => adapter.log.warn(e));
+                            adapter.setStateAsync(`${objPfad}.triggerPoint`, {
+                                val: (myConfig.config[j].soilMoisture.pctTriggerIrrigation).toString(),
+                                ack: true
+                            }).catch((e) => adapter.log.warn(e));
                             break;
                         }
                     }
@@ -2025,7 +2026,10 @@ function main(adapter) {
     if (adapter.config.actualValueLevel !== '') {
         adapter.subscribeForeignStates(adapter.config.actualValueLevel);
     } else {
-        adapter.setState('info.cisternState', { val: 'The level sensor of the water cistern is not specified', ack: true });
+        adapter.setState('info.cisternState', { 
+            val: 'The level sensor of the water cistern is not specified', 
+            ack: true 
+        });
     }
 }
 
