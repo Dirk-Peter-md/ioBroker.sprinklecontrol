@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.14",
+    "version": "0.2.15",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "0.2.15": {
+        "en": "Readme updated\nFixed an error when switching off with autoOnOff\nioBroker-Bot [W028]",
+        "de": "Reader aktualisiert\nFehler beim Ausschalten mit autoOnOff behoben\nioBroker-Bot [W028]",
+        "ru": "Readme обновлено\nИсправлена ошибка при выключении с помощью autoOnOff\nioBroker-Bot [W028]",
+        "pt": "Readme atualizado\nCorrigido um erro ao desligar com autoOnOff\nioBroker-Bot [W028]",
+        "nl": "Readme bijgewerkt\nEen fout hersteld bij het uitschakelen met autoOnOff\nioBroker-Bot [W028]",
+        "fr": "Lire mise à jour\nCorrection d'une erreur lors de l'arrêt automatique\nioBoker-Bot [W028]",
+        "it": "Readme aggiornato\nRisolto un errore durante l'accensione con autoOnOff\nioBroker-Bot [W028]",
+        "es": "Readme updated\nSe corrigió un error al apagarse con autoOnOff\nioBroker-Bot [W028]",
+        "pl": "Readme zaktualizowany\nNaprawiono błąd podczas wyłączania autoOnOff\njoBroker- Bot [W028]",
+        "uk": "Читати далі\nВиправлено помилку при вимкненні з автоматичноOnOff\nioBroker-Bot [W028]",
+        "zh-cn": "更新我\n用 autoOnOff 关闭时修补错误\nioBroker-Bot [W028] (英语)"
+      },
       "0.2.14": {
         "en": "eslint-config added\nDependencies updated\nUpdate License\nissue #92 Sprinkler im Gewächshaus solved\nadd Button control.autoStart",
         "de": "eslint-config hinzugefügt\nAusgaben aktualisiert\nLizenz aktualisieren\nausgabe #92 Sprinkler im Gewächshaus gelöst\nbutton Control.autoStart",
@@ -96,19 +109,6 @@
         "pl": "Procedura inicjowania błędów",
         "uk": "Процедура ініціалізації помилок",
         "zh-cn": "错误初始化例程"
-      },
-      "0.2.8": {
-        "en": "Adaptation for js controller 4; switched main.js to async",
-        "de": "Anpassung für js-Controller 4; main.js auf async umgestellt",
-        "ru": "Адаптация для js контроллера 4; переключил main.js на асинхронный",
-        "pt": "Adaptação para controlador js 4; mudou main.js para assíncrono",
-        "nl": "Aanpassing voor js-controller 4; main.js overgeschakeld naar async",
-        "fr": "Adaptation pour le contrôleur js 4 ; a basculé main.js en asynchrone",
-        "it": "Adattamento per js controller 4; cambiato main.js in asincrono",
-        "es": "Adaptación para controlador js 4; cambió main.js a asíncrono",
-        "pl": "Adaptacja pod kontroler js 4; przełączył main.js na asynchroniczny",
-        "uk": "Адаптація під js контролер 4; переключив main.js на асинхронний",
-        "zh-cn": "适配js控制器4；将 main.js 切换为异步"
       }
     },
     "desc": {

@@ -1,4 +1,8 @@
 # Older changes
+## 0.2.10 (2022-05-15)
+* (Dirk-Peter-md) manual watering limited to a maximum of 100%
+* (Dirk-Peter-md) Error whatsapp message fixed
+
 ## 0.2.9 (2022-04-10)
 * (Dirk-Peter-md) Bug-Initialisierungsroutine
 

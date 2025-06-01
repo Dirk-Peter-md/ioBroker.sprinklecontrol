@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.15 (2025-06-01)
 * (Dirk-Peter-md) Readme updated
 * (Dirk-Peter-md) Fixed an error when switching off with autoOnOff
 * (Dirk-Peter-md) ioBroker-Bot [W028]
@@ -57,10 +57,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ### 0.2.11 (2022-05-22)
 * (Dirk-Peter-md) Bug fixed => analog soil moisture sensor with negative characteristic
 * (Dirk-Peter-md) Attention => maximum soil moisture in rain now in %
-
-### 0.2.10 (2022-05-15)
-* (Dirk-Peter-md) manual watering limited to a maximum of 100%
-* (Dirk-Peter-md) Error whatsapp message fixed
 
 ## License
 MIT License
