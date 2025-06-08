@@ -130,5 +130,7 @@
     "public holidays Instance": "public holidays Instance",
     "rain counter sensor": "Precipitation counter in mm",
     "start with a fixed start time": "start with a fixed start time",
-    "weather forecast service": "weather forecast service"
+    "weather forecast service": "weather forecast service",
+    "Lead time of the main pump in s": "Lead time of the main pump in s",
+    "Lead time of the cistern pump in s": "Lead time of the cistern pump in s"
 }

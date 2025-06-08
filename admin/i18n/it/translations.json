@@ -130,5 +130,7 @@
     "public holidays Instance": "istanza festiva",
     "rain counter sensor": "Contatore delle precipitazioni in mm",
     "start with a fixed start time": "iniziare con un orario di inizio fisso",
-    "weather forecast service": "servizio di previsioni del tempo"
+    "weather forecast service": "servizio di previsioni del tempo",
+    "Lead time of the main pump in s": "Tempo di consegna della pompa principale in s",
+    "Lead time of the cistern pump in s": "Tempo di consegna della pompa di cisterna in s"
 }

@@ -130,5 +130,7 @@
     "public holidays Instance": "feestdagen exemplaar",
     "rain counter sensor": "Neerslagmeter in mm",
     "start with a fixed start time": "begin met een vaste starttijd",
-    "weather forecast service": "weersvoorspellingsservice"
+    "weather forecast service": "weersvoorspellingsservice",
+    "Lead time of the main pump in s": "Doorlooptijd van de hoofdpomp in S",
+    "Lead time of the cistern pump in s": "Doorlooptijd van de reserveurpomp in S"
 }

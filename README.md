@@ -33,6 +33,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) issue #95 Pump lead time added
+
 ### 0.2.15 (2025-06-01)
 * (Dirk-Peter-md) Readme updated
 * (Dirk-Peter-md) Fixed an error when switching off with autoOnOff
