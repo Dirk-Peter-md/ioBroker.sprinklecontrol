@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.15",
+    "version": "0.2.16",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "0.2.16": {
+        "en": "issue #95 Pump lead time added",
+        "de": "ausgabe #95 Pumpe Lieferzeit hinzugefügt",
+        "ru": "#95 Время работы насоса добавлено",
+        "pt": "número de edição #95 Tempo de lançamento da bomba adicionado",
+        "nl": "nummer #95 Pump doorlooptijd toegevoegd",
+        "fr": "numéro 95 Temps d'avance de la pompe ajouté",
+        "it": "numero #95 Pump lead time aggiunto",
+        "es": "#95 Tiempo de inicio de bomba añadido",
+        "pl": "wydanie # 95 Dodany czas ołowiu pompy",
+        "uk": "problem #95 Насос додано час",
+        "zh-cn": "增加了泵前准备时间"
+      },
       "0.2.15": {
         "en": "Readme updated\nFixed an error when switching off with autoOnOff\nioBroker-Bot [W028]",
         "de": "Reader aktualisiert\nFehler beim Ausschalten mit autoOnOff behoben\nioBroker-Bot [W028]",
@@ -96,19 +109,6 @@
         "pl": "- nawadnianie ręczne ograniczone do maksymalnie 100%; - Naprawiono błąd wiadomości WhatsApp",
         "uk": "- ручний полив обмежений максимум на 100%; - Виправлено повідомлення про помилку WhatsApp",
         "zh-cn": "- 手动浇水限制为最大 100%； - 错误whatsapp消息已修复"
-      },
-      "0.2.9": {
-        "en": "Bug initialization routine",
-        "de": "Bug-Initialisierungsroutine",
-        "ru": "Процедура инициализации ошибки",
-        "pt": "Rotina de inicialização de bugs",
-        "nl": "Bug initialisatie routine",
-        "fr": "Routine d'initialisation de bogue",
-        "it": "Routine di inizializzazione dei bug",
-        "es": "Rutina de inicialización de errores",
-        "pl": "Procedura inicjowania błędów",
-        "uk": "Процедура ініціалізації помилок",
-        "zh-cn": "错误初始化例程"
       }
     },
     "desc": {

@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.16 (2025-06-08)
 * (Dirk-Peter-md) issue #95 Pump lead time added
 
 ### 0.2.15 (2025-06-01)
@@ -56,10 +56,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 * (Dirk-Peter-md) fixDay(twoNd,threeRd) => postpone by one day
 * (Dirk-Peter-md) Bug fixed => autoOn
 * (Dirk-Peter-md) Additional post-watering => in case of high evaporation / switchable externally
-
-### 0.2.11 (2022-05-22)
-* (Dirk-Peter-md) Bug fixed => analog soil moisture sensor with negative characteristic
-* (Dirk-Peter-md) Attention => maximum soil moisture in rain now in %
 
 ## License
 MIT License
