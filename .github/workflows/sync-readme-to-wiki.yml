@@ -27,7 +27,6 @@ jobs:
 
       - name: Copy Docu to Wiki
         run: |
-          mkdir -p ./wiki/img/
           cp docs/de/sprinklecontrol.md ./wiki/Sprinklecontrol-Wiki-Deutsch.md
           cp docs/de/img/* ./wiki/img/
 
