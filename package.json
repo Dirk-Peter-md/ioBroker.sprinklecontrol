@@ -1,6 +1,6 @@
 {
   "name": "iobroker.sprinklecontrol",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "description": "Control of several sprinklers depending on weather conditions and pump performance.",
   "author": {
     "name": "Dirk Peter",

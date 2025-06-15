@@ -1,4 +1,9 @@
 # Older changes
+## 0.2.12 (2022-07-17)
+* (Dirk-Peter-md) fixDay(twoNd,threeRd) => postpone by one day
+* (Dirk-Peter-md) Bug fixed => autoOn
+* (Dirk-Peter-md) Additional post-watering => in case of high evaporation / switchable externally
+
 ## 0.2.11 (2022-05-22)
 * (Dirk-Peter-md) Bug fixed => analog soil moisture sensor with negative characteristic
 * (Dirk-Peter-md) Attention => maximum soil moisture in rain now in %

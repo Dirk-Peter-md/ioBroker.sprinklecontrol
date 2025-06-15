@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.16",
+    "version": "0.2.17",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "0.2.17": {
+        "en": "Valve timing corrected",
+        "de": "Ventilzeit korrigiert",
+        "ru": "Время клапана скорректировано",
+        "pt": "Regulação da válvula",
+        "nl": "Gecorrigeerde kleptijd",
+        "fr": "Réglage de la vanne",
+        "it": "Valvola tempistica corretta",
+        "es": "Tiempo de válvula corregido",
+        "pl": "Skorygowany czas zaworu",
+        "uk": "Терміни клапана, виправлені",
+        "zh-cn": "阀门时间得到纠正"
+      },
       "0.2.16": {
         "en": "issue #95 Pump lead time added",
         "de": "ausgabe #95 Pumpe Lieferzeit hinzugefügt",
@@ -96,19 +109,6 @@
         "pl": "Poprawiony błąd => analogowy czujnik wilgotności gleby o charakterystyce ujemnej; Uwaga => maksymalna wilgotność gleby w deszczu teraz w %",
         "uk": "Виправлено помилку => аналоговий датчик вологості ґрунту з негативною характеристикою; Увага => максимальна вологість ґрунту під час дощу зараз у %",
         "zh-cn": "错误修复 => 具有负特性的模拟土壤湿度传感器；注意 => 现在雨中的最大土壤水分百分比"
-      },
-      "0.2.10": {
-        "en": "- manual watering limited to a maximum of 100%; - Error whatsapp message fixed",
-        "de": "- manuelle Bewässerung begrenzt auf maximal 100 %; - Fehler WhatsApp-Nachricht behoben",
-        "ru": "- ручной полив ограничен максимум 100%; - Исправлено сообщение об ошибке WhatsApp",
-        "pt": "- rega manual limitada a um máximo de 100%; - Mensagem de erro do whatsapp corrigida",
-        "nl": "- handmatige bewatering beperkt tot maximaal 100%; - Fout whatsapp-bericht opgelost",
-        "fr": "- arrosage manuel limité à 100% maximum ; - Message d'erreur WhatsApp corrigé",
-        "it": "- irrigazione manuale limitata ad un massimo del 100%; - Errore messaggio whatsapp risolto",
-        "es": "- riego manual limitado a un máximo del 100%; - Mensaje de error de whatsapp arreglado",
-        "pl": "- nawadnianie ręczne ograniczone do maksymalnie 100%; - Naprawiono błąd wiadomości WhatsApp",
-        "uk": "- ручний полив обмежений максимум на 100%; - Виправлено повідомлення про помилку WhatsApp",
-        "zh-cn": "- 手动浇水限制为最大 100%； - 错误whatsapp消息已修复"
       }
     },
     "desc": {
