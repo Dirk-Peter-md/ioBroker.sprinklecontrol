@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.17",
+    "version": "0.2.18",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "0.2.18": {
+        "en": "Hysteresis switch-on value of the cistern changed to 20%",
+        "de": "Hysterese Einschaltwert der Zisterne auf 20% geändert",
+        "ru": "Значение Hysteresis switch-on цистерны изменилось до 20%",
+        "pt": "O valor da histerese da cisterna mudou para 20%",
+        "nl": "Hysterese schakelaar waarde van de cisterne veranderd in 20%",
+        "fr": "La valeur d'activation de l'hystérie de la citerne est passée à 20%",
+        "it": "Il valore di commutazione della cisterna di Hysteresis è cambiato al 20%",
+        "es": "El valor de conmutación de la histeria cambió al 20%",
+        "pl": "Zmiana wartości hysterezy cysterny na 20%",
+        "uk": "Гістерез змінився на 20%",
+        "zh-cn": "贮器的开关值改为20%"
+      },
       "0.2.17": {
         "en": "Valve timing corrected",
         "de": "Ventilzeit korrigiert",
@@ -96,19 +109,6 @@
         "pl": "fixDay(twoNd, tripleRd) =>. Odroczony przez jeden dzień; Bug fixed => autoOn; dodatkowy post-watering => w przypadku dużego odparowania i przełącznika zewnętrznego",
         "uk": "fixDay(twoNd,threeRd) => відкласти на один день; Виправлено помилку => autoOn; Додатковий дополив => у разі високого випаровування / перемикається зовні",
         "zh-cn": "fix Day(两名Nd,三Rd)=> 一天推迟;Bug固定=汽车;额外的水事后=在高度疏散/外部可转换的情况下。"
-      },
-      "0.2.11": {
-        "en": "Bug fixed => analogue soil moisture sensor with negative characteristic; Attention => maximum soil moisture in rain now in %",
-        "de": "Fehler behoben => analoger Bodenfeuchtesensor mit negativer Kennlinie; Achtung => maximale Bodenfeuchte bei Regen jetzt in %",
-        "ru": "Исправлена ошибка => аналоговый датчик влажности почвы с отрицательной характеристикой; Внимание => максимальная влажность почвы в дождь теперь в %",
-        "pt": "Bug corrigido => sensor analógico de umidade do solo com característica negativa; Atenção => umidade máxima do solo na chuva agora em %",
-        "nl": "Bug opgelost => analoge bodemvochtsensor met negatieve karakteristiek; Let op => maximale bodemvochtigheid bij regen nu in %",
-        "fr": "Bug corrigé => capteur d'humidité du sol analogique avec caractéristique négative ; Attention => humidité maximale du sol sous la pluie maintenant en %",
-        "it": "Bug risolto => sensore di umidità del suolo analogico con caratteristica negativa; Attenzione => umidità massima del suolo sotto la pioggia ora in %",
-        "es": "Error solucionado => sensor de humedad del suelo analógico con característica negativa; Atención => humedad máxima del suelo en lluvia ahora en %",
-        "pl": "Poprawiony błąd => analogowy czujnik wilgotności gleby o charakterystyce ujemnej; Uwaga => maksymalna wilgotność gleby w deszczu teraz w %",
-        "uk": "Виправлено помилку => аналоговий датчик вологості ґрунту з негативною характеристикою; Увага => максимальна вологість ґрунту під час дощу зараз у %",
-        "zh-cn": "错误修复 => 具有负特性的模拟土壤湿度传感器；注意 => 现在雨中的最大土壤水分百分比"
       }
     },
     "desc": {

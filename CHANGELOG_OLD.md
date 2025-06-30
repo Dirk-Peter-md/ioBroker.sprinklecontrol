@@ -1,4 +1,8 @@
 # Older changes
+## 0.2.13 (2022-09-06)
+* (Dirk-Peter-md) various bugs fixed
+* (Dirk-Peter-md) Preparing the stable release
+
 ## 0.2.12 (2022-07-17)
 * (Dirk-Peter-md) fixDay(twoNd,threeRd) => postpone by one day
 * (Dirk-Peter-md) Bug fixed => autoOn

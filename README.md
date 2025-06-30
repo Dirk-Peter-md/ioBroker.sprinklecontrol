@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.2.18 (2025-06-30)
 * (Dirk-Peter-md) Hysteresis switch-on value of the cistern changed to 20%
 
 ### 0.2.17 (2025-06-15)
@@ -53,10 +53,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 * (Dirk-Peter-md) Update License
 * (Dirk-Peter-md) issue #92 Sprinkler im Gewächshaus solved
 * (Dirk-Peter-md) add Button control.autoStart
-
-### 0.2.13 (2022-09-06)
-* (Dirk-Peter-md) various bugs fixed
-* (Dirk-Peter-md) Preparing the stable release
 
 ## License
 MIT License
