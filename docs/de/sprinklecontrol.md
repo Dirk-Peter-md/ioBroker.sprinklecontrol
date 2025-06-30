@@ -349,7 +349,7 @@ Hier werden die Einstellung der Hauptpumpe (z.B. Grundwasser), einer zweiten Pum
     * **Vorlaufzeit der Zisternenpumpe in s** → Vorlaufzeit in Sekunden die benötigt wird um den Druck in den Hauptleitungen aufzubauen.    
     * **Füllhöhe der Zisterne** → Angabe des Füllstandsensors für die Ermittlung der Füllhöhe in %.
         > **eingebaut** → Hm-Sen-Wa-Od kapazitiver Füllstandmesser von HomeMatic.
-    * **Mindestfüllstand der Zysten in %** → Schaltpunkt, bei dessen Unterschreitung wird auf die Hauptpumpe umgeschaltet und bei laufender Bewässerung die Ventile je Verbrauchsmenge angepasst.
+    * **Mindestfüllstand der Zysten in %** → Schaltpunkt, bei dessen Unterschreitung wird auf die Hauptpumpe umgeschaltet und bei laufender Bewässerung die Ventile je Verbrauchsmenge angepasst. Es ist eine Einschalthysterese von 20% hinterlegt. Die Zysterne schaltet alse erst wieder zu wenn der Mindestfüllstand + 20% überschritten ist!
     
 ---
 
