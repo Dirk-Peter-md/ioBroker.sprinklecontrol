@@ -33,6 +33,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) Hysteresis switch-on value of the cistern changed to 20%
+
 ### 0.2.17 (2025-06-15)
 * (Dirk-Peter-md) Valve timing corrected
 
