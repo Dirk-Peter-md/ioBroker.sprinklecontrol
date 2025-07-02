@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.18",
+    "version": "0.2.19",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "0.2.19": {
+        "en": "The switch-on hysteresis of the cistern is now stored in the configuration.",
+        "de": "Die Einschalthysterese der Zisterne wird nun in der Konfiguration gespeichert.",
+        "ru": "Гистерезис цистерны теперь хранится в конфигурации.",
+        "pt": "A histerese da cisterna é agora armazenada na configuração.",
+        "nl": "De inschakelhysterese van de cisterne wordt nu opgeslagen in de configuratie.",
+        "fr": "L'hystérie de la citerne est maintenant stockée dans la configuration.",
+        "it": "L'isteresi di commutazione della cisterna è ora memorizzata nella configurazione.",
+        "es": "La histeresis de la cisterna se almacena ahora en la configuración.",
+        "pl": "Przełączanie hysterezy cysterny jest teraz przechowywane w konfiguracji.",
+        "uk": "У конфігурації тепер зберігається комутаційний гістерезис цистерни.",
+        "zh-cn": "晶体的开关式歇斯底里现保存在配置中."
+      },
       "0.2.18": {
         "en": "Hysteresis switch-on value of the cistern changed to 20%",
         "de": "Hysterese Einschaltwert der Zisterne auf 20% geändert",
@@ -96,19 +109,6 @@
         "pl": "różne trąbki ustalono; Preparowanie stabilnego wydania",
         "uk": "виправлено різні помилки; Підготовка стабільного випуску",
         "zh-cn": "(a) 固定地点; 准备稳定释放"
-      },
-      "0.2.12": {
-        "en": "fixDay(twoNd,threeRd) => postpone by one day; Bug fixed => autoOn; Additional post-watering => in case of high evaporation / switchable externally",
-        "de": "fixDay(twoNd,threeRd) => Verschiebung um einen Tag; Bug fix => autoOn; Zusätzliche Nachbewässerung => bei hoher Verdampfung / schaltbar extern",
-        "ru": "fixDay(дваNd,триRd) => откладываться на один день; Bug Fixed => autoOn; Дополнительный пост-вода => в случае высокой испарения / переключаемый внешне",
-        "pt": "fixDay(twoNd,threeRd) => adiar por um dia; Bug corrigido => autoOn; Post-watering adicional => em caso de alta evaporação / comutável externamente",
-        "nl": "fixDay(tweeNd,drieRd) => één dag uitstellen; Bug opgelost => autoAan; Extra nabewatering => bij hoge verdamping / extern schakelbaar",
-        "fr": "correctionDay(twoNd, threeRd) = repousser d'un jour; Bug corrigé = vaccin autoOn; Additionnel post-arrosage = clinique en cas d'évaporation élevée / commutable extérieurement",
-        "it": "fixDay(twoNd,treRd) => rinviare entro un giorno; Bug fisso => autoOn; Ulteriori post-irrigazione => in caso di alta evaporazione / commutabile esternamente",
-        "es": "fixDay(twoNd,threeRd) = confianza posponer por un día; Bug fijo = prenda autoOn; Pos-aguas adicionales = prenda en caso de alta evaporación / conmutable externamente",
-        "pl": "fixDay(twoNd, tripleRd) =>. Odroczony przez jeden dzień; Bug fixed => autoOn; dodatkowy post-watering => w przypadku dużego odparowania i przełącznika zewnętrznego",
-        "uk": "fixDay(twoNd,threeRd) => відкласти на один день; Виправлено помилку => autoOn; Додатковий дополив => у разі високого випаровування / перемикається зовні",
-        "zh-cn": "fix Day(两名Nd,三Rd)=> 一天推迟;Bug固定=汽车;额外的水事后=在高度疏散/外部可转换的情况下。"
       }
     },
     "desc": {
