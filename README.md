@@ -34,7 +34,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   ### **WORK IN PROGRESS**
 -->
 
- ### **WORK IN PROGRESS**
+### **WORK IN PROGRESS**
 * (Dirk-Peter-md) The switch-on hysteresis of the cistern is now stored in the configuration.
 
 ### 0.2.18 (2025-06-30)
