@@ -179,6 +179,7 @@
     "cisternPumpLeadTime": "10",
     "actualValueLevel": "",
     "triggerMinCisternLevel": "25",
+    "switchOnLevelCistern": "10",
     "wateringStartTime": "livingGoldenHourEnd",
     "timeShift": "0",
     "weekLiving": "06:30",

@@ -132,5 +132,6 @@
     "start with a fixed start time": "commencer avec une heure de début fixe",
     "weather forecast service": "service de prévisions météorologiques",
     "Lead time of the main pump in s": "Temps de livraison de la pompe principale en s",
-    "Lead time of the cistern pump in s": "Temps de livraison de la pompe de la citerne en s"
+    "Lead time of the cistern pump in s": "Temps de livraison de la pompe de la citerne en s",
+    "Switch-on hysteresis in %": "Hystérésis de réaction dans%"
 }

@@ -132,5 +132,6 @@
     "start with a fixed start time": "Beginnen Sie mit einer festen Startzeit",
     "weather forecast service": "Wettervorhersagedienst",
     "Lead time of the main pump in s": "Vorlaufzeit der Hauptpumpe in s",
-    "Lead time of the cistern pump in s": "Vorlaufzeit der Zisternepumpe in s"
+    "Lead time of the cistern pump in s": "Vorlaufzeit der Zisternepumpe in s",
+    "Switch-on hysteresis in %": "Einschalthysterese in %"
 }

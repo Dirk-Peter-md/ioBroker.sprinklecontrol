@@ -132,5 +132,6 @@
     "start with a fixed start time": "从固定的开始时间开始",
     "weather forecast service": "天气预报服务",
     "Lead time of the main pump in s": "主泵的交货时间",
-    "Lead time of the cistern pump in s": "s泵的交货时间"
+    "Lead time of the cistern pump in s": "s泵的交货时间",
+    "Switch-on hysteresis in %": "以％的切换滞后"
 }

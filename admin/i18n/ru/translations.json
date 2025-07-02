@@ -132,5 +132,6 @@
     "start with a fixed start time": "начать с фиксированного времени начала",
     "weather forecast service": "служба прогноза погоды",
     "Lead time of the main pump in s": "Время выполнения основного насоса в s",
-    "Lead time of the cistern pump in s": "Время заказа цистернного насоса в s"
+    "Lead time of the cistern pump in s": "Время заказа цистернного насоса в s",
+    "Switch-on hysteresis in %": "Включение гистерезиса в %"
 }
