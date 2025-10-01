@@ -43,7 +43,7 @@
     "@iobroker/testing": "^5.0.4",
     "chai": "^6.2.0",
     "chai-as-promised": "^8.0.2",
-    "mocha": "^11.7.1",
+    "mocha": "^11.7.3",
     "sinon": "^21.0.0",
     "sinon-chai": "^4.0.1"
   },
