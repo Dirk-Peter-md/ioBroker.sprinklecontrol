@@ -34,16 +34,16 @@
     "suncalc": "^1.9.0"
   },
   "devDependencies": {
-    "@alcalzone/release-script": "^3.8.0",
-    "@alcalzone/release-script-plugin-iobroker": "^3.7.2",
-    "@alcalzone/release-script-plugin-license": "^3.7.0",
-    "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
+    "@alcalzone/release-script": "^5.0.0",
+    "@alcalzone/release-script-plugin-iobroker": "^4.0.0",
+    "@alcalzone/release-script-plugin-license": "^4.0.0",
+    "@alcalzone/release-script-plugin-manual-review": "^4.0.0",
     "@iobroker/adapter-dev": "^1.5.0",
     "@iobroker/eslint-config": "^2.2.0",
-    "@iobroker/testing": "^5.0.4",
-    "chai": "^6.2.0",
+    "@iobroker/testing": "^5.2.2",
+    "chai": "^6.2.1",
     "chai-as-promised": "^8.0.2",
-    "mocha": "^11.7.3",
+    "mocha": "^11.7.5",
     "sinon": "^21.0.0",
     "sinon-chai": "^4.0.1"
   },
