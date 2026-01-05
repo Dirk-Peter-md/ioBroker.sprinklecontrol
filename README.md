@@ -59,11 +59,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ## License
 MIT License
 
-<<<<<<< HEAD
-Copyright (c) 2020 - 2026     Dirk Peter     <dirk.peter@freenet.de>
-=======
 Copyright (c) 2020-2026     Dirk Peter     <dirk.peter@freenet.de>
->>>>>>> cfe3d3bf290fa5688c2484758ffcf8ead486704c
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
