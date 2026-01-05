@@ -322,7 +322,7 @@ function startAdapter(options) {
                     ack: true
                 });
             }
-            if (id === `${adapter.config.weatherForInstance  }.NextDaysDetailed.Location_1.Day_2.rain_value`) {
+            if (id === `${adapter.config.weatherForInstance  }.location_1.ForecastDaily.Day_2.Rain`) {
                 weatherForecastTomorrowNum = parseFloat(state.val);
                 adapter.setState('info.rainTomorrow', {
                     val: weatherForecastTomorrowNum,
@@ -546,7 +546,7 @@ async function checkActualStates () {
              *
              */
             const _weatherForInstance = await adapter.getForeignStateAsync(
-                `${adapter.config.weatherForInstance  }.NextDaysDetailed.Location_1.Day_2.rain_value`
+                `${adapter.config.weatherForInstance  }.location_1.ForecastDaily.Day_2.Rain`
             ).catch((e) => adapter.log.warn(e));
             if (_weatherForInstance && _weatherForInstance.val) {
                 weatherForecastTomorrowNum = _weatherForInstance.val;
@@ -2016,9 +2016,9 @@ function main(adapter) {
             weatherForecastTodayPfadStr = adapter.config.pathRainForecast;
             adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
         } else if (adapter.config.weatherForecastService === 'dasWetter' && adapter.config.weatherForInstance) {
-            weatherForecastTodayPfadStr = `${adapter.config.weatherForInstance}.NextDaysDetailed.Location_1.Day_1.rain_value`;
+            weatherForecastTodayPfadStr = `${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_1.Rain`;
             adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
-            adapter.subscribeForeignStates(`${adapter.config.weatherForInstance}.NextDaysDetailed.Location_1.Day_2.rain_value`);
+            adapter.subscribeForeignStates(`${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_2.Rain`);
         } else {
             adapter.log.warn('There is no valid data record stored in the weather forecast, please correct it!');
         }
