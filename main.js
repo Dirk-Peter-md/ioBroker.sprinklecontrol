@@ -93,7 +93,7 @@ function startAdapter(options) {
                 case 'getTelegramUser':
                     adapter.getForeignState(`${adapter.config.telegramInstance  }.communicate.users`, (err, state) => {
                         err && adapter.log.error(err);
-                        if (state && state.val) {
+                        if (state?.val) {
                             try {
                                 adapter.log.debug(`getTelegramUser: ${state.val}`);
                                 adapter.sendTo(obj.from, obj.command, JSON.parse(state.val), obj.callback);
@@ -354,7 +354,7 @@ async function GetSystemData() {
         try {
             const obj = await adapter.getForeignObjectAsync('system.config');
 
-            if (obj && obj.common && obj.common.longitude && obj.common.latitude) {
+            if (obj?.common?.longitude && obj?.common?.latitude) {
                 adapter.config.longitude = obj.common.longitude;
                 adapter.config.latitude = obj.common.latitude;
 
@@ -482,7 +482,7 @@ async function checkActualStates () {
          *
          */
         const _holiday = await adapter.getStateAsync('control.Holiday');
-        if (_holiday && _holiday.val && typeof _holiday.val === 'boolean') {
+        if (_holiday?.val && typeof _holiday.val === 'boolean') {
             holidayStr = _holiday.val;
         }
 
@@ -491,7 +491,7 @@ async function checkActualStates () {
          *
          */
         const _autoOnOff = await adapter.getStateAsync('control.autoOnOff');
-        if (_autoOnOff && _autoOnOff.val && typeof _autoOnOff.val === 'boolean') {
+        if (_autoOnOff?.val && typeof _autoOnOff.val === 'boolean') {
             autoOnOffStr = _autoOnOff.val;
         }
 
@@ -503,7 +503,7 @@ async function checkActualStates () {
             const _publicHolInstanceHeute = await adapter.getForeignStateAsync(
                 `${adapter.config.publicHolInstance  }.heute.boolean`
             ).catch((e) => adapter.log.warn(e));
-            if (_publicHolInstanceHeute && _publicHolInstanceHeute.val) {
+            if (_publicHolInstanceHeute?.val) {
                 publicHolidayStr = _publicHolInstanceHeute.val;
             }
             /**
@@ -513,7 +513,7 @@ async function checkActualStates () {
             const _publicHolInstanceMorgen = await adapter.getForeignStateAsync(
                 `${adapter.config.publicHolInstance  }.morgen.boolean`
             ).catch((e) => adapter.log.warn(e));
-            if (_publicHolInstanceMorgen && _publicHolInstanceMorgen.val) {
+            if (_publicHolInstanceMorgen?.val) {
                 publicHolidayTomorrowStr = _publicHolInstanceMorgen.val;
             }
         }
@@ -526,7 +526,7 @@ async function checkActualStates () {
             const _weatherForInstanceToday = await adapter.getForeignStateAsync(
                 weatherForecastTodayPfadStr
             ).catch((e) => adapter.log.warn(e));
-            if (_weatherForInstanceToday && _weatherForInstanceToday.val) {
+            if (_weatherForInstanceToday?.val) {
                 if (typeof _weatherForInstanceToday.val == 'string') {
                     weatherForecastTodayNum = parseFloat(_weatherForInstanceToday.val);
                 } else if (typeof _weatherForInstanceToday.val == 'number') {
@@ -548,7 +548,7 @@ async function checkActualStates () {
             const _weatherForInstance = await adapter.getForeignStateAsync(
                 `${adapter.config.weatherForInstance  }.location_1.ForecastDaily.Day_2.Rain`
             ).catch((e) => adapter.log.warn(e));
-            if (_weatherForInstance && _weatherForInstance.val) {
+            if (_weatherForInstance?.val) {
                 weatherForecastTomorrowNum = _weatherForInstance.val;
                 await adapter.setStateAsync('info.rainTomorrow', {
                     val: weatherForecastTomorrowNum,
@@ -2016,8 +2016,10 @@ function main(adapter) {
             weatherForecastTodayPfadStr = adapter.config.pathRainForecast;
             adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
         } else if (adapter.config.weatherForecastService === 'dasWetter' && adapter.config.weatherForInstance) {
-            weatherForecastTodayPfadStr = `${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_1.Rain`;
+            weatherForecastTodayPfadStr = `${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_1.Rain`;
+            adapter.log.debug(`Data point "daswetter" > 4.0 rainToday: ${ weatherForecastTodayPfadStr }`);
             adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
+            adapter.log.debug(`Data point "daswetter" > 4.0 rainTomorrow: ${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_2.Rain`);
             adapter.subscribeForeignStates(`${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_2.Rain`);
         } else {
             adapter.log.warn('There is no valid data record stored in the weather forecast, please correct it!');
