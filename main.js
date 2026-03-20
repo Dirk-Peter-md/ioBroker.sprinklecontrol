@@ -1934,7 +1934,7 @@ async function createSprinklers() {
                     /* del when exist Object Async */
                     const delWhenExistObjectAsync = async (id, type) => {
                         const _find = await adapter.findForeignObjectAsync(`${id}`, `${type}`);
-                        if (_find && _find.id === `${id}`) {
+                        if (_find?.id === `${id}`) {
                             await adapter.delObjectAsync(`${id}`).catch((e) => adapter.log.warn(e));  // "sprinklecontrol.0.sprinkle.???.postponeByOneDay"
                         }
                     };
