@@ -148,7 +148,7 @@
     "type": "garden",
     "compact": true,
     "connectionType": "local",
-    "dataSource": "assumption",
+    "dataSource": "push",
     "messagebox": true,
     "tier": 2,
     "stopBeforeUpdate": true,
@@ -159,7 +159,7 @@
     ],
     "globalDependencies": [
       {
-        "admin": ">=7.6.17"
+        "admin": ">=7.6.20"
       }
     ],
     "adminUI": {
@@ -169,22 +169,23 @@
   "native": {
     "triggerControlVoltage": "",
     "maximumParallelValves": "5",
-    "switchingDistance": "300",
+    "switchingDistance": "0.5",
+    "pumpSelection": "mainPump",
     "triggerMainPump": "hm-rpc.0.MEQ1234567.1.STATE",
     "triggerMainPumpPower": "2000",
-    "mainPumpLeadTime": "15",
-    "cisternSettings": false,
+    "mainPumpLeadTime": "1",
     "triggerCisternPump": "",
     "triggerCisternPumpPower": "1800",
-    "cisternPumpLeadTime": "10",
+    "cisternPumpLeadTime": "1",
     "actualValueLevel": "",
     "triggerMinCisternLevel": "25",
-    "switchOnLevelCistern": "10",
+    "triggerOnCisternLevel": "50",
     "wateringStartTime": "livingGoldenHourEnd",
     "timeShift": "0",
     "weekLiving": "06:30",
     "selectAddStartTime": "noAddStartTime",
     "triggerAddStartTimeETpCur": "3.5",
+    "triggerAddStartTimeETpToday": "30",
     "addWateringStartTime": "18:00",
     "publicWeekend": true,
     "weekEndLiving": "07:30",
@@ -235,7 +236,8 @@
         "triggerID": "",
         "wateringTime": "10",
         "wateringAdd": "200",
-        "wateringInterval": "0",
+        "wateringIntervalOff": "0",
+        "wateringIntervalOn": "10",
         "addWateringTime": "0",
         "addTriggersIrrigation": "30",
         "maxSoilMoistureIrrigation": "8",
@@ -266,18 +268,19 @@
       "_id": "evaporation",
       "type": "channel",
       "common": {
-        "name": {
+        "name": "Info Evaporation data",
+        "desc": {
           "en": "Info Evaporation data",
-          "de": "Info Verdunstungsdaten",
-          "ru": "Данные об оценке",
-          "pt": "Info Dados de evaporÃ§Ã£o",
-          "nl": "Info Verdampingsgegevens",
-          "fr": "Info Données d'évaporation",
-          "it": "Info Dati di valutazione",
-          "es": "Info Datos de evaporación",
+          "de": "Informationen zu Verdunstungsdaten",
+          "ru": "Информация о данных испарения",
+          "pt": "Informações sobre dados de evaporação",
+          "nl": "Informatie over verdampingsgegevens",
+          "fr": "Données d'évaporation",
+          "it": "Informazioni Dati di evaporazione",
+          "es": "Información Datos de evaporación",
           "pl": "Informacje Dane dotyczące parowania",
-          "uk": "Інформація про випаровування",
-          "zh-cn": "信息释放数据"
+          "uk": "Дані про випаровування",
+          "zh-cn": "蒸发数据信息"
         }
       },
       "native": {}
@@ -287,18 +290,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
-          "en": "Calculation of current potential evapotranspiration",
-          "de": "Berechnung des aktuellen Potenzials evapotranspiration",
-          "ru": "Расчет текущего потенциального эвапотранспирации",
-          "pt": "Cálculo da evapotranspiração potencial atual",
-          "nl": "Berekening van de huidige potentiële verdamping",
-          "fr": "Calcul de l'évapotranspiration potentielle actuelle",
-          "it": "Calcolo del potenziale attuale evapotraspirazione",
-          "es": "Cálculo de la evapotranspiración potencial actual",
-          "pl": "Obliczanie bieżącej potencjalnej ewapotranspiracji",
-          "uk": "Розрахунок поточного потенціалу evapotranspiration",
-          "zh-cn": "当前潜在蒸发量的计算"
+        "name": "Calculation of the current pot. Evapotranspiration",
+        "desc": {
+          "en": "Calculation of the current pot. Evapotranspiration",
+          "de": "Berechnung des aktuellen pot. Evapotranspiration",
+          "ru": "Расчет текущего объема воды. Испарение.",
+          "pt": "Cálculo da evapotranspiração atual.",
+          "nl": "Berekening van de huidige verdamping.",
+          "fr": "Calcul du pot actuel. Évapotranspiration",
+          "it": "Calcolo del pot attuale. Evapotraspirazione",
+          "es": "Cálculo de la corriente de vapor. Evapotranspiración",
+          "pl": "Obliczanie aktualnego stanu skupienia. Ewapotranspiracja",
+          "uk": "Розрахунок поточного котла. Евапотранспірація",
+          "zh-cn": "当前蒸散量的计算。蒸散量"
         },
         "type": "number",
         "read": true,
@@ -313,18 +317,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
-          "en": "today's potential evapotranspiration",
-          "de": "heutige potentielle Evapotranspiration",
-          "ru": "потенциальная эвапотранспирация",
-          "pt": "evapotranspiração potencial de hoje",
-          "nl": "de potentiële verdamping van vandaag",
-          "fr": "l'évapotranspiration potentielle d'aujourd'hui",
-          "it": "l'evapotraspirazione potenziale di oggi",
-          "es": "la posible evapotranspiración de hoy",
-          "pl": "dzisiejsza potencjalna ewapotranspiracja",
-          "uk": "сьогодні потенціал evapotranspiration",
-          "zh-cn": "今天潜在的蒸发"
+        "name": "today's pot. Evapotranspiration",
+        "desc": {
+          "en": "today's pot. Evapotranspiration",
+          "de": "Heutiger pot. Evapotranspiration",
+          "ru": "Сегодняшний горшок. Испарение и транспирация",
+          "pt": "O pote de hoje. Evapotranspiração",
+          "nl": "De pot van vandaag. Verdamping.",
+          "fr": "Le pot du jour. Évapotranspiration",
+          "it": "il vaso di oggi. Evapotraspirazione",
+          "es": "La olla de hoy. Evapotranspiración",
+          "pl": "dzisiejszy garnek. Ewapotranspiracja",
+          "uk": "сьогоднішній горщик. Евапотранспірація",
+          "zh-cn": "今天的锅。蒸散作用"
         },
         "type": "number",
         "read": true,
@@ -339,18 +344,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
-          "en": "potential evapotranspiration from yesterday",
-          "de": "potenzielle evapotranspiration von gestern",
-          "ru": "потенциал эвапотранспирации из вчерашнего",
-          "pt": "evapotranspiração potencial de ontem",
-          "nl": "potentiële verdamping van gisteren",
-          "fr": "évapotranspiration potentielle d'hier",
-          "it": "potenziale evapotraspirazione da ieri",
-          "es": "posible evapotranspiración de ayer",
-          "pl": "potencjalna ewapotranspiracja z wczoraj",
-          "uk": "потенційний евапоранспіратор з дня",
-          "zh-cn": "可能从昨天蒸发"
+        "name": "yesterday's pot. Evapotranspiration",
+        "desc": {
+          "en": "yesterday's pot. Evapotranspiration",
+          "de": "Gestrige pot. Evapotranspiration",
+          "ru": "Вчерашний горшок. Испарение и транспирация",
+          "pt": "O pote de ontem. Evapotranspiração",
+          "nl": "De pot van gisteren. Verdamping.",
+          "fr": "Le pot d'hier. Évapotranspiration",
+          "it": "il vaso di ieri. Evapotraspirazione",
+          "es": "La olla de ayer. Evapotranspiración",
+          "pl": "wczorajszy garnek. Ewapotranspiracja",
+          "uk": "вчорашній горщик. Евапотранспірація",
+          "zh-cn": "昨天的锅。蒸散作用"
         },
         "type": "number",
         "read": true,
@@ -361,20 +367,48 @@
       "native": {}
     },
     {
+      "_id": "evaporation.dailyHighTemp",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "Daily High Temperature",
+        "desc": {
+          "en": "Daily high temperature",
+          "de": "Tageshöchsttemperatur",
+          "ru": "Максимальная температура за день",
+          "pt": "Temperatura máxima diária",
+          "nl": "Dagelijkse hoogste temperatuur",
+          "fr": "Température maximale quotidienne",
+          "it": "Temperatura massima giornaliera",
+          "es": "Temperatura máxima diaria",
+          "pl": "Maksymalna temperatura dzienna",
+          "uk": "Максимальна температура за добу",
+          "zh-cn": "日最高温度"
+        },
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0,
+        "unit": "°C"
+      },
+      "native": {}
+    },
+    {
       "_id": "control",
       "type": "channel",
       "common": {
-        "name": {
+        "name": "Control Buttons",
+        "desc": {
           "en": "Control Buttons",
-          "de": "Steuertasten",
-          "ru": "Контроль кнопки",
+          "de": "Steuerungstasten",
+          "ru": "Кнопки управления",
           "pt": "Botões de controle",
-          "nl": "Controleknoppen",
+          "nl": "Besturingsknoppen",
           "fr": "Boutons de contrôle",
           "it": "Pulsanti di controllo",
           "es": "Botones de control",
           "pl": "Przyciski sterujące",
-          "uk": "Контрольні кнопки",
+          "uk": "Кнопки управления",
           "zh-cn": "控制按钮"
         }
       },
@@ -385,18 +419,19 @@
       "type": "state",
       "common": {
         "role": "switch",
-        "name": {
-          "en": "Holiday",
-          "de": "Urlaub",
-          "ru": "Праздник",
-          "pt": "Férias",
-          "nl": "Vakantie",
-          "fr": "Vacances",
-          "it": "Vacanza",
-          "es": "Vacaciones",
-          "pl": "Wakacje",
-          "uk": "Свята",
-          "zh-cn": "节假日"
+        "name": "Holiday",
+        "desc": {
+          "en": "Holiday Mode",
+          "de": "Feiertagsmodus",
+          "ru": "Режим праздника",
+          "pt": "Modo de feriado",
+          "nl": "Vakantiemodus",
+          "fr": "Mode vacances",
+          "it": "Modalità vacanza",
+          "es": "Modo de vacaciones",
+          "pl": "Tryb wakacji",
+          "uk": "Режим святкування",
+          "zh-cn": "假期模式"
         },
         "type": "boolean",
         "read": true,
@@ -410,18 +445,19 @@
       "type": "state",
       "common": {
         "role": "switch",
-        "name": {
-          "en": "Auto / Manual On - Off",
-          "de": "Auto / Manual On - Off",
-          "ru": "Авто/руководство - Выкл",
-          "pt": "Auto / Manual On - Off",
-          "nl": "Auto / handmatig aan - uit",
-          "fr": "Auto / Manuel marche - Arrêt",
-          "it": "Auto / Manuale On - Off",
-          "es": "Auto / Manual On - Off",
-          "pl": "Automatyczne / ręczne włączanie - wyłączone",
-          "uk": "Авто / Керівництво по - Off",
-          "zh-cn": "自动/ 手动打开 - 关闭"
+        "name": "Auto / Manu On - Off",
+        "desc": {
+          "en": "Automatic or manual control of the sprinklers",
+          "de": "Automatische oder manuelle Steuerung der Sprinkler",
+          "ru": "Автоматическое или ручное управление спринклерами",
+          "pt": "Controle automático ou manual dos aspersores",
+          "nl": "Automatische of handmatige bediening van de sprinklers",
+          "fr": "Contrôle automatique ou manuel des arroseurs",
+          "it": "Controllo automatico o manuale degli irrigatori",
+          "es": "Control automático o manual de los rociadores",
+          "pl": "Automatyczne lub ręczne sterowanie zraszaczami",
+          "uk": "Автоматичне або ручне управління зрошувачами",
+          "zh-cn": "自动或手动控制喷头"
         },
         "type": "boolean",
         "states": {
@@ -439,18 +475,19 @@
       "type": "state",
       "common": {
         "role": "button",
-        "name": {
-          "en": "Start irrigation",
-          "de": "Bewässerung starten",
-          "ru": "Начать орошение",
-          "pt": "Iniciar irrigação",
-          "nl": "Begin met irrigatie",
-          "fr": "Démarrer l'irrigation",
-          "it": "Iniziare l'irrigazione",
-          "es": "Iniciar riego",
-          "pl": "Rozpocznij nawadnianie",
-          "uk": "Почати полив",
-          "zh-cn": "开始灌溉"
+        "name": "Start irrigation",
+        "desc": {
+          "en": "Start the irrigation process immediately",
+          "de": "Sofort den Bewässerungsprozess starten",
+          "ru": "Немедленно запустить процесс орошения",
+          "pt": "Iniciar o processo de irrigação imediatamente",
+          "nl": "Start het irrigatieproces onmiddellijk",
+          "fr": "Démarrez immédiatement le processus d'irrigation",
+          "it": "Avvia immediatamente il processo di irrigazione",
+          "es": "Inicie el proceso de irrigación inmediatamente",
+          "pl": "Natychmiast rozpocznij proces nawadniania",
+          "uk": "Негайно запустіть процес зрошення",
+          "zh-cn": "立即启动灌溉过程"
         },
         "type": "boolean",
         "read": true,
@@ -464,18 +501,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
-          "en": "parallel of max. Sprinklers",
-          "de": "parallel von max. Sprinkler",
-          "ru": "параллельно макс. Спринклеры",
-          "pt": "paralelo de máx. Aspersores",
-          "nl": "parallel aan max. Sprinklers",
-          "fr": "parallèle de max. Saupoudrers",
-          "it": "parallelo di max. Sprinklers",
-          "es": "paralelo de max. Espolvoradores",
-          "pl": "równoległe wartości maks. Zraszacze",
-          "uk": "парасолька макс. Спринкери",
-          "zh-cn": "与最大值平行。 喷洒器"
+        "name": "parallel of max Sprinklers",
+        "desc": {
+          "en": "Number of sprinklers that are currently running in parallel",
+          "de": "Anzahl der Sprinkler, die derzeit parallel laufen",
+          "ru": "Количество спринклеров, которые в настоящее время работают параллельно",
+          "pt": "Número de aspersores que estão atualmente funcionando em paralelo",
+          "nl": "Aantal sprinklers die momenteel parallel lopen",
+          "fr": "Nombre de sprinkleurs qui fonctionnent actuellement en parallèle",
+          "it": "Numero di irrigatori che attualmente funzionano in parallelo",
+          "es": "Número de rociadores que actualmente funcionan en paralelo",
+          "pl": "Liczba zraszaczy, które obecnie działają równolegle",
+          "uk": "Кількість зрошувачів, які в даний час працюють паралельно",
+          "zh-cn": "当前并行运行的喷头数量"
         },
         "type": "string",
         "read": true,
@@ -489,18 +527,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
-          "en": "remaining flow rate of the pump",
-          "de": "Restfördermenge der Pumpe",
-          "ru": "оставшийся расход насоса",
-          "pt": "taxa de fluxo restante da bomba",
-          "nl": "reststroom van de pomp",
-          "fr": "débit restant de la pompe",
-          "it": "portata rimanente della pompa",
-          "es": "el caudal restante de la bomba",
-          "pl": "pozostałe natężenie przepływu pompy",
-          "uk": "решта витрати насоса",
-          "zh-cn": "泵的剩余流量率"
+        "name": "rest Flow of Pump",
+        "desc": {
+          "en": "Rest flow of the pump in l/h",
+          "de": "Restdurchfluss der Pumpe in l/h",
+          "ru": "Остаточный поток насоса в л/ч",
+          "pt": "Fluxo restante da bomba em l/h",
+          "nl": "Resterende stroom van de pomp in l/h",
+          "fr": "Débit restant de la pompe en l/h",
+          "it": "Flusso residuo della pompa in l/h",
+          "es": "Flujo restante de la bomba en l/h",
+          "pl": "Pozostały przepływ pompy w l/h",
+          "uk": "Залишковий потік насоса в л/ч",
+          "zh-cn": "泵的剩余流量（l/h）"
         },
         "type": "string",
         "read": true,
@@ -513,17 +552,18 @@
       "_id": "info",
       "type": "channel",
       "common": {
-        "name": {
+        "name": "Info Logs",
+        "desc": {
           "en": "Info Logs",
-          "de": "Infoprotokolle",
-          "ru": "Журналы",
-          "pt": "Info Logs",
-          "nl": "Infologs",
+          "de": "Info Protokolle",
+          "ru": "Информационные журналы",
+          "pt": "Logs de informações",
+          "nl": "Info Logs",
           "fr": "Journaux d'information",
-          "it": "Info Logs",
-          "es": "Info Logs",
-          "pl": "Logi informacji",
-          "uk": "Контакти",
+          "it": "Registri di informazioni",
+          "es": "Registros de información",
+          "pl": "Dzienniki informacji",
+          "uk": "Информационные журналы",
           "zh-cn": "信息日志"
         }
       },
@@ -534,18 +574,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
+        "name": "Next automatic start of the sprinklers",
+        "desc": {
           "en": "Next automatic start of the sprinklers",
-          "de": "Nächster automatischer Beginn der Sprinkler",
-          "ru": "Следующий автоматический старт спринклеров",
-          "pt": "Próximo início automático dos aspersores",
+          "de": "Nächster automatischer Start der Sprinkler",
+          "ru": "Следующий автоматический запуск спринклеров",
+          "pt": "Próxima partida automática dos aspersores",
           "nl": "Volgende automatische start van de sprinklers",
           "fr": "Prochain démarrage automatique des arroseurs",
           "it": "Prossimo avvio automatico degli irrigatori",
-          "es": "Siguiente inicio automático de los aspersores",
+          "es": "Próximo inicio automático de los rociadores",
           "pl": "Następny automatyczny start zraszaczy",
-          "uk": "Наступний автоматичний запуск посипачів",
-          "zh-cn": "喷洒器下次自动启动"
+          "uk": "Наступний автоматичний запуск зрошувачів",
+          "zh-cn": "下一次自动启动喷头"
         },
         "type": "string",
         "read": true,
@@ -559,18 +600,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
-          "en": "Rain amount that day",
-          "de": "Regenmenge am Tag",
-          "ru": "Количество осадков в этот день",
-          "pt": "Quantidade de chuva naquele dia",
-          "nl": "Regen bedrag die dag",
-          "fr": "Quantité de pluie ce jour-là",
-          "it": "Quantità di pioggia quel giorno",
-          "es": "Cantidad de lluvia ese día",
-          "pl": "Ilość deszczu tego dnia",
-          "uk": "Кількість дощу в день",
-          "zh-cn": "当天的降雨量"
+        "name": "Amount of rain today",
+        "desc": {
+          "en": "Amount of rain today",
+          "de": "Niederschlagsmenge heute",
+          "ru": "Количество осадков сегодня",
+          "pt": "Quantidade de chuva hoje",
+          "nl": "Neerslaghoeveelheid vandaag",
+          "fr": "Quantité de pluie aujourd'hui",
+          "it": "Quantità di pioggia oggi",
+          "es": "Cantidad de lluvia hoy",
+          "pl": "Ilość opadów dzisiaj",
+          "uk": "Кількість опадів сьогодні",
+          "zh-cn": "今天的降雨量"
         },
         "type": "number",
         "unit": "mm",
@@ -585,18 +627,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
+        "name": "Amount of rain tomorrow",
+        "desc": {
           "en": "Amount of rain tomorrow",
-          "de": "Regenmenge morgen",
-          "ru": "Дождь завтра",
+          "de": "Niederschlagsmenge morgen",
+          "ru": "Количество осадков завтра",
           "pt": "Quantidade de chuva amanhã",
-          "nl": "Bedrag regen morgen",
+          "nl": "Neerslaghoeveelheid morgen",
           "fr": "Quantité de pluie demain",
-          "it": "Importo della pioggia domani",
+          "it": "Quantità di pioggia domani",
           "es": "Cantidad de lluvia mañana",
-          "pl": "Ilość deszczu jutro",
-          "uk": "Кількість дощу завтра",
-          "zh-cn": "明天的雨量会增加"
+          "pl": "Ilość opadów jutro",
+          "uk": "Кількість опадів завтра",
+          "zh-cn": "明天的降雨量"
         },
         "type": "number",
         "unit": "mm",
@@ -611,18 +654,19 @@
       "type": "state",
       "common": {
         "role": "indicator",
-        "name": {
+        "name": "State of the cistern",
+        "desc": {
           "en": "State of the cistern",
           "de": "Zustand der Zisterne",
           "ru": "Состояние цистерны",
           "pt": "Estado da cisterna",
-          "nl": "Staat van het reservoir",
+          "nl": "Staat van de cisterne",
           "fr": "État de la citerne",
           "it": "Stato della cisterna",
           "es": "Estado de la cisterna",
           "pl": "Stan cysterny",
-          "uk": "Стан цистерни",
-          "zh-cn": "蓄水池状况"
+          "uk": "Состояние цистерны",
+          "zh-cn": "水箱状态"
         },
         "type": "string",
         "read": true,

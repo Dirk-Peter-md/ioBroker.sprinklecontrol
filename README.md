@@ -34,6 +34,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (Dirk-Peter-md) Adapter redesign => Check configuration
 * (Dirk-Peter-md) Adaptation to “dasWeather” >= 4.0
 * (Dirk-Peter-md) Fix npm publish
 * (Dirk-Peter-md) dependencies updated
