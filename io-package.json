@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "0.2.19",
+    "version": "1.0.0",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.0": {
+        "en": "Adapter redesign => Be sure to check your configuration\nAdaptation to “dasWeather” >= 4.0\nFix npm publish\ndependencies updated\nupdate dependabot",
+        "de": "Adapter redesign => Überprüfen Sie Ihre Konfiguration\nAnpassung an „dasWeather“ >= 4.0\nNpm veröffentlichen\naktualisierte abhängigkeiten\nupdate abhängigabot",
+        "ru": "Адаптивный редизайн = Обязательно проверьте свою конфигурацию\nАдаптация к «dasWeather» 4.0\nИздательство Fix npm\nобновленные зависимости\nобновление dependabot",
+        "pt": "Redesenho do adaptador => Certifique-se de verificar sua configuração\nAdaptação ao “dasWeather” >= 4.0\nCorrigir a publicação do npm\ndependências atualizadas\nupdate dependebot",
+        "nl": "Herontwerp van de adapter => Controleer zeker uw configuratie\nAanpassing aan het weer 4.0\nFix npm publiceren\nafhankelijkheden bijgewerkt\nupdate dependabot",
+        "fr": "Remaniement de l'adaptateur => Vérifiez votre configuration\nAdaptation à la température de l'air >= 4,0\nCorrection de npm publier\ndépendances mises à jour\nmise à jour de dermabot",
+        "it": "Redesign adattatore = > Assicurati di controllare la configurazione\nAdattamento a “dasWeather” >= 4.0\nFisso npm pubblicazione\ndipendenze aggiornate\naggiornamento dipendeabot",
+        "es": "Adaptador de rediseño = confianza Asegúrese de comprobar su configuración\nAdaptación a “dasWeather” 4.0\nCorrección npm publicar\ndependencias actualizadas\nactualización dependabot",
+        "pl": "Przeprojektowanie adaptera = > Sprawdź konfigurację\nAdaptacja do \"dasWeather\" > = 4. 0\nNapraw publikację npm\nzaktualizowane zależności\naktualizacja zależna",
+        "uk": "Редизайн адаптера => Обов'язково перевірте налаштування\nАдаптація до \"dasWeather\" >= 4.8 км\nВиправлення npm опублікування\nоновлені залежності\nоновлення залежності",
+        "zh-cn": "适应器的重新设计 请检查您的配置\n适应“DasWeather”_________________________ 4.0 (单位:百万美元)\n修复 npm 发布\n更新依赖关系\n更新依赖保护"
+      },
       "0.2.19": {
         "en": "The switch-on hysteresis of the cistern is now stored in the configuration.",
         "de": "Die Einschalthysterese der Zisterne wird nun in der Konfiguration gespeichert.",
@@ -96,19 +109,6 @@
         "pl": "eslint- config dodany\nAktualizacja zależności\nUaktualnij licencję\nwydanie # 92 Sprinkler im Gewächshaus rozwiązane\ndodaj przycisk control.autoStart",
         "uk": "eslint-config додано\nЗалежність оновлено\nОновлення ліцензії\nproblem #92 Спринклер і Gewächshaus\nдодати контрольButton.autoStart",
         "zh-cn": "添加埃斯林特配置\n更新的依赖关系\n更新许可证\n#92 Sprinkr im Gewächshaus 解决了\n添加按钮控制.autoStart"
-      },
-      "0.2.13": {
-        "en": "various bugs fixed; Preparing the stable release",
-        "de": "verschiedene Fehler behoben; Vorbereitung der stabilen Freigabe",
-        "ru": "исправлены различные баги; Подготовка стабильного релиза",
-        "pt": "vários bugs corrigidos; Preparando a liberação estável",
-        "nl": "diverse insecten gerepareerd. De stabiele vrijlating voorbereiden",
-        "fr": "divers bugs corrigés; Préparation de la libération stable",
-        "it": "vari bug fissi; Preparazione del rilascio stabile",
-        "es": "varios errores fijos; Preparación de la liberación estable",
-        "pl": "różne trąbki ustalono; Preparowanie stabilnego wydania",
-        "uk": "виправлено різні помилки; Підготовка стабільного випуску",
-        "zh-cn": "(a) 固定地点; 准备稳定释放"
       }
     },
     "desc": {

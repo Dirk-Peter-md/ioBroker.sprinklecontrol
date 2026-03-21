@@ -1,4 +1,9 @@
 # Older changes
+## 0.2.15 (2025-06-01)
+* (Dirk-Peter-md) Readme updated
+* (Dirk-Peter-md) Fixed an error when switching off with autoOnOff
+* (Dirk-Peter-md) ioBroker-Bot [W028]
+
 ## 0.2.14 (2025-03-15)
 * (Dirk-Peter-md) eslint-config added
 * (Dirk-Peter-md) Dependencies updated
