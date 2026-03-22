@@ -1,6 +1,7 @@
-.git
-.vscode
-.idea
+# No dot-directories except github/vscode
+.*/
+!.vscode/
+!.github/
 .commitinfo
 
 *.code-workspace
