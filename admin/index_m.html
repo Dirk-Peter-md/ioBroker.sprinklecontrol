@@ -44,11 +44,10 @@
             <div class="row">
                 <div class="col s12" id="tab-area">
                     <ul class="tabs blue lighten-4" width="4%">
-                        <li class="tab col s6 l2"><a href="#tab-settings" class="translate active">main settings</a></li>
-                        <li class="tab col s6 l2 tab-pump"><a href="#tab-pump" class="translate">Pump Settings</a></li>
-                        <li class="tab col s6 l2 tab-time"><a href="#tab-time" class="translate">Time Settings</a></li>
-                        <li class="tab col s6 l2 tab-extra"><a href="#tab-extra" class="translate">Extra Settings</a></li>
-                        <li class="tab col s6 l2 tab-notification"><a href="#tab-notification" class="translate">Notifications</a></li>
+                        <li class="tab col s6 l3"><a href="#tab-settings" class="translate active">main settings</a></li>
+                        <li class="tab col s6 l3 tab-pump"><a href="#tab-pump" class="translate">Pump Settings</a></li>
+                        <li class="tab col s6 l3 tab-time"><a href="#tab-time" class="translate">Time Settings</a></li>
+                        <li class="tab col s6 l3 tab-extra"><a href="#tab-extra" class="translate">Extra Settings</a></li>
                     </ul>
                 </div>
                 <div class="row" id="mainSettings">
@@ -131,11 +130,6 @@
                                 <input type="number" class="value" id="maximumParallelValves" min=1 max=5 placeholder="1-5" step="1" />
                                 <label for="maximumParallelValves" class="translate"></label>
                                 <span class="translate">Maximum parallel operation of the valves</span>
-                            </div>
-                            <div class="col s12 m6 l2 input-field">
-                                <input type="number" class="value" id="switchingDistance" min=200 max=240000 placeholder="200-240000" step="100" value="500" />
-                                <label for="switchingDistance" class="translate"></label>
-                                <span class="translate">Switching distance between the valves in ms</span>
                             </div>
                         </div>
                         <div class="row">
@@ -220,470 +214,509 @@
                     </div>
                     <!-- time settings -->
                     <div id="tab-time" class="col s12 page">
-                        <!-- Start Time -->
                         <div class="row">
                             <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Start time</h6>
+                                <h6 class="translate title" style="background-color:#174475;">Time Settings</h6>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="input-field col s12 m4">
-                                <select type="combobox" class="value" id="wateringStartTime">
-                                    <option value="livingTime" class="translate">start with a fixed start time</option>
-                                    <option value="livingSunrise" class="translate">Start time at sunrise</option>
-                                    <option value="livingGoldenHourEnd" class="translate">Start time at the end of the golden hour</option>
-                                    <option value="livingSunset" class="translate">Start time at sunset</option>
-                                </select>
-                                <label for="wateringStartTime" class="translate"></label>
-                                <span class="translate">Start time for irrigation</span>
-                            </div>
-                            <div class="input-field col s6 l2 visTimeShift">
-                                <input type="number" id="timeShift" class="value" min="-120" max="120" placeholder="-120-120" step="1" />
-                                <label for="timeShift" class="translate"></label>
-                                <span class="translate">Time shift in min</span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6 l2 visWeekLiving">
-                                <input type="text" class="timepicker value" id="weekLiving" />
-                                <label for="weekLiving" class="translate"></label>
-                                <span class="translate">Start time in the week</span>
-                            </div>
-                        </div>
-                        <!-- Additional start time -->
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Additional start time</h6>
-                            </div>
-                        </div>
-                        <div class="input-field col s12 m4 l3">
-                            <select type="combobox" class="value" id="selectAddStartTime">
-                                <option value="noAddStartTime" class="translate">No additional start time</option>
-                                <option value="greaterETpCurrent" class="translate">Start at ETpCurrent greater than</option>
-                                <option value="greaterDailyMaxTemp" class="translate">Start, when the daily high temperature exceeds</option>
-                                <option value="withExternalSignal" class="translate">Start, with external signal</option>
-                            </select>
-                            <label for="selectAddStartTime" class="translate"></label>
-                            <span class="translate">Starting conditions</span>
-                        </div>
-                        <div class="col s12 m4 l2 showGreaterETpCur input-field">
-                            <input type="number" class="value" id="triggerAddStartTimeETpCur" min=0 max=10 placeholder="0-10.0" step="0.1" />
-                            <label for="triggerAddStartTimeETpCur" class="translate"></label>
-                            <span class="translate">Start at ETpCurrent greater than</span>
-                        </div>
-                        <div class="col s12 m4 l2 showGreaterTemp input-field">
-                            <input type="number" class="value" id="triggerAddStartTimeTempMax" min=20 max=50 placeholder="20-50" step="1" />
-                            <label for="triggerAddStartTimeTemp" class="translate"></label>
-                            <span class="translate">Switches on at maximum temperature via</span>
-                        </div>
-                        <div class="row">
-                            <div class="col s12 m4 l3 showExtSig">
-                                <div class="card-panel" style="background-color:#46a0e9; border-radius:15px;border-bottom: medium solid #174475;">
-                                    <span class="white-text translate">Activation of additional watering under objects:</span>
-                                    <br>
-                                    <span class="white-text translate">sprinklecontrol. ... .control.addStartTimeSwitch</span>
+                        <ul class="collapsible">
+                            <!-- StartTime settings -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Start time</h6>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 m4 l2 showAddStartTime">
-                                <input type="text" class="timepicker value" id="addWateringStartTime" />
-                                <label for="addWateringStartTime" class="translate"></label>
-                                <span class="translate">Additional start time</span>
-                            </div>
-                        </div>
-                        <!-- Weekend start time -->
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Weekend start time</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6 l2">
-                                <input type="checkbox" class="value" id="publicWeekend" />
-                                <span for="publicWeekend" class="translate">different start time on weekends</span>
-                            </div>
-                            <div class="input-field col s12 m6 l2 publicWeek">
-                                <input type="text" class="timepicker value" id="weekEndLiving" />
-                                <label for="weekEndLiving" class="translate"></label>
-                                <span class="translate">Start time at the weekend</span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Settings for the start time on public holidays</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s6 l2 publicWeekHol">
-                                <input type="checkbox" class="value" id="publicHolidays" />
-                                <span for="publicHolidays" class="translate">Start time of public holidays as on weekends</span>
-                            </div>
-                            <div class="input-field col s12 m6 l2 publicHol">
-                                <select id="publicHolInstance" class="value"></select>
-                                <label for="publicHolInstance" class="translate"></label>
-                                <span class="translate">public holidays Instance</span>
-                            </div>
-                        </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="input-field col s12 m4">
+                                            <select type="combobox" class="value" id="wateringStartTime">
+                                                <option value="livingTime" class="translate">start with a fixed start time</option>
+                                                <option value="livingSunrise" class="translate">Start time at sunrise</option>
+                                                <option value="livingGoldenHourEnd" class="translate">Start time at the end of the golden hour</option>
+                                                <option value="livingSunset" class="translate">Start time at sunset</option>
+                                            </select>
+                                            <label for="wateringStartTime" class="translate"></label>
+                                            <span class="translate">Start time for irrigation</span>
+                                        </div>
+                                        <div class="input-field col s6 l2 visTimeShift">
+                                            <input type="number" id="timeShift" class="value" min="-120" max="120" placeholder="-120-120" step="1" />
+                                            <label for="timeShift" class="translate"></label>
+                                            <span class="translate">Time shift in min</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="input-field col s6 l2 visWeekLiving">
+                                            <input type="text" class="timepicker value" id="weekLiving" />
+                                            <label for="weekLiving" class="translate"></label>
+                                            <span class="translate">Start time in the week</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Additional start time -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Additional start time</h6>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="input-field col s12 m4 l3">
+                                            <select type="combobox" class="value" id="selectAddStartTime">
+                                                <option value="noAddStartTime" class="translate">No additional start time</option>
+                                                <option value="greaterETpCurrent" class="translate">Start at ETpCurrent greater than</option>
+                                                <option value="greaterDailyMaxTemp" class="translate">Start, when the daily high temperature exceeds</option>
+                                                <option value="withExternalSignal" class="translate">Start, with external signal</option>
+                                            </select>
+                                            <label for="selectAddStartTime" class="translate"></label>
+                                            <span class="translate">Starting conditions</span>
+                                        </div>
+                                        <div class="col s12 m4 l2 showGreaterETpCur input-field">
+                                            <input type="number" class="value" id="triggerAddStartTimeETpCur" min=0 max=10 placeholder="0-10.0" step="0.1" />
+                                            <label for="triggerAddStartTimeETpCur" class="translate"></label>
+                                            <span class="translate">Start at ETpCurrent greater than</span>
+                                        </div>
+                                        <div class="col s12 m4 l2 showGreaterTemp input-field">
+                                            <input type="number" class="value" id="triggerAddStartTimeTempMax" min=20 max=50 placeholder="20-50" step="1" />
+                                            <label for="triggerAddStartTimeTemp" class="translate"></label>
+                                            <span class="translate">Switches on at maximum temperature via</span>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col s12 m4 l3 showExtSig">
+                                                <div class="card-panel" style="background-color:#46a0e9; border-radius:15px;border-bottom: medium solid #174475;">
+                                                    <span class="white-text translate">Activation of additional watering under objects:</span>
+                                                    <br>
+                                                    <span class="white-text translate">sprinklecontrol. ... .control.addStartTimeSwitch</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="input-field col s12 m4 l2 showAddStartTime">
+                                                <input type="text" class="timepicker value" id="addWateringStartTime" />
+                                                <label for="addWateringStartTime" class="translate"></label>
+                                                <span class="translate">Additional start time</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <!-- Weekend & Public holiday start time -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Weekend start time</h6>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="input-field col s12 m12 l12">
+                                            <input type="checkbox" class="value" id="publicWeekend" />
+                                            <span for="publicWeekend" class="translate">different start time on weekends</span>
+                                        </div>
+                                        <div class="input-field col s12 m4 l2 publicWeek">
+                                            <input type="text" class="timepicker value" id="weekEndLiving" />
+                                            <label for="weekEndLiving" class="translate"></label>
+                                            <span class="translate">Start time at the weekend</span>
+                                        </div>
+                                    </div> 
+                                    <div class="row">
+                                        <div class="input-field col s12 m12 l12 publicWeekHol">
+                                            <input type="checkbox" class="value" id="publicHolidays" />
+                                            <span for="publicHolidays" class="translate">Start time of public holidays as on weekends</span>
+                                        </div>
+                                        <div class="input-field col s12 m4 l2 publicHol">
+                                            <select id="publicHolInstance" class="value"></select>
+                                            <label for="publicHolInstance" class="translate"></label>
+                                            <span class="translate">public holidays Instance</span>
+                                        </div>
+                                    </div>
+                                </div>                               
+                            </li>
+                        </ul>
                     </div>
+
                     <!-- Tab Extra -->
                     <div id="tab-extra" class="col s12 page">
-                        <!-- Astro Einstellungen -->
-                        <div class="col s12 m6 l4">
-                            <div class="row">
-                                <div class="col s12">
-                                    <h6 class="translate title" style="background-color:#174475;">Astro settings</h6>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col s12 l6 input-field">
-                                    <input type="text" class="value" id="latitude" />
-                                    <label for="latitude" class="translate"></label>
-                                    <span class="translate">latitude</span>
-                                </div>
-                                <div class="col s12 l6 input-field">
-                                    <input type="text" class="value" id="longitude" />
-                                    <label for="longitude" class="translate"></label>
-                                    <span class="translate">longitude</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- notifications on/off -->
-                        <div class="col s12 m6 l4">
-                            <div class="row">
-                                <div class="col s12">
-                                    <h6 class="translate title" style="background-color:#174475;">Additional notification setting</h6>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col s8 input-field">
-                                    <input type="checkbox" class="value" id="notificationEnabled" />
-                                    <span for="notificationEnabled" class="translate">Enable / Disable Notifications</span>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- aktuelle Wetterdaten -->
                         <div class="row">
                             <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Evaporation calculation sensors</h6>
+                                <h6 class="translate title" style="background-color:#174475;">Extra Settings</h6>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col s12">
-                                <div class="card-panel" style="background-color:#46a0e9; border-radius:15px;border-bottom: medium solid #174475;">
-                                    <span class="white-text translate">These sensors are only required for irrigation depending on the calculated evaporation values.</span>
-                                    <br>
-                                    <span class="white-text translate">If you don't use this procedure, you can leave these fields blank.</span>
+                        <ul class="collapsible">
+                            <!-- Astro Einstellungen -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Astro settings</h6>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s10 m4 l4 input-field">
-                                <input type="text" class="value" id="sensorOutsideTemperature" />
-                                <label for="sensorOutsideTemperature" class="translate"></label>
-                                <span class="translate">Temperature sensor</span>
-                            </div>
-                            <div class="col s2 m2 l2">
-                                <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                            <div class="col s10 m4 l4 input-field">
-                                <input type="text" class="value" id="sensorOutsideHumidity" />
-                                <label for="sensorOutsideHumidity" class="translate"></label>
-                                <span class="translate">Humidity sensor</span>
-                            </div>
-                            <div class="col s2 m2 l2">
-                                <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s10 m4 l4 input-field">
-                                <input type="text" class="value" id="sensorWindSpeed" />
-                                <label for="sensorWindSpeed" class="translate"></label>
-                                <span class="translate">Wind speed sensor</span>
-                            </div>
-                            <div class="col s2 m2 l2">
-                                <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col s10 m4 l4 input-field">
-                                <input type="text" class="value" id="sensorBrightness" />
-                                <label for="sensorBrightness" class="translate"></label>
-                                <span class="translate">Brightness sensor</span>
-                            </div>
-                            <div class="col s2 m2 l2">
-                                <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                            <div class="col s10 m4 l4 input-field">
-                                <input type="text" class="value" id="sensorRainfall" />
-                                <label for="sensorRainfall" class="translate"></label>
-                                <span class="translate">rain counter sensor</span>
-                            </div>
-                            <div class="col s2 m2 l2">
-                                <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                            </div>
-                        </div>
-                        <!-- Wettervorhersage -->
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Weather forecast</h6>
-                            </div>
-                            <div class="row col s12 m6 l2">
-                                <input type="checkbox" class="value" id="weatherForecast" />
-                                <span for="weatherForecast" class="translate">Use weather forecast</span>
-                            </div>
-                            <div class="row weatherFor s12 m12 l10">
-                                <div class="input-field col s12 m12 l2 ">
-                                    <select class="value" id="weatherForecastService">
-                                        <option value="ownDataPoint" class="translate">own data point</option>
-                                        <option value="dasWetter" class="translate">daswetter</option>
-                                    </select>
-                                    <label for="weatherForecastService" class="translate"></label>
-                                    <span class="translate">weather forecast service</span>
-                                </div>
-                                <!-- own data point -->
-                                <div class="showOwnDataPoint">
-                                    <div class="input-field col s10 m4 l3 ">
-                                        <input type="text" class="value" id="pathRainForecast" />
-                                        <label for="pathRainForecast" class="translate"></label>
-                                        <span class="translate">Rain forecast - path</span>
-                                    </div>
-                                    <div class="col s2 m2 l1">
-                                        <a id="pathRainForecastDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="col s12 l6 input-field">
+                                            <input type="text" class="value" id="latitude" />
+                                            <label for="latitude" class="translate"></label>
+                                            <span class="translate">latitude</span>
+                                        </div>
+                                        <div class="col s12 l6 input-field">
+                                            <input type="text" class="value" id="longitude" />
+                                            <label for="longitude" class="translate"></label>
+                                            <span class="translate">longitude</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <!-- daswetter -->
-                                <div class="input-field col s12 m6 l2 showDasWetter">
-                                    <select id="weatherForInstance" class="value"></select>
-                                    <label for="weatherForInstance" class="translate"></label>
-                                    <span class="translate">Select the weather forecast instance</span>
+                            </li>
+
+                            <!-- notifications -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Additional notification setting</h6>
                                 </div>
-                                <!-- thresholdRain -->
-                                <div class="input-field col s12 m6 l2">
-                                    <input type="number" class="value" id="thresholdRain" min=0 max=5.0 placeholder="0-5.0" step="0.1" value="2" />
-                                    <label for="thresholdRain" class="translate"></label>
-                                    <span class="translate">Precipitation threshold in mm</span>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="input-field col s12 m4">
+                                                <select class="value" id="notificationsType">
+                                                    <option value="noNotification" class="translate">No Notification</option>
+                                                    <option value="Telegram" class="translate">Telegram</option>
+                                                    <option value="E-Mail" class="translate">E-Mail</option>
+                                                    <option value="Pushover" class="translate">Pushover</option>
+                                                    <option value="WhatsApp" class="translate">WhatsApp</option>
+                                                </select>
+                                                <label for="notificationsType" class="translate"></label>
+                                                <span class="translate">notifications type</span>
+                                            </div>
+                                        </div>
+                                        <!-- Telegram -->
+                                        <div class="row telegram">
+                                            <div class="col s12">
+                                                <h6 class="translate title" style="background-color:#174475;">Settings for telegram</h6>
+                                            </div>
+                                        </div>
+                                        <div class="row telegram">
+                                            <div class="input-field col s12 m6 l3 telegram">
+                                                <select id="telegramInstance" class="value"></select>
+                                                <label for="telegramInstance" class="translate"></label>
+                                                <span class="translate">Telegram instance</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 telegram">
+                                                <select id="telegramUser" class="value"></select>
+                                                <label for="telegramUser" class="translate"></label>
+                                                <span class="translate">Telegram Receiver</span>
+                                            </div>
+                                        </div>
+                                        <div class="row telegram">
+                                            <div class="input-field col s12 m6 l3 telegram">
+                                                <select class="value" id="telegramNoticeType">
+                                                    <option value="longTelegramNotice" class="translate">Long Notifications</option>
+                                                    <option value="shortTelegramNotice" class="translate">Short Notifications</option>
+                                                </select>
+                                                <label class="translate" for="telegramNoticeType"></label>
+                                                <span class="translate">Notification Style</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 telegram">
+                                                <input type="number" class="value" id="telegramWaitToSend" min="0" max="20"/>
+                                                <label for="telegramWaitToSend" class="translate"></label>
+                                                <span class="translate">Waiting for the send (seconds)</span>
+                                            </div>
+                                        </div>
+                                        <div class="row telegram">
+                                            <div class="input-field col s12 m6 l3 telegram">
+                                                <input class="value" id="telegramSilentNotice" type="checkbox"/>
+                                                <span for="telegramSilentNotice" class="translate">Silent Notice</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 telegram">
+                                                <input class="value" id="telegramOnlyError" type="checkbox"/>
+                                                <span for="telegramOnlyError" class="translate">Notification only on errors</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- WhatsApp -->
+                                        <div class="row whatsapp">
+                                            <div class="col s12">
+                                                <h6 class="translate title" style="background-color:#174475;">Settings for WhatsApp</h6>
+                                            </div>
+                                        </div>
+                                        <div class="row whatsapp">
+                                            <div class="input-field col s12 m6 l3 whatsapp">
+                                                <select id="whatsappInstance" class="value"></select>
+                                                <label for="whatsappInstance" class="translate"></label>
+                                                <span class="translate">WhatsApp instance</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 whatsapp">
+                                                <select class="value" id="whatsappNoticeType">
+                                                    <option value="longWhatsappNotice" class="translate">Long Notifications</option>
+                                                    <option value="shortWhatsappNotice" class="translate">Short Notifications</option>
+                                                </select>
+                                                <label class="translate" for="whatsappNoticeType"></label>
+                                                <span class="translate">Notification Style</span>
+                                            </div>
+                                        </div>
+                                        <div class="row whatsapp">
+                                            <div class="input-field col s12 m6 l3 whatsapp">
+                                                <input type="number" class="value" id="whatsappWaitToSend" min="0" max="20"/>
+                                                <label for="whatsappWaitToSend" class="translate"></label>
+                                                <span class="translate">Waiting for the send (seconds)</span>
+                                            </div>
+                                        </div>
+                                        <div class="row whatsapp">
+                                            <div class="input-field col s12 m6 l3 whatsapp">
+                                                <input class="value" id="whatsappOnlyError" type="checkbox"/>
+                                                <span for="whatsappOnlyError" class="translate">Notification only on errors</span>
+                                            </div>
+                                        </div>
+                                        <!-- Pushover -->
+                                        <div class="row pushover">
+                                            <div class="col s12">
+                                                <h6 class="translate title" style="background-color:#174475;">Settings for pushover</h6>
+                                            </div>
+                                        </div>
+                                        <div class="row pushover">
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <select id="pushoverInstance" class="value"></select>
+                                                <label for="pushoverInstance" class="translate"></label>
+                                                <span class="translate">Pushover instance</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <select class="value" id="pushoverNoticeType">
+                                                    <option value="longPushoverNotice" class="translate">Long Notifications</option>
+                                                    <option value="shortPushoverNotice" class="translate">Short Notifications</option>
+                                                </select>
+                                                <label class="translate" for="pushoverNoticeType"></label>
+                                                <span class="translate">Notification Style</span>
+                                            </div>
+                                        </div>
+                                        <div class="row pushover">
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <input type="number" class="value" id="pushoverWaitToSend" min="0" max="20"/>
+                                                <label for="pushoverWaitToSend" class="translate"></label>
+                                                <span class="translate">Waiting for the send (seconds)</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <input class="value" id="pushoverDeviceID" type="text">
+                                                <label for="pushoverDeviceID" class="translate"></label>
+                                                <span class="translate">device ID (optional)</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row pushover">
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <select class="value" id="pushoverSound">
+                                                    <option value="">              default </option>
+                                                    <option value="pushover">      pushover </option>
+                                                    <option value="bike">          bike </option>
+                                                    <option value="bugle">         bugle</option>
+                                                    <option value="cashregister">  cashregister </option>
+                                                    <option value="classical">     classical </option>
+                                                    <option value="cosmic">        cosmic </option>
+                                                    <option value="falling">       falling</option>
+                                                    <option value="gamelan">       gamelan </option>
+                                                    <option value="incoming">      incoming </option>
+                                                    <option value="intermission">  intermission </option>
+                                                    <option value="magic">         magic </option>
+                                                    <option value="mechanical">    mechanical </option>
+                                                    <option value="pianobar">      pianobar </option>
+                                                    <option value="siren">         siren</option>
+                                                    <option value="spacealarm">    spacealarm </option>
+                                                    <option value="tugboat">       tugboat </option>
+                                                    <option value="alien">         alien</option>
+                                                    <option value="climb">         climb </option>
+                                                    <option value="persistent">    persistent </option>
+                                                    <option value="echo">          echo</option>
+                                                    <option value="updown">        updown </option>
+                                                    <option value="none">          none</option>
+                                                </select>
+                                                <label class="translate" for="pushoverSound"></label>
+                                                <span class="translate">Notification Sound</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="row pushover">
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <input class="value" id="pushoverSilentNotice" type="checkbox"/>
+                                                <span for="pushoverSilentNotice" class="translate">Silent Notice</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 pushover">
+                                                <input class="value" id="pushoverOnlyError" type="checkbox"/>
+                                                <span for="pushoverOnlyError" class="translate">Notification only on errors</span>
+                                            </div>
+                                        </div>
+                                        <!-- email -->
+                                        <div class="row email">
+                                            <div class="col s12">
+                                                <h6 class="translate title" style="background-color:#174475;">Settings for email</h6>
+                                            </div>
+                                        </div>
+                                        <div class="row email">
+                                            <div class="input-field col s12 m6 l3 email">
+                                                <input class="value" id="emailReceiver" type="text">
+                                                <label for="emailReceiver" class="translate"></label>
+                                                <span class="translate">email receiver</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 email">
+                                                <input class="value" id="emailSender" type="text">
+                                                <label for="emailSender" class="translate"></label>
+                                                <span class="translate">email sender</span>
+                                            </div>
+                                        </div>
+                                        <div class="row email">
+                                            <div class="input-field col s12 m6 l3 email">
+                                                <select id="emailInstance" class="value"></select>
+                                                <label for="emailInstance" class="translate"></label>
+                                                <span class="translate">email instance</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 email">
+                                                <select class="value" id="emailNoticeType">
+                                                    <option value="longEmailNotice" class="translate">Long Notifications</option>
+                                                    <option value="shortEmailNotice" class="translate">Short Notifications</option>
+                                                </select>
+                                                <label class="translate" for="emailNoticeType"></label>
+                                                <span class="translate">Notification Style</span>
+                                            </div>
+                                        </div>
+                                        <div class="row email">
+                                            <div class="input-field col s12 m6 l3 email">
+                                                <input type="number" class="value" id="emailWaitToSend" min="0" max="20"/>
+                                                <label for="emailWaitToSend" class="translate"></label>
+                                                <span class="translate">Waiting for the send (seconds)</span>
+                                            </div>
+                                            <div class="input-field col s12 m6 l3 email">
+                                                <input class="value" id="emailOnlyError" type="checkbox"/>
+                                                <span for="emailOnlyError" class="translate">Notification only on errors</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- notifications -->
-                    <div id="tab-notification" class="col s12 page">
-                        <div class="row">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Selection of notification</h6>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 m4">
-                                <select class="value" id="notificationsType">
-                                    <option value="Telegram" class="translate">Telegram</option>
-                                    <option value="E-Mail" class="translate">E-Mail</option>
-                                    <option value="Pushover" class="translate">Pushover</option>
-                                    <option value="WhatsApp" class="translate">WhatsApp</option>
-                                </select>
-                                <label for="notificationsType" class="translate"></label>
-                                <span class="translate">notifications type</span>
-                            </div>
-                        </div>
-                        <!-- Telegram -->
-                        <div class="row telegram">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Settings for telegram</h6>
-                            </div>
-                        </div>
-                        <div class="row telegram">
-                            <div class="input-field col s12 m6 l3 telegram">
-                                <select id="telegramInstance" class="value"></select>
-                                <label for="telegramInstance" class="translate"></label>
-                                <span class="translate">Telegram instance</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 telegram">
-                                <select id="telegramUser" class="value"></select>
-                                <label for="telegramUser" class="translate"></label>
-                                <span class="translate">Telegram Receiver</span>
-                            </div>
-                        </div>
-                        <div class="row telegram">
-                            <div class="input-field col s12 m6 l3 telegram">
-                                <select class="value" id="telegramNoticeType">
-                                    <option value="longTelegramNotice" class="translate">Long Notifications</option>
-                                    <option value="shortTelegramNotice" class="translate">Short Notifications</option>
-                                </select>
-                                <label class="translate" for="telegramNoticeType"></label>
-                                <span class="translate">Notification Style</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 telegram">
-                                <input type="number" class="value" id="telegramWaitToSend" min="0" max="20"/>
-                                <label for="telegramWaitToSend" class="translate"></label>
-                                <span class="translate">Waiting for the send (seconds)</span>
-                            </div>
-                        </div>
-                        <div class="row telegram">
-                            <div class="input-field col s12 m6 l3 telegram">
-                                <input class="value" id="telegramSilentNotice" type="checkbox"/>
-                                <span for="telegramSilentNotice" class="translate">Silent Notice</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 telegram">
-                                <input class="value" id="telegramOnlyError" type="checkbox"/>
-                                <span for="telegramOnlyError" class="translate">Notification only on errors</span>
-                            </div>
-                        </div>
+                            </li>
 
-                        <!-- WhatsApp -->
-                        <div class="row whatsapp">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Settings for WhatsApp</h6>
-                            </div>
-                        </div>
-                        <div class="row whatsapp">
-                            <div class="input-field col s12 m6 l3 whatsapp">
-                                <select id="whatsappInstance" class="value"></select>
-                                <label for="whatsappInstance" class="translate"></label>
-                                <span class="translate">WhatsApp instance</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 whatsapp">
-                                <select class="value" id="whatsappNoticeType">
-                                    <option value="longWhatsappNotice" class="translate">Long Notifications</option>
-                                    <option value="shortWhatsappNotice" class="translate">Short Notifications</option>
-                                </select>
-                                <label class="translate" for="whatsappNoticeType"></label>
-                                <span class="translate">Notification Style</span>
-                            </div>
-                        </div>
-                        <div class="row whatsapp">
-                            <div class="input-field col s12 m6 l3 whatsapp">
-                                <input type="number" class="value" id="whatsappWaitToSend" min="0" max="20"/>
-                                <label for="whatsappWaitToSend" class="translate"></label>
-                                <span class="translate">Waiting for the send (seconds)</span>
-                            </div>
-                        </div>
-                        <div class="row whatsapp">
-                            <div class="input-field col s12 m6 l3 whatsapp">
-                                <input class="value" id="whatsappOnlyError" type="checkbox"/>
-                                <span for="whatsappOnlyError" class="translate">Notification only on errors</span>
-                            </div>
-                        </div>
-                        <!-- Pushover -->
-                        <div class="row pushover">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Settings for pushover</h6>
-                            </div>
-                        </div>
-                        <div class="row pushover">
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <select id="pushoverInstance" class="value"></select>
-                                <label for="pushoverInstance" class="translate"></label>
-                                <span class="translate">Pushover instance</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <select class="value" id="pushoverNoticeType">
-                                    <option value="longPushoverNotice" class="translate">Long Notifications</option>
-                                    <option value="shortPushoverNotice" class="translate">Short Notifications</option>
-                                </select>
-                                <label class="translate" for="pushoverNoticeType"></label>
-                                <span class="translate">Notification Style</span>
-                            </div>
-                        </div>
-                        <div class="row pushover">
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <input type="number" class="value" id="pushoverWaitToSend" min="0" max="20"/>
-                                <label for="pushoverWaitToSend" class="translate"></label>
-                                <span class="translate">Waiting for the send (seconds)</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <input class="value" id="pushoverDeviceID" type="text">
-                                <label for="pushoverDeviceID" class="translate"></label>
-                                <span class="translate">device ID (optional)</span>
-                            </div>
-                        </div>
+                            <!-- Einstellung des Schaltverhaltens -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Adjusting the switching behavior</h6>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row s12 m6 l2">
+                                        <div class="input-field col s12 m6 l2">
+                                            <select class="value" id="switchingBehavior">
+                                                <option value="standard" class="translate">Standard [ack === true]</option>
+                                                <option value="homematic" class="translate">Homematic [on_time]</option>
+                                            </select>
+                                            <label for="switchingBehavior" class="translate"></label>
+                                            <span class="translate">Switching actuator manufacturer</span>
+                                        </div>
+                                    </div>
+                                    <div class="row s12 m6 l2">
+                                        <div class="input-field col s12 m6 l2">
+                                            <input type="number" class="value" id="switchingDistance" min=200 max=240000 placeholder="200-240000" step="100" value="500" />
+                                            <label for="switchingDistance" class="translate"></label>
+                                            <span class="translate">Switching distance between the valves in ms</span>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                            </li>
 
-                        <div class="row pushover">
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <select class="value" id="pushoverSound">
-                                    <option value="">              default </option>
-                                    <option value="pushover">      pushover </option>
-                                    <option value="bike">          bike </option>
-                                    <option value="bugle">         bugle</option>
-                                    <option value="cashregister">  cashregister </option>
-                                    <option value="classical">     classical </option>
-                                    <option value="cosmic">        cosmic </option>
-                                    <option value="falling">       falling</option>
-                                    <option value="gamelan">       gamelan </option>
-                                    <option value="incoming">      incoming </option>
-                                    <option value="intermission">  intermission </option>
-                                    <option value="magic">         magic </option>
-                                    <option value="mechanical">    mechanical </option>
-                                    <option value="pianobar">      pianobar </option>
-                                    <option value="siren">         siren</option>
-                                    <option value="spacealarm">    spacealarm </option>
-                                    <option value="tugboat">       tugboat </option>
-                                    <option value="alien">         alien</option>
-                                    <option value="climb">         climb </option>
-                                    <option value="persistent">    persistent </option>
-                                    <option value="echo">          echo</option>
-                                    <option value="updown">        updown </option>
-                                    <option value="none">          none</option>
-                                </select>
-                                <label class="translate" for="pushoverSound"></label>
-                                <span class="translate">Notification Sound</span>
-                            </div>
-                        </div>
+                            <!-- aktuelle Wetterdaten -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Evaporation calculation sensors</h6>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="col s12">
+                                            <div class="card-panel" style="background-color:#46a0e9; border-radius:15px;border-bottom: medium solid #174475;">
+                                                <span class="white-text translate">These sensors are only required for irrigation depending on the calculated evaporation values.</span>
+                                                <br>
+                                                <span class="white-text translate">If you don't use this procedure, you can leave these fields blank.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s10 m4 l4 input-field">
+                                            <input type="text" class="value" id="sensorOutsideTemperature" />
+                                            <label for="sensorOutsideTemperature" class="translate"></label>
+                                            <span class="translate">Temperature sensor</span>
+                                        </div>
+                                        <div class="col s2 m2 l2">
+                                            <a id="sensorOutsideTemperatureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>
+                                        <div class="col s10 m4 l4 input-field">
+                                            <input type="text" class="value" id="sensorOutsideHumidity" />
+                                            <label for="sensorOutsideHumidity" class="translate"></label>
+                                            <span class="translate">Humidity sensor</span>
+                                        </div>
+                                        <div class="col s2 m2 l2">
+                                            <a id="sensorOutsideHumidityDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s10 m4 l4 input-field">
+                                            <input type="text" class="value" id="sensorWindSpeed" />
+                                            <label for="sensorWindSpeed" class="translate"></label>
+                                            <span class="translate">Wind speed sensor</span>
+                                        </div>
+                                        <div class="col s2 m2 l2">
+                                            <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col s10 m4 l4 input-field">
+                                            <input type="text" class="value" id="sensorBrightness" />
+                                            <label for="sensorBrightness" class="translate"></label>
+                                            <span class="translate">Brightness sensor</span>
+                                        </div>
+                                        <div class="col s2 m2 l2">
+                                            <a id="sensorBrightnessDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>
+                                        <div class="col s10 m4 l4 input-field">
+                                            <input type="text" class="value" id="sensorRainfall" />
+                                            <label for="sensorRainfall" class="translate"></label>
+                                            <span class="translate">rain counter sensor</span>
+                                        </div>
+                                        <div class="col s2 m2 l2">
+                                            <a id="sensorRainfallDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
 
-                        <div class="row pushover">
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <input class="value" id="pushoverSilentNotice" type="checkbox"/>
-                                <span for="pushoverSilentNotice" class="translate">Silent Notice</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 pushover">
-                                <input class="value" id="pushoverOnlyError" type="checkbox"/>
-                                <span for="pushoverOnlyError" class="translate">Notification only on errors</span>
-                            </div>
-                        </div>
-                        <!-- email -->
-                        <div class="row email">
-                            <div class="col s12">
-                                <h6 class="translate title" style="background-color:#174475;">Settings for email</h6>
-                            </div>
-                        </div>
-                        <div class="row email">
-                            <div class="input-field col s12 m6 l3 email">
-                                <input class="value" id="emailReceiver" type="text">
-                                <label for="emailReceiver" class="translate"></label>
-                                <span class="translate">email receiver</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 email">
-                                <input class="value" id="emailSender" type="text">
-                                <label for="emailSender" class="translate"></label>
-                                <span class="translate">email sender</span>
-                            </div>
-                        </div>
-                        <div class="row email">
-                            <div class="input-field col s12 m6 l3 email">
-                                <select id="emailInstance" class="value"></select>
-                                <label for="emailInstance" class="translate"></label>
-                                <span class="translate">email instance</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 email">
-                                <select class="value" id="emailNoticeType">
-                                    <option value="longEmailNotice" class="translate">Long Notifications</option>
-                                    <option value="shortEmailNotice" class="translate">Short Notifications</option>
-                                </select>
-                                <label class="translate" for="emailNoticeType"></label>
-                                <span class="translate">Notification Style</span>
-                            </div>
-                        </div>
-                        <div class="row email">
-                            <div class="input-field col s12 m6 l3 email">
-                                <input type="number" class="value" id="emailWaitToSend" min="0" max="20"/>
-                                <label for="emailWaitToSend" class="translate"></label>
-                                <span class="translate">Waiting for the send (seconds)</span>
-                            </div>
-                            <div class="input-field col s12 m6 l3 email">
-                                <input class="value" id="emailOnlyError" type="checkbox"/>
-                                <span for="emailOnlyError" class="translate">Notification only on errors</span>
-                            </div>
-                        </div>
+                            <!-- Wettervorhersage -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Weather forecast</h6>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row weatherFor s12 m12 l10">
+                                        <div class="input-field col s12 m12 l2 ">
+                                            <select class="value" id="weatherForecastService">
+                                                <option value="noWeatherData" class="translate">Working without a weather forecast</option>
+                                                <option value="ownDataPoint" class="translate">own data point</option>
+                                                <option value="dasWetter" class="translate">daswetter</option>
+                                            </select>
+                                            <label for="weatherForecastService" class="translate"></label>
+                                            <span class="translate">weather forecast service</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <!-- own data point -->
+                                        <div class="showOwnDataPoint">
+                                            <div class="input-field col s10 m4 l3 ">
+                                                <input type="text" class="value" id="pathRainForecast" />
+                                                <label for="pathRainForecast" class="translate"></label>
+                                                <span class="translate">Rain forecast - path</span>
+                                            </div>
+                                            <div class="col s2 m2 l1">
+                                                <a id="pathRainForecastDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                            </div>
+                                        </div>
+                                        <!-- daswetter -->
+                                        <div class="input-field col s12 m6 l2 showDasWetter">
+                                            <select id="weatherForInstance" class="value"></select>
+                                            <label for="weatherForInstance" class="translate"></label>
+                                            <span class="translate">Select the weather forecast instance</span>
+                                        </div>
+                                        <!-- thresholdRain -->
+                                        <div class="input-field col s12 m6 l2 showThresholdRain">
+                                            <input type="number" class="value" id="thresholdRain" min=0 max=5.0 placeholder="0-5.0" step="0.1" value="2" />
+                                            <label for="thresholdRain" class="translate"></label>
+                                            <span class="translate">Precipitation threshold in mm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

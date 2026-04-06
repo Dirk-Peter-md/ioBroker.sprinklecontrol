@@ -137,7 +137,7 @@ function startAdapter(options) {
                     }
                 }
                 // Wettervorhersage
-                if (adapter.config.weatherForecast === true) {
+                if (adapter.config.weatherForecastService !== 'noWeatherData') {
                     if (id === weatherForecastTodayPfadStr) {
                         if (typeof state.val == 'string') {
                             weatherForecastTodayNum = parseFloat(state.val);
@@ -317,24 +317,24 @@ function startAdapter(options) {
                     // Bestätigung für das Schalten der Ventile
                     if (myConfig.config) {
                         //adapter.log.info(`vor found: ${id} (${state.val}) => ack === ${state.ack}`);
-                        const found = myConfig.config.find((d) => d.idState === id);
+                        const found = myConfig.config.find((d) => d.control.idACK === id);
                         //adapter.log.info(`nach found: ${id} => ${JSON.stringify(found)}`);
-                        if (found && (id === myConfig.config[found.sprinkleID].idState)) {
+                        if (found && (id === myConfig.config[found.sprinkleID].control.idACK)) {
                             found.state = state;
                         }
                     }
                     if (threadList) {
-                        const found = threadList.find((d) => d.idState === id);
+                        const found = threadList.find((d) => d.control.idACK === id);
                         if (found !== undefined && typeof found.controller.ackTrue === 'function') {
                             found.controller.ackTrue(state);
                         }
                     }
                     // 24V Steuerspannung
-                    if (id === adapter.config.triggerControlVoltage && typeof controlVoltage.controller.ackTrue === 'function') {
+                    if (id === controlVoltage.control.idACK && typeof controlVoltage.controller.ackTrue === 'function') {
                         controlVoltage.controller.ackTrue(state);
                     }
                     // Pumpe (aktuell verwendete Pumpe)
-                    if (id === currentPumpUse.idState && typeof currentPumpUse.controller.ackTrue === 'function') {
+                    if (id === currentPumpUse.control.idACK && typeof currentPumpUse.controller.ackTrue === 'function') {
                         currentPumpUse.controller.ackTrue(state);
                     }
                     // The state was deleted
@@ -494,7 +494,7 @@ async function setNewDay (indexNr, threeRd) {
  * @returns {number} - resultierende Regenmenge
  */
 function resRain (inGreenhouse) {
-    return +((adapter.config.weatherForecast && !inGreenhouse) ? (((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)).toFixed(1)) : 0);
+    return +((adapter.config.weatherForecastService !== 'noWeatherData' && !inGreenhouse) ? (((+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)).toFixed(1)) : 0);
 }
 
 /**
@@ -620,7 +620,7 @@ async function checkActualStates () {
             }
         }
 
-        if (adapter.config.weatherForecast === true && (weatherForecastTodayPfadStr !== undefined || weatherForecastTodayPfadStr !== '')) {
+        if (adapter.config.weatherForecastService !== 'noWeatherData' && (weatherForecastTodayPfadStr !== undefined || weatherForecastTodayPfadStr !== '')) {
             /*     Niederschlagsmenge HEUTE in mm     */
             const _weatherForInstanceToday = await adapter.getForeignStateAsync(
                 weatherForecastTodayPfadStr
@@ -1062,7 +1062,7 @@ const startOfIrrigation = async () => {
                                         wateringTime: curWateringTime
                                     });
                                     messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(curWateringTime, '')}\n`;
-                                } else if (adapter.config.weatherForecast) {
+                                } else if (adapter.config.weatherForecastService !== 'noWeatherData') {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;
                                     adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
@@ -1086,7 +1086,7 @@ const startOfIrrigation = async () => {
                                         wateringTime: Math.round(60* countdown)
                                     });
                                     messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60*countdown), '')}\n}`;
-                                } else if (adapter.config.weatherForecast) {
+                                } else if (adapter.config.weatherForecastService !== 'noWeatherData') {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;
                                     adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum}mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
@@ -1115,7 +1115,7 @@ const startOfIrrigation = async () => {
                                         res.fixDay.startFixDay[(+ today + 2 > 6) ? (+ today-5) : (+ today+2)] = true;
                                     }
                                 }
-                            } else if (adapter.config.weatherForecast){
+                            } else if (adapter.config.weatherForecastService !== 'noWeatherData'){
                                 messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;
                                 adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${resRain(res.inGreenhouse)} > 0 ]`);
                                 if ((res.fixDay.startDay === 'threeRd') || (res.fixDay.startDay === 'twoNd')) {
@@ -1140,7 +1140,7 @@ const startOfIrrigation = async () => {
                         case 'calculation':
                             if (res.calculation.val <= res.calculation.triggersIrrigation) {
                             /* Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn es heute ausreichend regnen sollte. */
-                                const resMoisture = (adapter.config.weatherForecast)?((+ res.calculation.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.calculation.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage
+                                const resMoisture = (adapter.config.weatherForecastService !== 'noWeatherData')?((+ res.calculation.val) + (+ weatherForecastTodayNum) - parseFloat(adapter.config.thresholdRain)):(res.calculation.val);   // aktualisierte Bodenfeuchte mit Regenvorhersage
                                 if ((resMoisture <= res.calculation.triggersIrrigation) || res.inGreenhouse) {   // Kontrolle ob Regenvorhersage ausreicht || Bewässerung inGreenhouse
                                     let countdown = res.wateringTime * (res.calculation.maxIrrigation - res.calculation.val) / (res.calculation.maxIrrigation - res.calculation.triggersIrrigation); // in min
                                     // Begrenzung der Bewässerungszeit auf dem in der Config eingestellten Überschreitung (in Prozent)
@@ -1153,7 +1153,7 @@ const startOfIrrigation = async () => {
                                         wateringTime: Math.round(60*countdown)
                                     });
                                     messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60*countdown), '')}\n`;
-                                } else if (adapter.config.weatherForecast) {
+                                } else if (adapter.config.weatherForecastService !== 'noWeatherData') {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;
                                     adapter.log.info(`${res.objectName}: Start verschoben, da Regenvorhersage für Heute ${weatherForecastTodayNum} mm [ ${res.calculation.val.toFixed(1)} (${resMoisture.toFixed(1)}) <= ${res.calculation.triggersIrrigation} ]`);
@@ -2151,18 +2151,18 @@ async function main() {
     await adapter.subscribeStatesAsync('control.Holiday');
     //adapter.subscribeStates('info.Elevation');
     //adapter.subscribeStates('info.Azimut');
-    if (adapter.config.weatherForecast === true) {
-        if (adapter.config.weatherForecastService === 'ownDataPoint') {
-            weatherForecastTodayPfadStr = adapter.config.pathRainForecast;
-            adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
-        } else if (adapter.config.weatherForecastService === 'dasWetter' && (adapter.config.weatherForInstance.length > 10)) {
-            weatherForecastTodayPfadStr = `${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_1.Rain`;
-            adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
-            adapter.subscribeForeignStates(`${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_2.Rain`);
-        } else {
-            adapter.log.warn('There is no valid data record stored in the weather forecast, please correct it!');
-        }
+    
+    if (adapter.config.weatherForecastService === 'ownDataPoint') {
+        weatherForecastTodayPfadStr = adapter.config.pathRainForecast;
+        adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
+    } else if (adapter.config.weatherForecastService === 'dasWetter' && (adapter.config.weatherForInstance.length > 10)) {
+        weatherForecastTodayPfadStr = `${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_1.Rain`;
+        adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
+        adapter.subscribeForeignStates(`${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_2.Rain`);
+    } else {
+        adapter.log.warn('There is no valid data record stored in the weather forecast, please correct it!');
     }
+    
     // Request a notification from a third-party adapter => Fordern Sie eine Benachrichtigung von einem Drittanbieter-Adapter an
     if (adapter.config.publicHolidays === true && (`${ adapter.config.publicHolInstance }.heute.*`)) {
         adapter.subscribeForeignStates(`${ adapter.config.publicHolInstance }.heute.*`);

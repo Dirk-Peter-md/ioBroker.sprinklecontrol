@@ -253,6 +253,28 @@ function load(settings, onChange) {
         fillTelegramUser(settings['telegramUser'], obj);
     });
     fillPosition();
+
+        //++++++++++ TABS ++++++++++
+    //Enhance Tabs with onShow-Function
+    $('ul.tabs li a').on('click', function () { onTabShow($(this).attr('href')); });
+    function onTabShow(tabId) {
+        switch (tabId) {
+            case "#tab-time":
+                loadOptions();
+                break;
+            case "#tab-extra":
+                loadOptions();
+                break;
+            case "#tab-extraPopUp":
+                loadOptions();
+                break;
+        }
+    }
+    //++++++++++ OPTIONS ++++++++++
+    //Load Options
+    function loadOptions() {
+        $('.collapsible').collapsible();
+    }
 }
 
 /**
@@ -562,36 +584,31 @@ function showHideSettings() {
         $('.publicHol').hide();
     }
 
-    // zusätzliche Einstellungen => Wettervorhersage
-    const mWeatherForecast = $('#weatherForecast').prop('checked');
-    if (mWeatherForecast) {
-        $('.weatherFor').show();
-    } else {
-        $('.weatherFor').hide();
-    }
-
     // individuelle Wettervorhersage
     $('#weatherForecastService').on('change', function () {
-        if ($(this).val() === 'ownDataPoint') {
+        if ($(this).val() === 'noWeatherData') {
+            $('.showOwnDataPoint').hide();
+            $('.showDasWetter').hide();
+            $('.showThresholdRain').hide();
+        } else if ($(this).val() === 'ownDataPoint') {
             $('.showOwnDataPoint').show();
             $('.showDasWetter').hide();
+            $('.showThresholdRain').show();
         } else if ($(this).val() === 'dasWetter') {
             $('.showOwnDataPoint').hide();
             $('.showDasWetter').show();
+            $('.showThresholdRain').show();
         }
     }).trigger('change');
 
-    // Benachrichtigung Karte Ein / Aus
-    if ($('#notificationEnabled').prop('checked')) {
-        $('.tab-notification').show();
-    } else {
-        $('.tab-notification').hide();
-    }
-
-
     // Benachrichtigung - Typ auswahl
     $('#notificationsType').on('change', function () {
-        if ($(this).val() === 'Telegram') {
+        if ($(this).val() === 'noNotification') {
+            $('.email').hide();
+            $('.pushover').hide();
+            $('.telegram').hide();
+            $('.whatsapp').hide();
+        } else if ($(this).val() === 'Telegram') {
             $('.email').hide();
             $('.pushover').hide();
             $('.telegram').show();
