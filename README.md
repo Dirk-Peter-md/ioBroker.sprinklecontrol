@@ -33,6 +33,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* Node reset >= 20
+
 ### 1.0.1 (2026-04-06)
 * (Dirk-Peter-md) Add Homematic ON_TIME
 * (Dirk-Peter-md) Adapter configuration revised
