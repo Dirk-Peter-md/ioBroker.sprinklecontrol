@@ -1,4 +1,7 @@
 # Older changes
+## 0.2.16 (2025-06-08)
+* (Dirk-Peter-md) issue #95 Pump lead time added
+
 ## 0.2.15 (2025-06-01)
 * (Dirk-Peter-md) Readme updated
 * (Dirk-Peter-md) Fixed an error when switching off with autoOnOff

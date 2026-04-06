@@ -33,8 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 1.0.1 (2026-04-06)
 * (Dirk-Peter-md) Add Homematic ON_TIME
 * (Dirk-Peter-md) Adapter configuration revised
 * (Dirk-Peter-md) ioBroker-Bot [E4041], [E4043] completed
@@ -54,9 +53,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ### 0.2.17 (2025-06-15)
 * (Dirk-Peter-md) Valve timing corrected
-
-### 0.2.16 (2025-06-08)
-* (Dirk-Peter-md) issue #95 Pump lead time added
 
 ## License
 MIT License

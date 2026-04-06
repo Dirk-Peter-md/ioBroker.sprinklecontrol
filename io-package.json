@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.1": {
+        "en": "Add Homematic ON_TIME\nAdapter configuration revised\nioBroker-Bot [E4041], [E4043] completed",
+        "de": "Homematic ON TIME hinzufügen\nAdapterkonfiguration überarbeitet\nioBroker-Bot [E4041], [E4043] abgeschlossen",
+        "ru": "Добавить Homematic on time\nПересмотренная конфигурация адаптера\nioBroker-Bot [E4041], [E4043]",
+        "pt": "Adicionar tempo de on  metragem homemática\nA configuração do adaptador foi revista\nioBroker-Bot [E4041], [E4043] completado",
+        "nl": "Homematisch ON TIME toevoegen\nAdapterconfiguratie herzien\nioBroker-Bot [E4041], [E4043] voltooid",
+        "fr": "Ajouter Homematic ON TIME\nConfiguration de l'adaptateur révisée\nioBroker-Bot [E4041], [E4043] terminé",
+        "it": "Aggiungi Homematic ON TIME\nConfigurazione adattatore revisionata\nioBroker-Bot [E4041], [E4043] completato",
+        "es": "Añadir Homematic ON TIME\nAjuste revisado de la configuración del adaptador\nioBroker-Bot [E4041], [E4043] completado",
+        "pl": "Dodaj homematic on _ time\nZmieniona konfiguracja adaptera\njoBroker- Bot [E4041], [E4043] ukończone",
+        "uk": "Додати Homematic ON TIME\nПереглянуто налаштування адаптера\nioBroker-Bot [E4041], [E4043] завершено",
+        "zh-cn": "添加自定义 ON TIME\n修改适应器配置\nioBroker-Bot [E4041], [E4043] 完成"
+      },
       "1.0.0": {
         "en": "Adapter redesign => Be sure to check your configuration\nAdaptation to “dasWeather” >= 4.0\nFix npm publish\ndependencies updated\nupdate dependabot",
         "de": "Adapter redesign => Überprüfen Sie Ihre Konfiguration\nAnpassung an „dasWeather“ >= 4.0\nNpm veröffentlichen\naktualisierte abhängigkeiten\nupdate abhängigabot",
@@ -96,19 +109,6 @@
         "pl": "Readme zaktualizowany\nNaprawiono błąd podczas wyłączania autoOnOff\njoBroker- Bot [W028]",
         "uk": "Читати далі\nВиправлено помилку при вимкненні з автоматичноOnOff\nioBroker-Bot [W028]",
         "zh-cn": "更新我\n用 autoOnOff 关闭时修补错误\nioBroker-Bot [W028] (英语)"
-      },
-      "0.2.14": {
-        "en": "eslint-config added\nDependencies updated\nUpdate License\nissue #92 Sprinkler im Gewächshaus solved\nadd Button control.autoStart",
-        "de": "eslint-config hinzugefügt\nAusgaben aktualisiert\nLizenz aktualisieren\nausgabe #92 Sprinkler im Gewächshaus gelöst\nbutton Control.autoStart",
-        "ru": "eslint-config добавлен\nОбновленные зависимости\nОбновление лицензии\n#92 Sprinkler im Gewächshaus\nскачать игру Button control.autoStart",
-        "pt": "eslint-config adicionado\nDependências atualizadas\nLicença de atualização\nedição #92 Sprinkler im Gewächshaus resolvido\nadicionar Button control.autoStart",
-        "nl": "eslint-config toegevoegd\nAfhankelijkheden bijgewerkt\nLicentie bijwerken\nnummer #92 Sprinkler im Gewächshaus opgelost\nknop control.autoStart toevoegen",
-        "fr": "eslint-config ajouté\nDépendances actualisées\nMettre à jour la licence\nproblème #92 Sprinkler im Gewächshaus résolu\najouter Bouton control.autoStart",
-        "it": "eslint-config aggiunto\nDipendenze aggiornate\nLicenza di aggiornamento\nproblema #92 Sprinkler im Gewächshaus risolto\naggiungere controllo pulsante.autoStart",
-        "es": "eslint-config añadido\nActualización de las dependencias\nActualizar Licencia\n#92 Sprinkler im Gewächshaus resuelto\nañadir control de botón.autoStart",
-        "pl": "eslint- config dodany\nAktualizacja zależności\nUaktualnij licencję\nwydanie # 92 Sprinkler im Gewächshaus rozwiązane\ndodaj przycisk control.autoStart",
-        "uk": "eslint-config додано\nЗалежність оновлено\nОновлення ліцензії\nproblem #92 Спринклер і Gewächshaus\nдодати контрольButton.autoStart",
-        "zh-cn": "添加埃斯林特配置\n更新的依赖关系\n更新许可证\n#92 Sprinkr im Gewächshaus 解决了\n添加按钮控制.autoStart"
       }
     },
     "desc": {
