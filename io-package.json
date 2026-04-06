@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.2": {
+        "en": "Node reset >= 20",
+        "de": "Keine Rückstellung >= 20",
+        "ru": "Сброс узлов >= 20",
+        "pt": "Node reset >= 20",
+        "nl": "Voor de toepassing van deze onderverdeling wordt verstaan onder:",
+        "fr": "Réinitialisation du nœud >= 20",
+        "it": "Ripristino dei nodi >= 20",
+        "es": "Node reset >= 20",
+        "pl": "Reset węzła > = 20",
+        "uk": "Node скидання >= 20",
+        "zh-cn": "节点重置QQ 20"
+      },
       "1.0.1": {
         "en": "Add Homematic ON_TIME\nAdapter configuration revised\nioBroker-Bot [E4041], [E4043] completed",
         "de": "Homematic ON TIME hinzufügen\nAdapterkonfiguration überarbeitet\nioBroker-Bot [E4041], [E4043] abgeschlossen",
@@ -96,19 +109,6 @@
         "pl": "wydanie # 95 Dodany czas ołowiu pompy",
         "uk": "problem #95 Насос додано час",
         "zh-cn": "增加了泵前准备时间"
-      },
-      "0.2.15": {
-        "en": "Readme updated\nFixed an error when switching off with autoOnOff\nioBroker-Bot [W028]",
-        "de": "Reader aktualisiert\nFehler beim Ausschalten mit autoOnOff behoben\nioBroker-Bot [W028]",
-        "ru": "Readme обновлено\nИсправлена ошибка при выключении с помощью autoOnOff\nioBroker-Bot [W028]",
-        "pt": "Readme atualizado\nCorrigido um erro ao desligar com autoOnOff\nioBroker-Bot [W028]",
-        "nl": "Readme bijgewerkt\nEen fout hersteld bij het uitschakelen met autoOnOff\nioBroker-Bot [W028]",
-        "fr": "Lire mise à jour\nCorrection d'une erreur lors de l'arrêt automatique\nioBoker-Bot [W028]",
-        "it": "Readme aggiornato\nRisolto un errore durante l'accensione con autoOnOff\nioBroker-Bot [W028]",
-        "es": "Readme updated\nSe corrigió un error al apagarse con autoOnOff\nioBroker-Bot [W028]",
-        "pl": "Readme zaktualizowany\nNaprawiono błąd podczas wyłączania autoOnOff\njoBroker- Bot [W028]",
-        "uk": "Читати далі\nВиправлено помилку при вимкненні з автоматичноOnOff\nioBroker-Bot [W028]",
-        "zh-cn": "更新我\n用 autoOnOff 关闭时修补错误\nioBroker-Bot [W028] (英语)"
       }
     },
     "desc": {

@@ -1,4 +1,7 @@
 # Older changes
+## 0.2.17 (2025-06-15)
+* (Dirk-Peter-md) Valve timing corrected
+
 ## 0.2.16 (2025-06-08)
 * (Dirk-Peter-md) issue #95 Pump lead time added
 

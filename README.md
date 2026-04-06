@@ -33,8 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 1.0.2 (2026-04-06)
 * Node reset >= 20
 
 ### 1.0.1 (2026-04-06)
@@ -54,9 +53,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ### 0.2.18 (2025-06-30)
 * (Dirk-Peter-md) Hysteresis switch-on value of the cistern changed to 20%
-
-### 0.2.17 (2025-06-15)
-* (Dirk-Peter-md) Valve timing corrected
 
 ## License
 MIT License
