@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.2",
+    "version": "1.0.0",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,32 +19,6 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
-      "1.0.2": {
-        "en": "Node reset >= 20",
-        "de": "Keine Rückstellung >= 20",
-        "ru": "Сброс узлов >= 20",
-        "pt": "Node reset >= 20",
-        "nl": "Voor de toepassing van deze onderverdeling wordt verstaan onder:",
-        "fr": "Réinitialisation du nœud >= 20",
-        "it": "Ripristino dei nodi >= 20",
-        "es": "Node reset >= 20",
-        "pl": "Reset węzła > = 20",
-        "uk": "Node скидання >= 20",
-        "zh-cn": "节点重置QQ 20"
-      },
-      "1.0.1": {
-        "en": "Add Homematic ON_TIME\nAdapter configuration revised\nioBroker-Bot [E4041], [E4043] completed",
-        "de": "Homematic ON TIME hinzufügen\nAdapterkonfiguration überarbeitet\nioBroker-Bot [E4041], [E4043] abgeschlossen",
-        "ru": "Добавить Homematic on time\nПересмотренная конфигурация адаптера\nioBroker-Bot [E4041], [E4043]",
-        "pt": "Adicionar tempo de on  metragem homemática\nA configuração do adaptador foi revista\nioBroker-Bot [E4041], [E4043] completado",
-        "nl": "Homematisch ON TIME toevoegen\nAdapterconfiguratie herzien\nioBroker-Bot [E4041], [E4043] voltooid",
-        "fr": "Ajouter Homematic ON TIME\nConfiguration de l'adaptateur révisée\nioBroker-Bot [E4041], [E4043] terminé",
-        "it": "Aggiungi Homematic ON TIME\nConfigurazione adattatore revisionata\nioBroker-Bot [E4041], [E4043] completato",
-        "es": "Añadir Homematic ON TIME\nAjuste revisado de la configuración del adaptador\nioBroker-Bot [E4041], [E4043] completado",
-        "pl": "Dodaj homematic on _ time\nZmieniona konfiguracja adaptera\njoBroker- Bot [E4041], [E4043] ukończone",
-        "uk": "Додати Homematic ON TIME\nПереглянуто налаштування адаптера\nioBroker-Bot [E4041], [E4043] завершено",
-        "zh-cn": "添加自定义 ON TIME\n修改适应器配置\nioBroker-Bot [E4041], [E4043] 完成"
-      },
       "1.0.0": {
         "en": "Adapter redesign => Be sure to check your configuration\nAdaptation to “dasWeather” >= 4.0\nFix npm publish\ndependencies updated\nupdate dependabot",
         "de": "Adapter redesign => Überprüfen Sie Ihre Konfiguration\nAnpassung an „dasWeather“ >= 4.0\nNpm veröffentlichen\naktualisierte abhängigkeiten\nupdate abhängigabot",
