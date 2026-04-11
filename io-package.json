@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
