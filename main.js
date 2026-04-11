@@ -288,7 +288,7 @@ function startAdapter(options) {
                             const _extBreak = await valveControl.extBreak(_found.sprinkleID, state.val).catch((e) => {
                                 adapter.log.warn(`main.extBreak: ${e}`);
                             });
-                            adapter.log.info(`_extBreake: ${_extBreak}, ${JSON.stringify(_extBreak)}`);
+                            if (_extBreak?.name) adapter.log.info(`_extBreak: ${_extBreak.name}, ${_extBreak.val ? 'on' : 'off'}`);
                             if (_extBreak?.val === false) {
                                 /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost), < 6 > Cistern empty, <<< 7 >>> extBreak */
                                 adapter.setState(`sprinkle.${_found.objectName}.sprinklerState`, {
