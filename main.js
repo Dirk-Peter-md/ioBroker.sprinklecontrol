@@ -18,6 +18,7 @@ const myConfig = require('./lib/myConfig.js');                          // myCon
 const evaporation = require('./lib/evaporation.js');
 const addTime = require('./lib/tools.js').addTime;
 const formatTime = require('./lib/tools.js').formatTime;
+const tools = require('./lib/tools.js').tools;
 
 /**
  * The adapter instance
@@ -30,6 +31,7 @@ let weatherForecastTodayPfadStr;    // Pfad zur Regenvorhersage in mm (Regenvorh
 let weatherForecastTodayNum = 0;    // heutige Regenvorhersage in mm
 let weatherForecastTomorrowNum = 0; // morgige Regenvorhersage in mm
 let addStartTimeSwitch = false;     // Externer Schalter für Zusatzbewässerung
+let irrigationRestriction = false;  // Schalter für Bewässerungseinschränkung
 
 let startTimeStr;
 let sunriseStr;
@@ -68,6 +70,8 @@ function startAdapter(options) {
                 /*Startzeiten der Timer löschen*/
                 schedule.cancelJob('calcPosTimer');
                 schedule.cancelJob('sprinkleStartTime');
+                schedule.cancelJob('irrigationRestrictionOn');
+                schedule.cancelJob('irrigationRestrictionOff');
                 schedule.cancelJob('sprinkleAddStartTime');
                 /* alle Ventile und Aktoren deaktivieren */
                 valveControl.clearEntireList();
@@ -751,6 +755,10 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Startzeit Festlegen → verzögert wegen Daten von SunCalc
     setTimeout(() => {
         startTimeSprinkle();
+        if (adapter.config.enableTimeBasedRestriction === true) {
+            irrigationRestrictionOn();
+            irrigationRestrictionOff();
+        }
         addStartTimeSprinkle();
     },1000);
 
@@ -778,6 +786,28 @@ function sunPos() {
         // format sunset time from the Date object → formatieren Sie die Sonnenuntergangszeit aus dem Date-Objekt
         sunsetStr = sunsetStr = `${(`0${  times.sunset.getHours()}`).slice(-2)  }:${  (`0${  times.sunset.getMinutes()}`).slice(-2)}`;
     }
+}
+
+function irrigationRestrictionOn() {
+    schedule.cancelJob('irrigationRestrictionOn');
+    if (adapter.config.enableTimeBasedRestriction === true) {
+        const startOfInterruptionSplit = adapter.config.startOfInterruption.split(':');
+        const scheduleStartOfInterruption = schedule.scheduleJob('irrigationRestrictionOn', `${ startOfInterruptionSplit[1] } ${ startOfInterruptionSplit[0] } * * *`, function() {
+            irrigationRestriction = true;
+            valveControl.timeBasedRestriction(true);
+            adapter.log.info(`Time-based irrigation restriction is enabled! (${adapter.config.startOfInterruption} - ${adapter.config.endOfInterruption})`);
+        });
+    }
+}
+
+function irrigationRestrictionOff() {
+    schedule.cancelJob('irrigationRestrictionOff');
+    const endOfInterruptionSplit = adapter.config.endOfInterruption.split(':');
+    const scheduleEndOfInterruption = schedule.scheduleJob('irrigationRestrictionOff', `${ endOfInterruptionSplit[1] } ${ endOfInterruptionSplit[0] } * * *`, function() {
+        irrigationRestriction = false;
+        valveControl.timeBasedRestriction(false);
+        adapter.log.info('Time-based irrigation restrictions have been disabled!');
+    });
 }
 
 function addStartTimeSprinkle() {
@@ -2203,6 +2233,20 @@ async function main() {
     timer = setTimeout(() => {
         startTimeSprinkle();
         addStartTimeSprinkle();
+        if (adapter.config.enableTimeBasedRestriction === true) {
+            if(tools.laterThanTime(adapter.config.startOfInterruption) === true){            // Bewässerungsverbot wird heute noch aktiviert
+                irrigationRestriction = false
+                irrigationRestrictionOn();
+                irrigationRestrictionOff();
+            } else if (tools.laterThanTime(adapter.config.endOfInterruption) === true){      // Bewässerungsverbot aktiv
+                irrigationRestriction = true;
+                irrigationRestrictionOff();
+                valveControl.timeBasedRestriction(true);
+                adapter.log.info(`Time-based irrigation restriction is enabled! (${adapter.config.startOfInterruption} - ${adapter.config.endOfInterruption})`);
+            } else {
+                irrigationRestriction = false;                                      // Bewässerungsverbot war schon aktiv, wird heute nicht mehr aktiviert
+            }
+        }
     }, 1000);
 }
 
