@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.2": {
+        "en": "Added times for the irrigation ban",
+        "de": "Zusätzliche Zeiten für das Bewässerungsverbot",
+        "ru": "Добавлено время для запрета ирригации",
+        "pt": "Tempos adicionais para a proibição da irrigação",
+        "nl": "Toegevoegde tijden voor het irrigatieverbod",
+        "fr": "Ajout de temps pour l'interdiction d'irrigation",
+        "it": "Aggiunti i tempi per il divieto di irrigazione",
+        "es": "Tiempos adicionales para la prohibición de riego",
+        "pl": "Dodano czasy zakazu nawadniania",
+        "uk": "Додані часи для поливу заборони",
+        "zh-cn": "灌溉禁令增加的时间"
+      },
       "1.0.1": {
         "en": "Add Homematic ON_TIME\nAdapter configuration revised\nioBroker-Bot [E4041], [E4043] completed",
         "de": "Homematic ON TIME hinzufügen\nAdapterkonfiguration überarbeitet\nioBroker-Bot [E4041], [E4043] abgeschlossen",
