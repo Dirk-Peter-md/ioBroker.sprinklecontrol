@@ -15,10 +15,8 @@ const controlVoltage = require('./lib/valveControl.js').controlVoltage; // state
 const currentPumpUse = require('./lib/valveControl.js').currentPumpUse; // state der Pumpen
 const threadList = require('./lib/valveControl.js').threadList;         // Auflistung aller aktiver Sprenger-Kreise
 const myConfig = require('./lib/myConfig.js');                          // myConfig → Speichern und abrufen von Konfigurationsdaten der Ventile
-const evaporation = require('./lib/evaporation.js');
-const addTime = require('./lib/tools.js').addTime;
-const formatTime = require('./lib/tools.js').formatTime;
-const tools = require('./lib/tools.js').tools;
+const evaporation = require('./lib/evaporation.js');                    // Berechnung der Verdunstung, Ermittlung der täglichen Höchsttemperatur, Speicherung der aktuellen Werte von Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit und Regenmenge
+const tools = require('./lib/tools.js').tools;                          // tools => laden von Hilfsfunktionen
 
 /**
  * The adapter instance
@@ -418,7 +416,7 @@ async function curNextFixDay (sprinkleID, returnOn) {
     const objPfad = `sprinkle.${myConfig.config[sprinkleID].objectName}`;
     const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
     let found = false;
-    let curDay = formatTime().day;
+    let curDay = tools.formatTime().day;
     const d = new Date();
     const curTime = `${zweiStellen(d.getHours())}:${zweiStellen(d.getMinutes())}`;
 
@@ -464,7 +462,7 @@ async function curNextFixDay (sprinkleID, returnOn) {
  *     false → Zweitage-modus (twoNd)
  */
 async function setNewDay (indexNr, threeRd) {
-    const today = formatTime().day;
+    const today = tools.formatTime().day;
     const nextStartDay = ((today + 1) > 6 ? 0 : (today + 1));
     const objectName = myConfig.config[indexNr].objectName;
     const _actualSoilMoisture = await adapter.getStateAsync(
@@ -571,7 +569,7 @@ async function checkStates() {
         }
 
         /*   akt. kW ermitteln für history last week   */
-        const _formatTime = formatTime();
+        const _formatTime = tools.formatTime();
         kw = _formatTime.kW;
         today = _formatTime.day;
     } catch (e) {
@@ -716,7 +714,7 @@ async function checkActualStates () {
 const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Berechnungen mittels SunCalc
     sunPos();
-    const _curTime = formatTime();
+    const _curTime = tools.formatTime();
     today = _curTime.day;
 
     // History Daten aktualisieren, wenn eine neue Woche beginnt
@@ -857,7 +855,7 @@ function addStartTimeSprinkle() {
                                 case 'bistable': {
                                     if (res.bistable.bool) {
                                         messageText += `<b>${res.objectName}</b> (${res.bistable.bool})\n`
-                                                    +  `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
+                                                    +  `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                         memAddList.push({
                                             auto: false,
                                             sprinkleID: res.sprinkleID,
@@ -868,7 +866,7 @@ function addStartTimeSprinkle() {
                                 }
                                 case 'fixDay': {
                                     messageText += `<b>${res.objectName}</b>\n`
-                                                +  `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
+                                                +  `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                     memAddList.push({
                                         auto: false,
                                         sprinkleID: res.sprinkleID,
@@ -878,7 +876,7 @@ function addStartTimeSprinkle() {
                                 }
                                 case 'calculation': {
                                     messageText += `<b>${res.objectName}</b> ${res.calculation.pct}% (${res.calculation.pctTriggerIrrigation}%)\n`
-                                                    + `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
+                                                    + `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                     memAddList.push({
                                         auto: false,
                                         sprinkleID: res.sprinkleID,
@@ -889,7 +887,7 @@ function addStartTimeSprinkle() {
                                 case 'analog': {
                                     if (res.analog.pct < res.analog.pctAddTriggersIrrigation) {
                                         messageText += `<b>${res.objectName}</b> ${res.analog.pct} %(${res.analog.pctAddTriggersIrrigation}%)\n`
-                                                    +  `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60 * res.addWateringTime), '')}\n`;
+                                                    +  `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(Math.round(60 * res.addWateringTime), '')}\n`;
                                         memAddList.push({
                                             auto: false,
                                             sprinkleID: res.sprinkleID,
@@ -977,7 +975,7 @@ function startTimeSprinkle() {
                 case 'livingSunrise' :			/*Startauswahl = Sonnenaufgang*/
                     infoMessage = 'Start mit Sonnenaufgang ';
                     // format sunrise time from the Date object
-                    newStartTime = addTime(sunriseStr, parseInt(adapter.config.timeShift));
+                    newStartTime = tools.addTime(sunriseStr, parseInt(adapter.config.timeShift));
                     break;
                 case 'livingGoldenHourEnd' :	/*Startauswahl = Ende der Golden Hour*/
                     infoMessage = 'Start zum Ende der Golden Hour ';
@@ -987,7 +985,7 @@ function startTimeSprinkle() {
                 case 'livingSunset' :           /*Startauswahl = Sonnenuntergang*/
                     infoMessage = 'Start mit Sonnenuntergang ';
                     // format sunset time from the Date object
-                    newStartTime = addTime(sunsetStr, parseInt(adapter.config.timeShift));
+                    newStartTime = tools.addTime(sunsetStr, parseInt(adapter.config.timeShift));
                     break;
             }
             // Start am Wochenende →, wenn andere Zeiten verwendet werden soll
@@ -1091,7 +1089,7 @@ const startOfIrrigation = async () => {
                                         sprinkleID: res.sprinkleID,
                                         wateringTime: curWateringTime
                                     });
-                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(curWateringTime, '')}\n`;
+                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(curWateringTime, '')}\n`;
                                 } else if (adapter.config.weatherForecastService !== 'noWeatherData') {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;
@@ -1115,7 +1113,7 @@ const startOfIrrigation = async () => {
                                         sprinkleID: res.sprinkleID,
                                         wateringTime: Math.round(60* countdown)
                                     });
-                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60*countdown), '')}\n}`;
+                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(Math.round(60*countdown), '')}\n}`;
                                 } else if (adapter.config.weatherForecastService !== 'noWeatherData') {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;
@@ -1136,7 +1134,7 @@ const startOfIrrigation = async () => {
                                         sprinkleID: res.sprinkleID,
                                         wateringTime: curWateringTime
                                     });
-                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(curWateringTime, '')}\n`;
+                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(curWateringTime, '')}\n`;
                                     if (res.fixDay.startDay === 'threeRd'){          // Next Start in 3 Tagen
                                         res.fixDay.startFixDay[today] = false;
                                         res.fixDay.startFixDay[(+ today + 3 > 6) ? (+ today-4) : (+ today+3)] = true;
@@ -1182,7 +1180,7 @@ const startOfIrrigation = async () => {
                                         sprinkleID: res.sprinkleID,
                                         wateringTime: Math.round(60*countdown)
                                     });
-                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${addTime(Math.round(60*countdown), '')}\n`;
+                                    messageText += `   ${res.extBreak ? 'extBreak ||' : 'START =>'} ${tools.addTime(Math.round(60*countdown), '')}\n`;
                                 } else if (adapter.config.weatherForecastService !== 'noWeatherData') {
                                 /* Bewässerung unterdrückt da ausreichende Regenvorhersage */
                                     messageText += `   <i>Start verschoben, da heute ${weatherForecastTodayNum}mm Niederschlag</i> \n`;

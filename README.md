@@ -34,7 +34,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   ### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
-* (Dirk-Peter-md) Add times for the irrigation ban
+* (Dirk-Peter-md) Added times for the irrigation ban
 
 ### 1.0.1 (2026-04-11)
 * (Dirk-Peter-md) Add Homematic ON_TIME
