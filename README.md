@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.3 (2026-04-25)
 * (Dirk-Peter-md) Pressure relief valve added after irrigation.
 
 ### 1.0.2 (2026-04-19)
@@ -53,9 +53,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ### 0.2.19 (2025-07-02)
 * (Dirk-Peter-md) The switch-on hysteresis of the cistern is now stored in the configuration.
-
-### 0.2.18 (2025-06-30)
-* (Dirk-Peter-md) Hysteresis switch-on value of the cistern changed to 20%
 
 ## License
 MIT License

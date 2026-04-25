@@ -1,4 +1,7 @@
 # Older changes
+## 0.2.18 (2025-06-30)
+* (Dirk-Peter-md) Hysteresis switch-on value of the cistern changed to 20%
+
 ## 0.2.17 (2025-06-15)
 * (Dirk-Peter-md) Valve timing corrected
 
