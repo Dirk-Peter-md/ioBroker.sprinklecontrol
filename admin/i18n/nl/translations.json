@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Object-ID sproeier",
     "Ok": "OK",
     "Precipitation threshold in mm": "Neerslagdrempel in mm",
+    "Pressure relief in the lines before shutdown": "Drukontlasting in de leidingen vóór uitschakeling",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Drukverlichting! Schakelt de grootste waterverbruiker gedurende 10 seconden in nadat de pomp is uitgeschakeld.",
     "Pump Settings": "Pompinstellingen",
     "Pump selection": "Pomp selectie",
     "Pump settings": "Pomp instellingen",

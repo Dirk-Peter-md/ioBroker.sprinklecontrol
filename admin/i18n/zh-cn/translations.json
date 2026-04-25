@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "对象ID洒水器",
     "Ok": "好",
     "Precipitation threshold in mm": "以毫米为单位的降水阈值",
+    "Pressure relief in the lines before shutdown": "停机前管线压力释放",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "压力缓解！泵关闭后，打开最大耗水量 10 秒。",
     "Pump Settings": "泵设定",
     "Pump selection": "倾销选择",
     "Pump settings": "泵设定",

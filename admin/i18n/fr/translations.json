@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Arroseur ID objet",
     "Ok": "D'accord",
     "Precipitation threshold in mm": "Seuil de précipitation en mm",
+    "Pressure relief in the lines before shutdown": "Décompression dans les conduites avant l'arrêt",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Soulagement de la pression ! Allume le plus gros consommateur d'eau pendant 10 secondes après l'arrêt de la pompe.",
     "Pump Settings": "Paramètres de la pompe",
     "Pump selection": "Choix de la pompe",
     "Pump settings": "Paramètres de la pompe",

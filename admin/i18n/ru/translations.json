@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Спринклер с идентификатором объекта",
     "Ok": "Хорошо",
     "Precipitation threshold in mm": "Порог осадков в мм",
+    "Pressure relief in the lines before shutdown": "Сброс давления в линиях перед остановом",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Сброс давления! Включает самый большой водопотребитель на 10 секунд после выключения насоса.",
     "Pump Settings": "Настройки насоса",
     "Pump selection": "Выбор насоса",
     "Pump settings": "Настройки насоса",

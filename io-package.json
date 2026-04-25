@@ -170,6 +170,7 @@
     "triggerControlVoltage": "",
     "maximumParallelValves": "5",
     "switchingDistance": "0.5",
+    "pressureRelief": false,
     "pumpSelection": "mainPump",
     "triggerMainPump": "hm-rpc.0.MEQ1234567.1.STATE",
     "triggerMainPumpPower": "2000",

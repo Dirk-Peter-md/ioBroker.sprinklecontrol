@@ -33,6 +33,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) Pressure relief valve added after irrigation.
+
 ### 1.0.2 (2026-04-19)
 * (Dirk-Peter-md) Added times for the irrigation ban
 

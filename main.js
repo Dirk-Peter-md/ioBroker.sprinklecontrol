@@ -9,14 +9,15 @@ const schedule = require('node-schedule');
 const SunCalc = require('suncalc');
 
 // Load your modules here, e.g.:
-const sendMessageText = require('./lib/sendMessageText.js');            // sendMessageText
-const valveControl = require('./lib/valveControl.js').valveControl;     // Steuerung der einzelnen Ventile
-const controlVoltage = require('./lib/valveControl.js').controlVoltage; // state der Steuerspannung
-const currentPumpUse = require('./lib/valveControl.js').currentPumpUse; // state der Pumpen
-const threadList = require('./lib/valveControl.js').threadList;         // Auflistung aller aktiver Sprenger-Kreise
-const myConfig = require('./lib/myConfig.js');                          // myConfig → Speichern und abrufen von Konfigurationsdaten der Ventile
-const evaporation = require('./lib/evaporation.js');                    // Berechnung der Verdunstung, Ermittlung der täglichen Höchsttemperatur, Speicherung der aktuellen Werte von Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit und Regenmenge
-const tools = require('./lib/tools.js').tools;                          // tools => laden von Hilfsfunktionen
+const sendMessageText = require('./lib/sendMessageText.js');                        // sendMessageText
+const valveControl = require('./lib/valveControl.js').valveControl;                 // Steuerung der einzelnen Ventile
+const controlVoltage = require('./lib/valveControl.js').controlVoltage;             // state der Steuerspannung
+const currentPumpUse = require('./lib/valveControl.js').currentPumpUse;             // state der Pumpen
+const threadList = require('./lib/valveControl.js').threadList;                     // Auflistung aller aktiver Sprenger-Kreise
+const pressureReliefValve = require('./lib/valveControl.js').pressureReliefValve;   // state des Druckentlastungsventil
+const myConfig = require('./lib/myConfig.js');                                      // myConfig → Speichern und abrufen von Konfigurationsdaten der Ventile
+const evaporation = require('./lib/evaporation.js');                                // Berechnung der Verdunstung, Ermittlung der täglichen Höchsttemperatur, Speicherung der aktuellen Werte von Temperatur, Luftfeuchtigkeit, Helligkeit, Windgeschwindigkeit und Regenmenge
+const tools = require('./lib/tools.js').tools;                                      // tools => laden von Hilfsfunktionen
 
 /**
  * The adapter instance
@@ -330,6 +331,10 @@ function startAdapter(options) {
                         if (found !== undefined && typeof found.controller.ackTrue === 'function') {
                             found.controller.ackTrue(state);
                         }
+                    }
+                    // Druckentlastungsventil
+                    if (id === pressureReliefValve.control.idACK && typeof pressureReliefValve.controller.ackTrue === 'function') {
+                        pressureReliefValve.controller.ackTrue(state);
                     }
                     // 24V Steuerspannung
                     if (id === controlVoltage.control.idACK && typeof controlVoltage.controller.ackTrue === 'function') {

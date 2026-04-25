@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Zraszacz ID obiektów",
     "Ok": "Dobrze",
     "Precipitation threshold in mm": "Próg opadów w mm",
+    "Pressure relief in the lines before shutdown": "Redukcja ciśnienia w przewodach przed wyłączeniem",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Redukcja ciśnienia! Włącza największy odbiornik wody na 10 sekund po wyłączeniu pompy.",
     "Pump Settings": "Ustawienia pompy",
     "Pump selection": "Wybór Pumpa",
     "Pump settings": "Ustawienia pompy",

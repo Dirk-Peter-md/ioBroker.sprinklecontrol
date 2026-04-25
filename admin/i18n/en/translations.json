@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Object-ID sprinkler",
     "Ok": "Ok",
     "Precipitation threshold in mm": "Precipitation threshold in mm",
+    "Pressure relief in the lines before shutdown": "Pressure relief in the lines before shutdown",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.",
     "Pump Settings": "Pump Settings",
     "Pump selection": "Pump selection",
     "Pump settings": "Pump settings",

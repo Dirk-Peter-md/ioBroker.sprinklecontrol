@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Aspersor de ID de objeto",
     "Ok": "Okay",
     "Precipitation threshold in mm": "Umbral de precipitación en mm",
+    "Pressure relief in the lines before shutdown": "Alivio de presión en las líneas antes de la parada.",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "¡Alivio de presión! Enciende el mayor consumidor de agua durante 10 segundos después de apagar la bomba.",
     "Pump Settings": "Configuraciones de bomba",
     "Pump selection": "Selección de bombas",
     "Pump settings": "Ajustes de la bomba",

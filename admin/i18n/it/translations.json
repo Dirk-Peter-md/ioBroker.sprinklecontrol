@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Irrigatore ID oggetto",
     "Ok": "Ok",
     "Precipitation threshold in mm": "Soglia di precipitazione in mm",
+    "Pressure relief in the lines before shutdown": "Depressurizzazione nelle linee prima dell'arresto",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Alleviamento della pressione! Accende l'utenza d'acqua più grande per 10 secondi dopo lo spegnimento della pompa.",
     "Pump Settings": "Impostazioni della pompa",
     "Pump selection": "Selezione pompa",
     "Pump settings": "Impostazioni della pompa",

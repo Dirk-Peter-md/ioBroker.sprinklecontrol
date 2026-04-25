@@ -52,6 +52,8 @@
     "Object-ID sprinkler": "Objekt-ID-Sprinkler",
     "Ok": "OK",
     "Precipitation threshold in mm": "Niederschlags-Schwellwert in mm",
+    "Pressure relief in the lines before shutdown": "Druckentlastung der Leitungen vor der Abschaltung",
+    "Pressure relief! Switches on the largest water consumer for 10 seconds after the pump has been switched off.": "Druckentlastung! Schaltet nach dem Abschalten der Pumpe den größten Wasserverbraucher für 10 Sekunden ein.",
     "Pump Settings": "Pumpeneinstellungen",
     "Pump selection": "Pumpenauswahl",
     "Pump settings": "Pumpeneinstellungen",
