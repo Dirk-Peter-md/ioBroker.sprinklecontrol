@@ -493,6 +493,7 @@ function showHideSettings() {
      * @type {boolean}
      */
     let selAddStartTime = false;
+    let mWeatherForecast = false;
 
     // Zeiteinstellungen => Feiertagseinstellung sichtbar bei combobox
     $('#wateringStartTime').on('change', function () {
@@ -587,14 +588,17 @@ function showHideSettings() {
     // individuelle Wettervorhersage
     $('#weatherForecastService').on('change', function () {
         if ($(this).val() === 'noWeatherData') {
+            mWeatherForecast = false;
             $('.showOwnDataPoint').hide();
             $('.showDasWetter').hide();
             $('.showThresholdRain').hide();
         } else if ($(this).val() === 'ownDataPoint') {
+            mWeatherForecast = true;
             $('.showOwnDataPoint').show();
             $('.showDasWetter').hide();
             $('.showThresholdRain').show();
         } else if ($(this).val() === 'dasWetter') {
+            mWeatherForecast = true;
             $('.showOwnDataPoint').hide();
             $('.showDasWetter').show();
             $('.showThresholdRain').show();

@@ -2192,10 +2192,8 @@ async function main() {
         weatherForecastTodayPfadStr = `${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_1.Rain`;
         adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
         adapter.subscribeForeignStates(`${ adapter.config.weatherForInstance }.location_1.ForecastDaily.Day_2.Rain`);
-    } else {
-        adapter.log.warn('There is no valid data record stored in the weather forecast, please correct it!');
     }
-    
+
     // Request a notification from a third-party adapter => Fordern Sie eine Benachrichtigung von einem Drittanbieter-Adapter an
     if (adapter.config.publicHolidays === true && (`${ adapter.config.publicHolInstance }.heute.*`)) {
         adapter.subscribeForeignStates(`${ adapter.config.publicHolInstance }.heute.*`);
