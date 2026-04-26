@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.4 (2026-04-26)
 * (Dirk-Peter-md) GitHub error message #274
 
 ### 1.0.3 (2026-04-25)
@@ -53,9 +53,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 * (Dirk-Peter-md) Fix npm publish
 * (Dirk-Peter-md) dependencies updated
 * (Dirk-Peter-md) update dependabot
-
-### 0.2.19 (2025-07-02)
-* (Dirk-Peter-md) The switch-on hysteresis of the cistern is now stored in the configuration.
 
 ## License
 MIT License

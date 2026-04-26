@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.4": {
+        "en": "GitHub error message #274",
+        "de": "GitHub Fehlermeldung #274",
+        "ru": "Сообщение об ошибке GitHub #274",
+        "pt": "Mensagem de erro do GitHub # 274",
+        "nl": "GitHub foutmelding #274",
+        "fr": "Message d'erreur GitHub #274",
+        "it": "Messaggio di errore GitHub #274",
+        "es": "Mensaje de error GitHub #274",
+        "pl": "Komunikat błędu GitHub # 274",
+        "uk": "Повідомлення про помилку GitHub #274",
+        "zh-cn": "GitHub 错误消息 # 274"
+      },
       "1.0.3": {
         "en": "Pressure relief valve added after irrigation.",
         "de": "Druckentlastungsventil nach Bewässerung hinzugefügt.",
@@ -96,19 +109,6 @@
         "pl": "Zmiana wartości hysterezy cysterny na 20%",
         "uk": "Гістерез змінився на 20%",
         "zh-cn": "贮器的开关值改为20%"
-      },
-      "0.2.17": {
-        "en": "Valve timing corrected",
-        "de": "Ventilzeit korrigiert",
-        "ru": "Время клапана скорректировано",
-        "pt": "Regulação da válvula",
-        "nl": "Gecorrigeerde kleptijd",
-        "fr": "Réglage de la vanne",
-        "it": "Valvola tempistica corretta",
-        "es": "Tiempo de válvula corregido",
-        "pl": "Skorygowany czas zaworu",
-        "uk": "Терміни клапана, виправлені",
-        "zh-cn": "阀门时间得到纠正"
       }
     },
     "desc": {
