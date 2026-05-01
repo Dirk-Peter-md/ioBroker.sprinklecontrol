@@ -251,7 +251,7 @@
         "pipeFlow": "1100",
         "booster": false,
         "endIrrigation": true,
-        "methodControlSM": "calculation",
+        "methodControlSM": "fixDay",
         "triggerSM": "",
         "inGreenhouse": false,
         "analogZPct": "0",

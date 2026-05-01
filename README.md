@@ -36,6 +36,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ### **WORK IN PROGRESS**
 * (Dirk-Peter-md) Second start time added
+* (Dirk-Peter-md) bug fixed in sprinklerState
 
 ### 1.0.4 (2026-04-26)
 * (Dirk-Peter-md) GitHub error message #274
