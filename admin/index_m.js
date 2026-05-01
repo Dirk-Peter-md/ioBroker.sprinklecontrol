@@ -54,6 +54,7 @@ function load(settings, onChange) {
         }
         setTimeout(function () {
             $('#events .values-input[data-name="enabled"][data-index="' + id + '"]').prop('checked', true);
+            $('#events .values-input[data-name="startTimeSelection"][data-index="' + id + '"]').val('firstStartTime').trigger('change');
             $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val('20').trigger('change');
             $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val('200').trigger('change');
             $('#events .values-input[data-name="wateringIntervalOff"][data-index="' + id + '"]').val('0').trigger('change');
@@ -65,12 +66,10 @@ function load(settings, onChange) {
             $('#events .values-input[data-name="triggersIrrigation"][data-index="' + id + '"]').val('50').trigger('change');
             $('#events .values-input[data-name="pipeFlow"][data-index="' + id + '"]').val('700').trigger('change');
             $('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').val('calculation').trigger('change');
-            //$('#events .values-input[data-name="methodControlSM"][data-index="' + id + '"]').select().trigger('change');    // select() > val
-            //$('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val().trigger('change');
+            $('#events .values-input[data-name="triggerSM"][data-index="' + id + '"]').val('').trigger('change');
             $('#events .values-input[data-name="analogZPct"][data-index="' + id + '"]').val('0').trigger('change');
             $('#events .values-input[data-name="analogOHPct"][data-index="' + id + '"]').val('100').trigger('change');
             $('#events .values-input[data-name="startDay"][data-index="' + id + '"]').val('threeRd').trigger('change');
-            //$('#events .values-input[data-name="startDay"][data-index="' + id + '"]').select().trigger('change');
             // boolean
             $('#events .values-input[data-name="booster"][data-index="' + id + '"]').prop('checked', false);
             $('#events .values-input[data-name="endIrrigation"][data-index="' + id + '"]').prop('checked', true);
@@ -359,6 +358,8 @@ function tableOnReady() {
     $('#events .table-values-div .table-values .values-buttons[data-command="edit"]').on('click', function () {
         const id = $(this).data('index');
         $('#triggerID').val($('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val());
+        $('#startTimeSelection').val($('#events .values-input[data-name="startTimeSelection"][data-index="' + id + '"]').val());
+        $('#startTimeSelection').select().trigger('change');
         $('#wateringTime').val($('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val());
         $('#wateringAdd').val($('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val());
         $('#wateringIntervalOff').val($('#events .values-input[data-name="wateringIntervalOff"][data-index="' + id + '"]').val());
@@ -393,6 +394,7 @@ function tableOnReady() {
         setTimeout(function () {
             initDialogSprinkle(function (sid) {
                 const newTriggerID = $('#triggerID').val();
+                const newStartTimeSelection = $('#startTimeSelection').val();
                 const newWateringTime = $('#wateringTime').val();
                 const newWateringAdd = $('#wateringAdd').val();
                 const newWateringIntervalOff = $('#wateringIntervalOff').val();
@@ -421,6 +423,7 @@ function tableOnReady() {
                 const newSat = $('#sat').prop('checked');
 
                 $('#events .values-input[data-name="triggerID"][data-index="' + id + '"]').val(newTriggerID).trigger('change');
+                $('#events .values-input[data-name="startTimeSelection"][data-index="' + id + '"]').val(newStartTimeSelection).trigger('change');
                 $('#events .values-input[data-name="wateringTime"][data-index="' + id + '"]').val(newWateringTime).trigger('change');
                 $('#events .values-input[data-name="wateringAdd"][data-index="' + id + '"]').val(newWateringAdd).trigger('change');
                 $('#events .values-input[data-name="wateringIntervalOff"][data-index="' + id + '"]').val(newWateringIntervalOff).trigger('change');

@@ -69,6 +69,7 @@ function startAdapter(options) {
                 /*Startzeiten der Timer löschen*/
                 schedule.cancelJob('calcPosTimer');
                 schedule.cancelJob('sprinkleStartTime');
+                schedule.cancelJob('sprinkleSecondStartTime');
                 schedule.cancelJob('irrigationRestrictionOn');
                 schedule.cancelJob('irrigationRestrictionOff');
                 schedule.cancelJob('sprinkleAddStartTime');
@@ -82,272 +83,277 @@ function startAdapter(options) {
 
         // is called if a subscribed state changes
         stateChange: async (id, state) => {
-            adapter.log.debug(`stateChange: ${id} (${state ? state.val : 'null'}) ack: ${state ? state.ack : 'null'}`);
-            // The state was changed → Der Zustand wurde geändert
-            if(state){
-                // Change in outside temperature → Änderung der Außentemperatur
-                if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
-                    if (!Number.isNaN(Number.parseFloat(state.val))) {
-                        // @ts-ignore
-                        evaporation.setCurTemperature(parseFloat(state.val), state.ts);
-                    } else {
-                        adapter.log.warn(`sensorOutsideTemperature => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                    }
-                }
-                // LuftFeuchtigkeit
-                if (id === adapter.config.sensorOutsideHumidity) {
-                    if (!Number.isNaN(Number.parseFloat(state.val))) {
-                        evaporation.setCurHumidity(parseFloat(state.val), state.lc);
-                    } else {
-                        adapter.log.warn(`sensorOutsideHumidity => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                    }
-                }
-                // Helligkeit
-                if (id === adapter.config.sensorBrightness) {
-                    if (!Number.isNaN(Number.parseFloat(state.val))) {
-                        evaporation.setCurIllumination(parseFloat(state.val), state.lc);
-                    } else {
-                        adapter.log.warn(`sensorBrightness => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                    }
-                }
-                // Windgeschwindigkeit
-                if (id === adapter.config.sensorWindSpeed) {
-                    if (!Number.isNaN(Number.parseFloat(state.val))) {
-                        evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
-                    } else {
-                        adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                    }
-                }
-                // Regencontainer
-                // If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
-                //	* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt.
-                if (id === adapter.config.sensorRainfall) {
-                    if (!Number.isNaN(Number.parseFloat(state.val))) {
-                        evaporation.setCurAmountOfRain(parseFloat(state.val));
-                    } else {
-                        adapter.log.warn(`sensorRainfall => Wrong value: ${state.val}, Type: ${typeof state.val}`);
-                    }
-                }
-                // Feiertagskalender
-                if (adapter.config.publicHolidays === true) {
-                    if (id === `${adapter.config.publicHolInstance}.heute.boolean`) {
-                        publicHolidayStr = state.val;
-                        startTimeSprinkle();
-                    }
-                    if (id === `${adapter.config.publicHolInstance}.morgen.boolean`) {
-                        publicHolidayTomorrowStr = state.val;
-                        startTimeSprinkle();
-                    }
-                }
-                // Wettervorhersage
-                if (adapter.config.weatherForecastService !== 'noWeatherData') {
-                    if (id === weatherForecastTodayPfadStr) {
-                        if (typeof state.val == 'string') {
-                            weatherForecastTodayNum = parseFloat(state.val);
-                        } else if (typeof state.val == 'number') {
-                            weatherForecastTodayNum = state.val;
+            try {
+                adapter.log.debug(`stateChange: ${id} (${state ? state.val : 'null'}) ack: ${state ? state.ack : 'null'}`);
+                // The state was changed → Der Zustand wurde geändert
+                if(state){
+                    // Change in outside temperature → Änderung der Außentemperatur
+                    if (id === adapter.config.sensorOutsideTemperature) {	/*Temperatur*/
+                        if (!Number.isNaN(Number.parseFloat(state.val))) {
+                            // @ts-ignore
+                            evaporation.setCurTemperature(parseFloat(state.val), state.ts);
                         } else {
-                            weatherForecastTodayNum = 0;
-                            adapter.log.info(`StateChange => Wettervorhersage state.val ( ${ state.val }; ${ typeof state.val } ) kann nicht als Number verarbeitet werden`);
-                        }
-                        adapter.setState('info.rainToday', {
-                            val: weatherForecastTodayNum,
-                            ack: true
-                        });
-                    }
-                    if (id === `${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_2.Rain`) {
-                        weatherForecastTomorrowNum = parseFloat(state.val);
-                        adapter.setState('info.rainTomorrow', {
-                            val: weatherForecastTomorrowNum,
-                            ack: true
-                        });
-                    }
-                }
-                // Füllstand der Zisterne bei Statusänderung
-                if (adapter.config.actualValueLevel && (id === adapter.config.actualValueLevel)) {
-                    valveControl.setFillLevelCistern(parseFloat(state.val) || 0);
-                    //fillLevelCistern = state.val || 0;
-                }
-                // Rückmeldungen mit ack === False
-                if(state.ack === false){
-                    // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
-                    if (id === `${adapter.namespace}.control.Holiday`) {
-                        holidayStr = state.val;
-                        adapter.setState(id, {
-                            val: state.val,
-                            ack: true
-                        });
-                        startTimeSprinkle();
-                    }
-                    // wenn (addStartTimeSwitch == true) wird die zusätzliche Bewässerung aktiviert
-                    if (id === `${adapter.namespace}.control.addStartTimeSwitch`) {
-                        addStartTimeSwitch = state.val;
-                        adapter.setState(id, {
-                            val: state.val,
-                            ack: true
-                        });
-                    }
-                    // wenn (autoOnOff == false) so werden alle Sprenger nicht mehr automatisch gestartet.
-                    if (id === `${adapter.namespace}.control.autoOnOff`) {
-                        autoOnOffStr = state.val;
-                        adapter.log.info(`startAdapter: control.autoOnOff: ${state.val}`);
-                        adapter.setState(id, {
-                            val: state.val,
-                            ack: true
-                        });
-                        if (state.val === false) {
-                            valveControl.clearEntireList();
-                        }
-                        startTimeSprinkle();
-                    }
-                    // wenn (autoStart == true) so die automatische Bewässerung von Hand gestartet
-                    if (id === `${adapter.namespace}.control.autoStart`) {
-                        adapter.setState(id, {
-                            val: false,
-                            ack: true
-                        });
-                        if (state.val === true) {
-                            // auto Start;
-                            startOfIrrigation();
+                            adapter.log.warn(`sensorOutsideTemperature => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                         }
                     }
-                    // wenn (...sprinkleName.runningTime sich ändert) so wird der aktuelle Sprenger [sprinkleName]
-                    //    bei == 0 gestoppt, > 1 gestartet || Zeit abgeändert
-                    if (myConfig.config && state.val !== '00:00') {
-                        const found = myConfig.config.find((d) => d.objectID === id);
-                        if (found) {
-                            if (id === myConfig.config[found.sprinkleID].objectID) {
-                                if (!isNaN(state.val)) {
-                                    valveControl.addList(
-                                        [{
-                                            auto: false,  // Handbetrieb
-                                            sprinkleID: found.sprinkleID,
-                                            wateringTime: (state.val <= 0) ? state.val : Math.round(60 * state.val)
-                                        }]);
-                                    adapter.setState(id, {
-                                        val: state.val,
-                                        ack: true
-                                    });
-                                }
+                    // LuftFeuchtigkeit
+                    if (id === adapter.config.sensorOutsideHumidity) {
+                        if (!Number.isNaN(Number.parseFloat(state.val))) {
+                            evaporation.setCurHumidity(parseFloat(state.val), state.lc);
+                        } else {
+                            adapter.log.warn(`sensorOutsideHumidity => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+                        }
+                    }
+                    // Helligkeit
+                    if (id === adapter.config.sensorBrightness) {
+                        if (!Number.isNaN(Number.parseFloat(state.val))) {
+                            evaporation.setCurIllumination(parseFloat(state.val), state.lc);
+                        } else {
+                            adapter.log.warn(`sensorBrightness => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+                        }
+                    }
+                    // Windgeschwindigkeit
+                    if (id === adapter.config.sensorWindSpeed) {
+                        if (!Number.isNaN(Number.parseFloat(state.val))) {
+                            evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
+                        } else {
+                            adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+                        }
+                    }
+                    // Regencontainer
+                    // If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
+                    //	* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt.
+                    if (id === adapter.config.sensorRainfall) {
+                        if (!Number.isNaN(Number.parseFloat(state.val))) {
+                            evaporation.setCurAmountOfRain(parseFloat(state.val));
+                        } else {
+                            adapter.log.warn(`sensorRainfall => Wrong value: ${state.val}, Type: ${typeof state.val}`);
+                        }
+                    }
+                    // Feiertagskalender
+                    if (adapter.config.publicHolidays === true) {
+                        if (id === `${adapter.config.publicHolInstance}.heute.boolean`) {
+                            publicHolidayStr = state.val;
+                            startTimeSprinkle();
+                        }
+                        if (id === `${adapter.config.publicHolInstance}.morgen.boolean`) {
+                            publicHolidayTomorrowStr = state.val;
+                            startTimeSprinkle();
+                        }
+                    }
+                    // Wettervorhersage
+                    if (adapter.config.weatherForecastService !== 'noWeatherData') {
+                        if (id === weatherForecastTodayPfadStr) {
+                            if (typeof state.val == 'string') {
+                                weatherForecastTodayNum = parseFloat(state.val);
+                            } else if (typeof state.val == 'number') {
+                                weatherForecastTodayNum = state.val;
+                            } else {
+                                weatherForecastTodayNum = 0;
+                                adapter.log.info(`StateChange => Wettervorhersage state.val ( ${ state.val }; ${ typeof state.val } ) kann nicht als Number verarbeitet werden`);
+                            }
+                            adapter.setState('info.rainToday', {
+                                val: weatherForecastTodayNum,
+                                ack: true
+                            });
+                        }
+                        if (id === `${adapter.config.weatherForInstance}.location_1.ForecastDaily.Day_2.Rain`) {
+                            weatherForecastTomorrowNum = parseFloat(state.val);
+                            adapter.setState('info.rainTomorrow', {
+                                val: weatherForecastTomorrowNum,
+                                ack: true
+                            });
+                        }
+                    }
+                    // Füllstand der Zisterne bei Statusänderung
+                    if (adapter?.config?.actualValueLevel && (id === adapter.config.actualValueLevel)) {
+                        valveControl.setFillLevelCistern(parseFloat(state?.val) || 0);
+                        //fillLevelCistern = state.val || 0;
+                    }
+                    // Rückmeldungen mit ack === False
+                    if(state.ack === false){
+                        // wenn (Holiday == true) ist, soll das Wochenendprogramm gefahren werden.
+                        if (id === `${adapter.namespace}.control.Holiday`) {
+                            holidayStr = state.val;
+                            adapter.setState(id, {
+                                val: state.val,
+                                ack: true
+                            });
+                            startTimeSprinkle();
+                        }
+                        // wenn (addStartTimeSwitch == true) wird die zusätzliche Bewässerung aktiviert
+                        if (id === `${adapter.namespace}.control.addStartTimeSwitch`) {
+                            addStartTimeSwitch = state.val;
+                            adapter.setState(id, {
+                                val: state.val,
+                                ack: true
+                            });
+                        }
+                        // wenn (autoOnOff == false) so werden alle Sprenger nicht mehr automatisch gestartet.
+                        if (id === `${adapter.namespace}.control.autoOnOff`) {
+                            autoOnOffStr = state.val;
+                            adapter.log.info(`startAdapter: control.autoOnOff: ${state.val}`);
+                            adapter.setState(id, {
+                                val: state.val,
+                                ack: true
+                            });
+                            if (state.val === false) {
+                                valveControl.clearEntireList();
+                            }
+                            startTimeSprinkle();
+                            secondStartTimeSprinkle();
+                        }
+                        // wenn (autoStart == true) so die automatische Bewässerung von Hand gestartet
+                        if (id === `${adapter.namespace}.control.autoStart`) {
+                            adapter.setState(id, {
+                                val: false,
+                                ack: true
+                            });
+                            if (state.val === true) {
+                                // auto Start;
+                                startOfIrrigation("autoStart");
                             }
                         }
-                    }
-                    // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
-                    if (myConfig.config) {
-
-                        // @ts-ignore
-                        function filterByID(obj){
-                            return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
-                        }
-                        const filter = myConfig.config.filter(filterByID);
-                        if (filter) {
-                            for (const fil of filter) {
-                                if (id === myConfig.config[fil.sprinkleID].triggerSM){
-                                    // analog
-                                    if (fil.methodControlSM === 'analog') {
-                                        myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
-                                    } else if (fil.methodControlSM === 'bistable') {   // bistable
-                                        myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
+                        // wenn (...sprinkleName.runningTime sich ändert) so wird der aktuelle Sprenger [sprinkleName]
+                        //    bei == 0 gestoppt, > 1 gestartet || Zeit abgeändert
+                        if (myConfig.config && state.val !== '00:00') {
+                            const found = myConfig.config.find((d) => d.objectID === id);
+                            if (found) {
+                                if (id === myConfig.config[found.sprinkleID].objectID) {
+                                    if (!isNaN(state.val)) {
+                                        valveControl.addList(
+                                            [{
+                                                auto: false,  // Handbetrieb
+                                                sprinkleID: found.sprinkleID,
+                                                wateringTime: (state.val <= 0) ? state.val : Math.round(60 * state.val)
+                                            }]);
+                                        adapter.setState(id, {
+                                            val: state.val,
+                                            ack: true
+                                        });
                                     }
                                 }
                             }
                         }
-                    }
+                        // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
+                        if (myConfig.config) {
 
-                    const idSplit = id.split('.', 5);
-                    const _found = myConfig.config.find((d) => d.objectName === idSplit[3]);
-                    if (_found) {
-                        // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
-                        //   bei false nicht automatisch gestartet
-                        if (idSplit[4] === 'autoOn' && id === myConfig.config[_found.sprinkleID].autoOnID) {
-                            myConfig.config[_found.sprinkleID].autoOn = state.val;
-                            adapter.setState(id, {     // Bestätigung
-                                val: state.val,
-                                ack: true
-                            });
-                            adapter.log.info(`set ${_found.objectName}.autoOn = ${state.val}, id: ${id}`);
-                            if (state.val === false) {
-                                valveControl.addList(
-                                    [{
-                                        auto: false,
-                                        sprinkleID: _found.sprinkleID,
-                                        wateringTime: 0
-                                    }]
-                                );
-                                adapter.setState(`sprinkle.${_found.objectName}.sprinklerState`, {
-                                    val: 'off',
-                                    ack: true
-                                });
-                            } else if (_found.methodControlSM === 'fixDay') {
-                                await curNextFixDay(myConfig.config[_found.sprinkleID].sprinkleID, false).catch((e) => {
-                                    adapter.log.warn(`main.autoOn: (${myConfig.config[_found.sprinkleID].sprinkleID}, false) ${e}`);
-                                });
+                            // @ts-ignore
+                            function filterByID(obj){
+                                return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
+                            }
+                            const filter = myConfig.config.filter(filterByID);
+                            if (filter) {
+                                for (const fil of filter) {
+                                    if (id === myConfig.config[fil.sprinkleID].triggerSM){
+                                        // analog
+                                        if (fil.methodControlSM === 'analog') {
+                                            myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
+                                        } else if (fil.methodControlSM === 'bistable') {   // bistable
+                                            myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
+                                        }
+                                    }
+                                }
                             }
                         }
 
-                        //  extBreak → Pause für den Spränger bis 0:05
-                        if (idSplit[4] === `extBreak`) {
-                            _found.extBreak = state.val;    // speichern unter myConfig.config.*.extBreak
-                            const _extBreak = await valveControl.extBreak(_found.sprinkleID, state.val).catch((e) => {
-                                adapter.log.warn(`main.extBreak: ${e}`);
-                            });
-                            if (_extBreak?.name) adapter.log.info(`_extBreak: ${_extBreak.name}, ${_extBreak.val ? 'on' : 'off'}`);
-                            if (_extBreak?.val === false) {
-                                /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost), < 6 > Cistern empty, <<< 7 >>> extBreak */
-                                adapter.setState(`sprinkle.${_found.objectName}.sprinklerState`, {
-                                    val: state.val ? 'extBreak' : 'off',
+                        const idSplit = id.split('.', 5);
+                        const _found = myConfig.config.find((d) => d.objectName === idSplit[3]);
+                        if (_found) {
+                            // wenn (...sprinkleName.autoOn == false[off])  so wird der aktuelle Sprenger [sprinkleName]
+                            //   bei false nicht automatisch gestartet
+                            if (idSplit[4] === 'autoOn' && id === myConfig.config[_found.sprinkleID].autoOnID) {
+                                myConfig.config[_found.sprinkleID].autoOn = state.val;
+                                adapter.setState(id, {     // Bestätigung
+                                    val: state.val,
+                                    ack: true
+                                });
+                                adapter.log.info(`set ${_found.objectName}.autoOn = ${state.val}, id: ${id}`);
+                                if (state.val === false) {
+                                    valveControl.addList(
+                                        [{
+                                            auto: false,
+                                            sprinkleID: _found.sprinkleID,
+                                            wateringTime: 0
+                                        }]
+                                    );
+                                    adapter.setState(`sprinkle.${_found.objectName}.sprinklerState`, {
+                                        val: 'off',
+                                        ack: true
+                                    });
+                                } else if (_found.methodControlSM === 'fixDay') {
+                                    await curNextFixDay(myConfig.config[_found.sprinkleID].sprinkleID, false).catch((e) => {
+                                        adapter.log.warn(`main.autoOn: (${myConfig.config[_found.sprinkleID].sprinkleID}, false) ${e}`);
+                                    });
+                                }
+                            }
+
+                            //  extBreak → Pause für den Spränger bis 0:05
+                            if (idSplit[4] === `extBreak`) {
+                                _found.extBreak = state.val;    // speichern unter myConfig.config.*.extBreak
+                                const _extBreak = await valveControl.extBreak(_found.sprinkleID, state.val).catch((e) => {
+                                    adapter.log.warn(`main.extBreak: ${e}`);
+                                });
+                                if (_extBreak?.name) adapter.log.info(`_extBreak: ${_extBreak.name}, ${_extBreak.val ? 'on' : 'off'}`);
+                                if (_extBreak?.val === false) {
+                                    /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost), < 6 > Cistern empty, <<< 7 >>> extBreak */
+                                    adapter.setState(`sprinkle.${_found.objectName}.sprinklerState`, {
+                                        val: state.val ? 'extBreak' : 'off',
+                                        ack: true
+                                    });
+                                }
+                                adapter.setState(id, {     // Bestätigung
+                                    val: state.val,
                                     ack: true
                                 });
                             }
-                            adapter.setState(id, {     // Bestätigung
-                                val: state.val,
-                                ack: true
-                            });
+                            //  postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
+                            if (idSplit[4] === `postponeByOneDay`) {
+                                myConfig.postponeByOneDay(_found.sprinkleID).catch((e) => {
+                                    adapter.log.warn(`.postponeByOneDay: ${e}`);
+                                });
+                                adapter.setState(id, {     // Bestätigung
+                                    val: false,
+                                    ack: true
+                                });
+                            }
                         }
-                        //  postponeByOneDay → um einen Tag verschieben bei fixDay (twoNd & threeRd)
-                        if (idSplit[4] === `postponeByOneDay`) {
-                            myConfig.postponeByOneDay(_found.sprinkleID).catch((e) => {
-                                adapter.log.warn(`.postponeByOneDay: ${e}`);
-                            });
-                            adapter.setState(id, {     // Bestätigung
-                                val: false,
-                                ack: true
-                            });
+                    // (state.ack === true)
+                    }else if (state.ack === true) {
+                        // Bestätigung für das Schalten der Ventile
+                        if (myConfig.config) {
+                            //adapter.log.info(`vor found: ${id} (${state.val}) => ack === ${state.ack}`);
+                            const found = myConfig.config.find((d) => d.control.idACK === id);
+                            //adapter.log.info(`nach found: ${id} => ${JSON.stringify(found)}`);
+                            if (found && (id === myConfig.config[found.sprinkleID].control.idACK)) {
+                                found.state = state;
+                            }
                         }
-                    }
-                // (state.ack === true)
-                }else if (state.ack === true) {
-                    // Bestätigung für das Schalten der Ventile
-                    if (myConfig.config) {
-                        //adapter.log.info(`vor found: ${id} (${state.val}) => ack === ${state.ack}`);
-                        const found = myConfig.config.find((d) => d.control.idACK === id);
-                        //adapter.log.info(`nach found: ${id} => ${JSON.stringify(found)}`);
-                        if (found && (id === myConfig.config[found.sprinkleID].control.idACK)) {
-                            found.state = state;
+                        if (threadList) {
+                            const found = threadList.find((d) => d.control.idACK === id);
+                            if (found !== undefined && typeof found.controller.ackTrue === 'function') {
+                                found.controller.ackTrue(state);
+                            }
                         }
-                    }
-                    if (threadList) {
-                        const found = threadList.find((d) => d.control.idACK === id);
-                        if (found !== undefined && typeof found.controller.ackTrue === 'function') {
-                            found.controller.ackTrue(state);
+                        // Druckentlastungsventil
+                        if (id === pressureReliefValve.control.idACK && typeof pressureReliefValve.controller.ackTrue === 'function') {
+                            pressureReliefValve.controller.ackTrue(state);
                         }
+                        // 24V Steuerspannung
+                        if (id === controlVoltage.control.idACK && typeof controlVoltage.controller.ackTrue === 'function') {
+                            controlVoltage.controller.ackTrue(state);
+                        }
+                        // Pumpe (aktuell verwendete Pumpe)
+                        if (id === currentPumpUse.control.idACK && typeof currentPumpUse.controller.ackTrue === 'function') {
+                            currentPumpUse.controller.ackTrue(state);
+                        }
+                        // The state was deleted
+                        adapter.log.debug(`state ${id} deleted`);
                     }
-                    // Druckentlastungsventil
-                    if (id === pressureReliefValve.control.idACK && typeof pressureReliefValve.controller.ackTrue === 'function') {
-                        pressureReliefValve.controller.ackTrue(state);
-                    }
-                    // 24V Steuerspannung
-                    if (id === controlVoltage.control.idACK && typeof controlVoltage.controller.ackTrue === 'function') {
-                        controlVoltage.controller.ackTrue(state);
-                    }
-                    // Pumpe (aktuell verwendete Pumpe)
-                    if (id === currentPumpUse.control.idACK && typeof currentPumpUse.controller.ackTrue === 'function') {
-                        currentPumpUse.controller.ackTrue(state);
-                    }
-                    // The state was deleted
-                    adapter.log.debug(`state ${id} deleted`);
                 }
-            }
+            } catch (e) {
+                adapter.log.error(`stateChange: ${e}`);
+            }    
         },
 
         // Wenn Sie Nachrichten in Ihrem Adapter akzeptieren müssen, entkommentieren Sie den folgenden Block.
@@ -758,6 +764,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     // Startzeit Festlegen → verzögert wegen Daten von SunCalc
     setTimeout(() => {
         startTimeSprinkle();
+        secondStartTimeSprinkle();
         if (adapter.config.enableTimeBasedRestriction === true) {
             irrigationRestrictionOn();
             irrigationRestrictionOff();
@@ -1035,7 +1042,7 @@ function startTimeSprinkle() {
     // @ts-ignore
      
     const scheduleStartTime = schedule.scheduleJob('sprinkleStartTime', `${ startTimeSplit[1] } ${ startTimeSplit[0] } * * *`, function() {
-        startOfIrrigation();
+        startOfIrrigation("firstStartTime");
         setTimeout (() => {
             setTimeout(()=>{
                 nextStartTime();
@@ -1045,7 +1052,7 @@ function startTimeSprinkle() {
     });
 }
 
-const startOfIrrigation = async () => {
+const startOfIrrigation = async (selectStartTime) => {
     let messageText = '';
 
     try {
@@ -1056,7 +1063,7 @@ const startOfIrrigation = async () => {
             schedule.cancelJob('sprinkleAddStartTime');
         }
         // Filter enabled
-        const result = myConfig.config.filter((d) => d.enabled === true);
+        const result = myConfig.config.filter((d) => (d.enabled === true && (d.startTimeSelection === selectStartTime || selectStartTime === "autoStart")));
         if (result) {
         /**
          * Array zum flüchtigen Sammeln von Bewässerungsaufgaben
@@ -1209,6 +1216,29 @@ const startOfIrrigation = async () => {
     }
 };
 
+// Determination of the second irrigation time => Bestimmung der 2. Bewässerungszeit
+function secondStartTimeSprinkle() {
+    schedule.cancelJob('sprinkleSecondStartTime');
+
+        // if (autoOnOff == false) => keine auto Start
+    if (!autoOnOffStr) {
+        adapter.log.info(`Sprinkle: autoOnOff === Aus ( ${autoOnOffStr} )`);
+        adapter.setState('info.nextAutoStart', {
+            val: 'autoOnOff = off(0)',
+            ack: true
+        });
+        return;
+    }
+
+    const secondStartTimeSplit = adapter.config.secondStartTime.split(':');
+    // @ts-ignore
+    const scheduleSecondStartTime = schedule.scheduleJob('sprinkleSecondStartTime', `${ secondStartTimeSplit[1] } ${ secondStartTimeSplit[0] } * * *`, function() {
+        startOfIrrigation("secondStartTime");
+        setTimeout(()=>{
+            schedule.cancelJob('sprinkleSecondStartTime');
+        }, 200);
+    });
+}
 
 //
 async function createSprinklers() {
@@ -1441,7 +1471,7 @@ async function createSprinklers() {
                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
 
                     // Create Object for sprinkle. (ID)
-                    const _sprinkleNotExist = await adapter.setObjectNotExistsAsync(`sprinkle.${ objectName }`, {
+                    await adapter.setObjectNotExistsAsync(`sprinkle.${ objectName }`, {
                         type: 'channel',
                         common: {
                             name: res.sprinkleName,
@@ -1452,13 +1482,14 @@ async function createSprinklers() {
                         }
                     });
                     // Create Object for .history
-                    const _historyNotExist = await adapter.setObjectNotExistsAsync(`sprinkle.${ objectName }.history`, {
+                    await adapter.setObjectNotExistsAsync(`sprinkle.${ objectName }.history`, {
                         type: 'channel',
                         common: {
                             name: `${ res.sprinkleName } => History`
                         },
                         native: {},
                     });
+                    
                     // Create Object for .history.curCalWeekConsumed
                     // Sprinkler consumption of the current calendar week => History - Sprinkler-Verbrauch der aktuellen Kalenderwoche (783 Liter)
                     const _curCalWeekConsumedNotExist = adapter.setObjectNotExistsAsync(`${ objPfad }.history.curCalWeekConsumed`, {
@@ -1913,10 +1944,7 @@ async function createSprinklers() {
                         native: {},
                     });
                     // Object created
-                    let value = true;
                     await Promise.all([
-                        _sprinkleNotExist,
-                        _historyNotExist,
                         _curCalWeekConsumedNotExist,
                         _curCalWeekRunningTimeNotExist,
                         _lastCalWeekConsumedNotExist,
@@ -1931,17 +1959,8 @@ async function createSprinklers() {
                         _sprinklerStateNotExists,
                         _valveOnNotExist,
                         _triggerPointNotExist
-                    ]).then((values) => {
-                        values.forEach(val => {
-                            if (!val) {
-                                value = false;
-                            }
-                        });
-                    });
-
-                    if(value) {
-                        adapter.log.info(`sprinkleControl [sprinkle.${objectName}] was created`);
-                    }
+                    ])
+                    .then(() => adapter.log.info(`sprinkleControl [sprinkle.${objectName}] was created`))
 
                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
                     // +++++                        zustände der States auf Startposition                       +++++ //
@@ -2125,6 +2144,7 @@ async function delOldSprinklers(result) {
                     adapter.delObjectAsync(`${resID}.runningTime`),                         // "sprinklecontrol.0.sprinkle.???.runningTime"
                     adapter.delObjectAsync(`${resID}.sprinklerState`),                      // "sprinklecontrol.0.sprinkle.???.sprinklerState"
                     adapter.delObjectAsync(`${resID}.triggerPoint`),                        // "sprinklecontrol.0.sprinkle.???.triggerPoint"
+                    adapter.delObjectAsync(`${resID}.valveOn`),                             // "sprinklecontrol.0.sprinkle.???.valveOn"
                     delWhenExistObjectAsync(`${resID}.postponeByOneDay`, `boolean`),        // "sprinklecontrol.0.sprinkle.???.postponeByOneDay" wenn vorhanden löschen
                 ]);//.then(async ()=>{
                 // History - Objekt(Ordner.history) löschen
@@ -2233,6 +2253,7 @@ async function main() {
     // @ts-ignore
     timer = setTimeout(() => {
         startTimeSprinkle();
+        secondStartTimeSprinkle();
         addStartTimeSprinkle();
         if (adapter.config.enableTimeBasedRestriction === true) {
             if(tools.laterThanTime(adapter.config.startOfInterruption) === true){            // Bewässerungsverbot wird heute noch aktiviert

@@ -33,6 +33,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) Second start time added
+
 ### 1.0.4 (2026-04-26)
 * (Dirk-Peter-md) GitHub error message #274
 
