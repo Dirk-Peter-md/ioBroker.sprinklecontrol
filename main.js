@@ -1959,8 +1959,7 @@ async function createSprinklers() {
                         _sprinklerStateNotExists,
                         _valveOnNotExist,
                         _triggerPointNotExist
-                    ])
-                    .then(() => adapter.log.info(`sprinkleControl [sprinkle.${objectName}] was created`))
+                    ]);
 
                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ //
                     // +++++                        zustände der States auf Startposition                       +++++ //
