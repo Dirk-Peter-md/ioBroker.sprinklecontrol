@@ -33,8 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 1.0.5 (2026-05-03)
 * (Copilot) Adapter benötigt jetzt node.js >= 22
 * (Dirk-Peter-md) Second start time added
 * (Dirk-Peter-md) bug fixed in sprinklerState
@@ -52,13 +51,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 * (Dirk-Peter-md) Add Homematic ON_TIME
 * (Dirk-Peter-md) Adapter configuration revised
 * (Dirk-Peter-md) ioBroker-Bot [E4041], [E4043] completed
-
-### 1.0.0 (2026-03-21)
-* (Dirk-Peter-md) Adapter redesign => Be sure to check your configuration
-* (Dirk-Peter-md) Adaptation to “dasWeather” >= 4.0
-* (Dirk-Peter-md) Fix npm publish
-* (Dirk-Peter-md) dependencies updated
-* (Dirk-Peter-md) update dependabot
 
 ## License
 MIT License

@@ -1,4 +1,11 @@
 # Older changes
+## 1.0.0 (2026-03-21)
+* (Dirk-Peter-md) Adapter redesign => Be sure to check your configuration
+* (Dirk-Peter-md) Adaptation to “dasWeather” >= 4.0
+* (Dirk-Peter-md) Fix npm publish
+* (Dirk-Peter-md) dependencies updated
+* (Dirk-Peter-md) update dependabot
+
 ## 0.2.19 (2025-07-02)
 * (Dirk-Peter-md) The switch-on hysteresis of the cistern is now stored in the configuration.
 

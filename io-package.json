@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.5": {
+        "en": "Adapter benötigt jetzt node.js >= 22\nSecond start time added\nbug fixed in sprinklerState",
+        "de": "Adapter benötigt jetzt node.js >= 22\nZweite Startzeit hinzugefügt\nfehler behoben in SprinklerState",
+        "ru": "Адаптер benötigt jetzt node.js >= 22\nДобавлено второе время\nбаг фиксируется в SprinklerState",
+        "pt": "Adaptador benötigt jetzt node.js >= 22\nSegunda hora de início adicionada\nerro corrigido no aspersorState",
+        "nl": "Voor de toepassing van deze onderverdeling wordt verstaan onder:\nTweede starttijd toegevoegd\nbug vast in sprinklerState",
+        "fr": "Adaptateur benötigt jetzt node.js >= 22\nDeuxième heure de départ ajoutée\nbug corrigé dans l'état arroseur",
+        "it": "Adattatore Benötigt jetzt node.js >= 22\nTempo di partenza aggiunto\nbug fisso in sprinkler",
+        "es": "Adaptador benötigt jetzt node.js ⇩= 22\nSegundo tiempo de inicio añadido\nbug fijado en sprinklerState",
+        "pl": "Adapter benötigt jetzt node.js > = 22\nDodano drugi czas rozpoczęcia\nbłąd zainstalowany w zraszaczu Stan",
+        "uk": "Адаптер benötigt jetzt node.js >= 22\nДругий час запуску\nвиправлено помилку в sprinklerState",
+        "zh-cn": "Benötigt喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷雾器\n第二次开始时间添加\n在喷洒状态中修正错误"
+      },
       "1.0.4": {
         "en": "GitHub error message #274",
         "de": "GitHub Fehlermeldung #274",
@@ -96,19 +109,6 @@
         "pl": "Przełączanie hysterezy cysterny jest teraz przechowywane w konfiguracji.",
         "uk": "У конфігурації тепер зберігається комутаційний гістерезис цистерни.",
         "zh-cn": "晶体的开关式歇斯底里现保存在配置中."
-      },
-      "0.2.18": {
-        "en": "Hysteresis switch-on value of the cistern changed to 20%",
-        "de": "Hysterese Einschaltwert der Zisterne auf 20% geändert",
-        "ru": "Значение Hysteresis switch-on цистерны изменилось до 20%",
-        "pt": "O valor da histerese da cisterna mudou para 20%",
-        "nl": "Hysterese schakelaar waarde van de cisterne veranderd in 20%",
-        "fr": "La valeur d'activation de l'hystérie de la citerne est passée à 20%",
-        "it": "Il valore di commutazione della cisterna di Hysteresis è cambiato al 20%",
-        "es": "El valor de conmutación de la histeria cambió al 20%",
-        "pl": "Zmiana wartości hysterezy cysterny na 20%",
-        "uk": "Гістерез змінився на 20%",
-        "zh-cn": "贮器的开关值改为20%"
       }
     },
     "desc": {
