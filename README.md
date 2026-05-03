@@ -35,7 +35,11 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 -->
 
 ### **WORK IN PROGRESS**
+<<<<<<< HEAD
 * (Copilot) Adapter benötigt jetzt node.js >= 22
+=======
+- (copilot) Adapter requires node.js >= 22 now
+>>>>>>> 2399d2304ecba8920d1168011cb4fe8fe0484d65
 * (Dirk-Peter-md) Second start time added
 * (Dirk-Peter-md) bug fixed in sprinklerState
 
