@@ -52,6 +52,8 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 * (Dirk-Peter-md) Adapter configuration revised
 * (Dirk-Peter-md) ioBroker-Bot [E4041], [E4043] completed
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 MIT License
 
