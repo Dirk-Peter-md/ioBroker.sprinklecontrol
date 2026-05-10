@@ -1,4 +1,9 @@
 # Older changes
+## 1.0.1 (2026-04-11)
+* (Dirk-Peter-md) Add Homematic ON_TIME
+* (Dirk-Peter-md) Adapter configuration revised
+* (Dirk-Peter-md) ioBroker-Bot [E4041], [E4043] completed
+
 ## 1.0.0 (2026-03-21)
 * (Dirk-Peter-md) Adapter redesign => Be sure to check your configuration
 * (Dirk-Peter-md) Adaptation to “dasWeather” >= 4.0

@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.6 (2026-05-10)
 * (Dirk-Peter-md) Cistern Control Optimized
 * (Dirk-Peter-md) Translation revised
 
@@ -51,14 +51,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ### 1.0.2 (2026-04-19)
 * (Dirk-Peter-md) Added times for the irrigation ban
 
-### 1.0.1 (2026-04-11)
-* (Dirk-Peter-md) Add Homematic ON_TIME
-* (Dirk-Peter-md) Adapter configuration revised
-* (Dirk-Peter-md) ioBroker-Bot [E4041], [E4043] completed
-
-[Older changelogs can be found there](CHANGELOG_OLD.md)
-
-## License
+[Older changelogs can be found there](CHANGELOG_OLD.md)## License
 MIT License
 
 Copyright (c) 2020-2026     Dirk Peter     <dirk.peter@freenet.de>

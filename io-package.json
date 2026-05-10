@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.6": {
+        "en": "Cistern Control Optimized\nTranslation revised",
+        "de": "Zisternensteuerung optimiert\nÜbersetzung überarbeitet",
+        "ru": "Оптимизированный контроль цистерны\nПеревод пересмотрен",
+        "pt": "Controle de cisterna otimizado\nTradução revista",
+        "nl": "Cistern Control Geoptimaliseerd\nVertaling herzien",
+        "fr": "Contrôle Cistern optimisé\nTraduction révisée",
+        "it": "Cistern Control Ottimizzato\nTraduzione rivista",
+        "es": "Control Cistern Optimizado\nTraducción revisada",
+        "pl": "Kontrola Cysterna zoptymalizowana\nTłumaczenie zmienione",
+        "uk": "Оптимізований контроль цистерни\nПереклад",
+        "zh-cn": "晶体控制优化\n翻译订正"
+      },
       "1.0.5": {
         "en": "Adapter benötigt jetzt node.js >= 22\nSecond start time added\nbug fixed in sprinklerState",
         "de": "Adapter benötigt jetzt node.js >= 22\nZweite Startzeit hinzugefügt\nfehler behoben in SprinklerState",
@@ -96,19 +109,6 @@
         "pl": "Przeprojektowanie adaptera = > Sprawdź konfigurację\nAdaptacja do \"dasWeather\" > = 4. 0\nNapraw publikację npm\nzaktualizowane zależności\naktualizacja zależna",
         "uk": "Редизайн адаптера => Обов'язково перевірте налаштування\nАдаптація до \"dasWeather\" >= 4.8 км\nВиправлення npm опублікування\nоновлені залежності\nоновлення залежності",
         "zh-cn": "适应器的重新设计 请检查您的配置\n适应“DasWeather”_________________________ 4.0 (单位:百万美元)\n修复 npm 发布\n更新依赖关系\n更新依赖保护"
-      },
-      "0.2.19": {
-        "en": "The switch-on hysteresis of the cistern is now stored in the configuration.",
-        "de": "Die Einschalthysterese der Zisterne wird nun in der Konfiguration gespeichert.",
-        "ru": "Гистерезис цистерны теперь хранится в конфигурации.",
-        "pt": "A histerese da cisterna é agora armazenada na configuração.",
-        "nl": "De inschakelhysterese van de cisterne wordt nu opgeslagen in de configuratie.",
-        "fr": "L'hystérie de la citerne est maintenant stockée dans la configuration.",
-        "it": "L'isteresi di commutazione della cisterna è ora memorizzata nella configurazione.",
-        "es": "La histeresis de la cisterna se almacena ahora en la configuración.",
-        "pl": "Przełączanie hysterezy cysterny jest teraz przechowywane w konfiguracji.",
-        "uk": "У конфігурації тепер зберігається комутаційний гістерезис цистерни.",
-        "zh-cn": "晶体的开关式歇斯底里现保存在配置中."
       }
     },
     "desc": {
