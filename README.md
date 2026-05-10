@@ -33,6 +33,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) Cistern Control Optimized
+* (Dirk-Peter-md) Translation revised
+
 ### 1.0.5 (2026-05-03)
 * (Copilot) Adapter benötigt jetzt node.js >= 22
 * (Dirk-Peter-md) Second start time added

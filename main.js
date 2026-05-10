@@ -166,8 +166,8 @@ function startAdapter(options) {
                         }
                     }
                     // Füllstand der Zisterne bei Statusänderung
-                    if (adapter?.config?.actualValueLevel && (id === adapter.config.actualValueLevel)) {
-                        valveControl.setFillLevelCistern(parseFloat(state?.val) || 0);
+                    if (adapter.config?.actualValueLevel && (id === adapter.config.actualValueLevel)) {
+                        valveControl.setFillLevelCistern(state.val);
                         //fillLevelCistern = state.val || 0;
                     }
                     // Rückmeldungen mit ack === False
@@ -392,9 +392,15 @@ function startAdapter(options) {
  * daher können wir bei Bedarf andere Einstellungen als das System verwenden
  */
 async function GetSystemData() {
-    if (typeof adapter.config.longitude === 'undefined' || adapter.config.longitude === null || adapter.config.longitude.length === 0 || isNaN(+adapter.config.longitude)
-        || typeof adapter.config.latitude === 'undefined' || adapter.config.latitude === null || adapter.config.latitude.length === 0 || isNaN(+adapter.config.latitude)) {
-
+    if (typeof adapter.config.longitude === 'undefined' 
+        || adapter.config.longitude === null 
+        || adapter.config.longitude.length === 0 
+        || isNaN(adapter.config.longitude)
+        || typeof adapter.config.latitude === 'undefined' 
+        || adapter.config.latitude === null 
+        || adapter.config.latitude.length === 0 
+        || isNaN(adapter.config.latitude)
+    ) {
         try {
             const obj = await adapter.getForeignObjectAsync('system.config', 'state');
 
@@ -423,44 +429,48 @@ async function GetSystemData() {
  * @param returnOn
  */
 async function curNextFixDay (sprinkleID, returnOn) {
-    const weekDayArray = myConfig.config[sprinkleID].fixDay.startFixDay;
-    const objPfad = `sprinkle.${myConfig.config[sprinkleID].objectName}`;
-    const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
-    let found = false;
-    let curDay = tools.formatTime().day;
-    const d = new Date();
-    const curTime = `${zweiStellen(d.getHours())}:${zweiStellen(d.getMinutes())}`;
+    try {
+        const weekDayArray = myConfig.config[sprinkleID].fixDay.startFixDay;
+        const objPfad = `sprinkle.${myConfig.config[sprinkleID].objectName}`;
+        const weekday = ['Sun','Mon','Tue','Wed','Thur','Fri','Sat'];
+        let found = false;
+        let curDay = tools.formatTime().day;
+        const d = new Date();
+        const curTime = `${zweiStellen(d.getHours())}:${zweiStellen(d.getMinutes())}`;
 
-    function zweiStellen (s) {
-        while (s.toString().length < 2) {
-                s = `0${s}`;
-            }
-        return s;
-    }
-    if (curTime >= startTimeStr) {
-        curDay++;
-    }
+        function zweiStellen (s) {
+            while (s.toString().length < 2) {
+                    s = `0${s}`;
+                }
+            return s;
+        }
+        if (curTime >= startTimeStr) {
+            curDay++;
+        }
 
-    for ( let i=0; i<7; i++ ) {
-        if (curDay > 6) {
-            curDay = curDay - 7;
-        }
-        if (weekDayArray[curDay] === true) {
-            found = true;
-            if (returnOn) {
-                return weekday[curDay];
-            } else {
-                adapter.setState(`${objPfad}.actualSoilMoisture`, {
-                    val: curDay,
-                    ack: true
-                });
+        for ( let i=0; i<7; i++ ) {
+            if (curDay > 6) {
+                curDay = curDay - 7;
             }
-            break;
+            if (weekDayArray[curDay] === true) {
+                found = true;
+                if (returnOn) {
+                    return weekday[curDay];
+                } else {
+                    adapter.setState(`${objPfad}.actualSoilMoisture`, {
+                        val: curDay,
+                        ack: true
+                    });
+                }
+                break;
+            }
+            curDay++;
         }
-        curDay++;
-    }
-    if (returnOn && found === false) {
-        return 'off';
+        if (returnOn && found === false) {
+            return 'off';
+        }        
+    } catch (error) {
+        adapter.log.error(`Error curNextFixDay: ${error}`);
     }
 }
 
@@ -569,7 +579,7 @@ async function checkStates() {
 
         /*   evaporation.dailyHighTemp   */
         const _dailyHighTemp = await adapter.getStateAsync('evaporation.dailyHighTemp');
-        if (_dailyHighTemp?.val) {
+        if (_dailyHighTemp?.val && typeof _dailyHighTemp.val === 'number') {
             evaporation.setCurTemperatureMax(+_dailyHighTemp.val);
         } else {
             evaporation.setCurTemperatureMax(0);
@@ -2123,7 +2133,7 @@ async function delOldSprinklers(result) {
                  */
                 const delWhenExistObjectAsync = async (id, type) => {
                     const _find = await adapter.findForeignObjectAsync(`${id}`, `${type}`);
-                    if (_find && _find.id === `${id}`) {
+                    if (_find?.id === `${id}`) {
                         await adapter.delObjectAsync(`${id}`).catch((e) => adapter.log.warn(e));  // "sprinklecontrol.0.sprinkle.???.postponeByOneDay"
                     }
                 };
