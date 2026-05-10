@@ -336,15 +336,15 @@ function startAdapter(options) {
                             }
                         }
                         // Druckentlastungsventil
-                        if (id === pressureReliefValve.control.idACK && typeof pressureReliefValve.controller.ackTrue === 'function') {
+                        if (id === pressureReliefValve?.control?.idACK && typeof pressureReliefValve.controller.ackTrue === 'function') {
                             pressureReliefValve.controller.ackTrue(state);
                         }
                         // 24V Steuerspannung
-                        if (id === controlVoltage.control.idACK && typeof controlVoltage.controller.ackTrue === 'function') {
+                        if (id === controlVoltage?.control?.idACK && typeof controlVoltage.controller.ackTrue === 'function') {
                             controlVoltage.controller.ackTrue(state);
                         }
                         // Pumpe (aktuell verwendete Pumpe)
-                        if (id === currentPumpUse.control.idACK && typeof currentPumpUse.controller.ackTrue === 'function') {
+                        if (id === currentPumpUse?.control?.idACK && typeof currentPumpUse.controller.ackTrue === 'function') {
                             currentPumpUse.controller.ackTrue(state);
                         }
                         // The state was deleted

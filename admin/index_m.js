@@ -1,4 +1,4 @@
-/**
+/*
  * @license
  * iobroker.sprinklecontrol - Copyright (c) by Dirk-Peter-md
  * Please visit https://github.com/Dirk-Peter-md/ioBroker.sprinklecontrol for licence-agreement and further information
