@@ -643,7 +643,31 @@
                                 </div>
                             </li>
 
-                            <!-- Einstellung des Schaltverhaltens -->
+                            <!-- Drucksensor zur Überwachung der Bewässerung -->
+                            <li>
+                                <div class="collapsible-header">
+                                    <i class="material-icons">expand_more</i><h6 class="translate">Pressure sensor for monitoring irrigation</h6>
+                                </div>
+                                <div class="collapsible-body">
+                                    <div class="row">
+                                        <div class="input-field col s10 m4 l4">
+                                            <input type="text" class="value" id="sensorPressure" />
+                                            <label for="sensorPressure" class="translate"></label>
+                                            <span class="translate">Pressure sensor - path</span>
+                                        </div>
+                                        <div class="col s2 m2 l2">
+                                            <a id="sensorPressureDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>
+                                        <!-- Mindestdruck -->
+                                        <div class="input-field col s12 m6 l2">
+                                            <input type="number" class="value" id="minimumPressure" min=0 max=10.0 placeholder="0-10.0" step="0.1" value="2" />
+                                            <label for="minimumPressure" class="translate"></label>
+                                            <span class="translate">Minimum pressure in the irrigation line in bar</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            <!-- Druckentlastung in den Leitungen vor der Abschaltung -->
                             <li>
                                 <div class="collapsible-header">
                                     <i class="material-icons">expand_more</i><h6 class="translate">Pressure relief in the lines before shutdown</h6>
@@ -699,6 +723,14 @@
                                         </div>
                                         <div class="col s2 m2 l2">
                                             <a id="sensorWindSpeedDialogPopUp" class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                                        </div>                                    
+                                        <div class="col s2 m2 l2">
+                                            <select class="value" id="unitOfWindSpeed">
+                                                <option value="km/h" class="translate">km/h</option>
+                                                <option value="m/s" class="translate">m/s</option>
+                                            </select>
+                                            <label for="unitOfWindSpeed" class="translate"></label>
+                                            <span class="translate">Unit of wind speed</span>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -721,7 +753,6 @@
                                     </div>
                                 </div>
                             </li>
-
                             <!-- Wettervorhersage -->
                             <li>
                                 <div class="collapsible-header">

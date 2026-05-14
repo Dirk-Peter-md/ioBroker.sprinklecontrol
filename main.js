@@ -115,7 +115,13 @@ function startAdapter(options) {
                     // Windgeschwindigkeit
                     if (id === adapter.config.sensorWindSpeed) {
                         if (!Number.isNaN(Number.parseFloat(state.val))) {
-                            evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
+                            if (adapter.config.unitOfWindSpeed === 'm/s') {
+                                evaporation.setCurWindSpeed(parseFloat(state.val) * 3.6, state.lc);
+                            } else if (adapter.config.unitOfWindSpeed === 'km/h') {    // HomeMatic: km/h
+                                evaporation.setCurWindSpeed(parseFloat(state.val), state.lc);
+                            } else {
+                                adapter.log.warn(`sensorWindSpeed => No unit selected; therefore, ${state.val} km/h is used. Please check your configuration!`);
+                            }
                         } else {
                             adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                         }
@@ -1323,7 +1329,7 @@ async function createSprinklers() {
                             write: false,
                             def: 50
                         },
-                        native: {},
+                        native: {}
                     }
                 };
             }
@@ -2184,8 +2190,8 @@ async function main() {
      * The adapters' config (in the instance object everything under the attribute "native") is accessible via adapter.config:
      * => Auf die Adapterkonfiguration (im Instanz objekt alles unter dem Attribut "native") kann zugegriffen werden über adapter.config:
      *
-     * @param {any} err
-     * @param {any} obj
+     * @param {objett} err
+     * @param {objekt} obj
      */
     // @ts-ignore
     // @ts-ignore
