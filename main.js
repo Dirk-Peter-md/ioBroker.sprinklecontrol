@@ -84,7 +84,7 @@ function startAdapter(options) {
         // is called if a subscribed state changes
         stateChange: async (id, state) => {
             try {
-                adapter.log.debug(`stateChange: ${id} (${state ? state.val : 'null'}) ack: ${state ? state.ack : 'null'}`);
+                // adapter.log.debug(`stateChange: ${id} (${state ? state.val : 'null'}) ack: ${state ? state.ack : 'null'}`);
                 // The state was changed → Der Zustand wurde geändert
                 if(state){
                     // Change in outside temperature → Änderung der Außentemperatur
@@ -126,6 +126,27 @@ function startAdapter(options) {
                             adapter.log.warn(`sensorWindSpeed => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                         }
                     }
+                    // Drucksensor
+                    if (id === adapter.config.sensorPressure) {
+                        adapter.log.debug(`SensorPressure: ${ state?.val }, Type: ${ typeof state.val }`);
+                        let myPressure;
+                        if(typeof state.val === 'number') {
+                            myPressure = parseFloat(state.val);
+                        }else if(typeof state.val === 'string') {
+                            myPressure = parseFloat(state.val);
+                        }else if(typeof state.val === 'boolean') {
+                            (state.val === true) ? myPressure = 100 : myPressure = 0;
+                        }
+                        if(typeof myPressure !== "number" 
+                            || myPressure > 0 
+                            || myPressure < 10
+                        ) {
+                            valveControl.setSensorPressure(state.val);
+                        } else {
+                            adapter.log.warn(`SensorPressure (0...10 bar || true/false) => Wrong value: ${ state.val }, Type: ${ typeof state.val }`);
+                        }
+                    }
+
                     // Regencontainer
                     // If the amount of rain is over 20 mm, the 'lastRainCounter' is overwritten and no calculation is carried out. =>
                     //	* Wenn die Regenmenge mehr als 20 mm beträgt, wird der 'lastRainCounter' überschrieben und es wird keine Berechnung durchgeführt.
@@ -324,7 +345,7 @@ function startAdapter(options) {
                                 });
                             }
                         }
-                    // (state.ack === true)
+                    // (state.ack === true) => Rückmeldung für das Schalten der Ventile, Druckentlastungsventil, Steuerspannung, Pumpen
                     }else if (state.ack === true) {
                         // Bestätigung für das Schalten der Ventile
                         if (myConfig.config) {
@@ -1295,7 +1316,7 @@ async function createSprinklers() {
      *
      * @param {string} methodControlSM
      * @param {string} objectName
-     * @returns {Promise<{nameMetConSM: string; objMetConSM: {type: string, common: {role: string, name: string, type: string, min?: number, max?: number, states?: {}, unit?: string, read: boolean, write: boolean, def?: number | string | boolean}, native: {}}}>}
+     * @returns {Promise<{nameMetConSM: string; objMetConSM: {type: string; common: {role: string; name: string; type: string; min?: number; max?: number; states?: Record<string, unknown>; unit?: string; read: boolean; write: boolean; def?: number | string | boolean}; native: Record<string, unknown>}}>} 
      */
     const fillMetConSM = async (methodControlSM, objectName) => {
         //adapter.log.debug(JSON.stringify(res));
@@ -2220,6 +2241,7 @@ async function main() {
     //adapter.subscribeStates('info.Elevation');
     //adapter.subscribeStates('info.Azimut');
     
+    // Trigger für die Wettervorhersage abonnieren, wenn in der Config angegeben
     if (adapter.config.weatherForecastService === 'ownDataPoint') {
         weatherForecastTodayPfadStr = adapter.config.pathRainForecast;
         adapter.subscribeForeignStates(weatherForecastTodayPfadStr);
@@ -2237,9 +2259,12 @@ async function main() {
         adapter.subscribeForeignStates(`${ adapter.config.publicHolInstance }.morgen.*`);
     }
 
+    // Trigger für die Bewässerung abonnieren, wenn in der Config angegeben
     if (adapter.config.triggerControlVoltage !== '') {
         await adapter.subscribeForeignStatesAsync(adapter.config.triggerControlVoltage);
     }
+
+    // Trigger für die Pumpe abonnieren, wenn in der Config angegeben
     switch(adapter.config.pumpSelection) {
         case 'noPump':
             break;
@@ -2255,6 +2280,7 @@ async function main() {
             break;
     }
 
+    // Level-Sensor abonnieren, wenn in der Config angegeben
     if (adapter.config.actualValueLevel !== '') {
         await adapter.subscribeForeignStatesAsync(adapter.config.actualValueLevel);
     } else if ((adapter.config.pumpSelection === 'pumpAndCistern') || (adapter.config.pumpSelection === 'cistern')) {
@@ -2262,6 +2288,11 @@ async function main() {
             val: 'The level sensor of the water cistern is not specified', 
             ack: true 
         }).catch((e) => adapter.log.warn(`info.cisternState ${e}`));
+    }
+
+    // Bodenfeuchte-Sensoren abonnieren, wenn in der Config angegeben
+    if (adapter.config.sensorPressure.length > 10) {
+        await adapter.subscribeForeignStatesAsync(adapter.config.sensorPressure);
     }
 
     await checkActualStates().catch((e) => adapter.log.warn(`checkActualStates: ${e}`));

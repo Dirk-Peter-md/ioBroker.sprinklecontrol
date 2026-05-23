@@ -152,7 +152,17 @@ function load(settings, onChange) {
         });
     });
 
-    // Registerkarte Extra Settings
+    // ---   Registerkarte Extra Settings   ---
+
+     $('#sensorPressureDialogPopUp').on('click', function () {
+        initSelectId(function (sid) {
+            sid.selectId('show', $('#sensorPressure').val(), function (newId) {
+                if (newId) {
+                    $('#sensorPressure').val(newId).trigger('change');
+                }
+            });
+        });
+    });   
 
     $('#sensorOutsideTemperatureDialogPopUp').on('click', function () {
         initSelectId(function (sid) {

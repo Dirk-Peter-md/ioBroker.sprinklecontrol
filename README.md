@@ -33,6 +33,10 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) Added pressure monitoring.
+
 ### 1.0.6 (2026-05-10)
 * (Dirk-Peter-md) Cistern Control Optimized
 * (Dirk-Peter-md) Translation revised
