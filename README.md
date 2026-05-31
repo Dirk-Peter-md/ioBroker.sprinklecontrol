@@ -36,7 +36,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
  ### **WORK IN PROGRESS**
  * (Dirk-Peter-md) Water Pressure Control Revised
- * (Dirk-Peter-md) ioBroker-Bot [E6004], [W1127], [W1133], [S6022] completed
+ * (Dirk-Peter-md) ioBroker-Bot [E6004], [W1127], [W1133], [W1134], [S6022] completed
 
 ### 1.0.7 (2026-05-24)
 * (Dirk-Peter-md) Added pressure monitoring.

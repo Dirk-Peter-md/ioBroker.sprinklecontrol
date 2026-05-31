@@ -496,7 +496,7 @@
           "zh-cn": "立即启动灌溉过程"
         },
         "type": "boolean",
-        "read": true,
+        "read": false,
         "write": true,
         "def": false
       },
@@ -506,7 +506,7 @@
       "_id": "control.parallelOfMax",
       "type": "state",
       "common": {
-        "role": "value",
+        "role": "text",
         "name": "parallel of max Sprinklers",
         "desc": {
           "en": "Number of sprinklers that are currently running in parallel",
@@ -532,7 +532,7 @@
       "_id": "control.restFlow",
       "type": "state",
       "common": {
-        "role": "value",
+        "role": "text",
         "name": "rest Flow of Pump",
         "desc": {
           "en": "Rest flow of the pump in l/h",
@@ -579,7 +579,7 @@
       "_id": "info.nextAutoStart",
       "type": "state",
       "common": {
-        "role": "value",
+        "role": "text",
         "name": "Next automatic start of the sprinklers",
         "desc": {
           "en": "Next automatic start of the sprinklers",
@@ -659,7 +659,7 @@
       "_id": "info.cisternState",
       "type": "state",
       "common": {
-        "role": "value",
+        "role": "text",
         "name": "State of the cistern",
         "desc": {
           "en": "State of the cistern",
