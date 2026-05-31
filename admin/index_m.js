@@ -592,12 +592,6 @@ function showHideSettings() {
         $('.publicWeekHol').hide();
     }
 
-    if ($('#publicHolidays').prop('checked') && mPublicWeekend) {
-        $('.publicHol').show();
-    } else {
-        $('.publicHol').hide();
-    }
-
     // individuelle Wettervorhersage
     $('#weatherForecastService').on('change', function () {
         if ($(this).val() === 'noWeatherData') {

@@ -321,7 +321,7 @@ function startAdapter(options) {
                                 const _extBreak = await valveControl.extBreak(_found.sprinkleID, state.val).catch((e) => {
                                     adapter.log.warn(`main.extBreak: ${e}`);
                                 });
-                                if (_extBreak?.name) adapter.log.info(`_extBreak: ${_extBreak.name}, ${_extBreak.val ? 'on' : 'off'}`);
+                                if (_extBreak?.name) adapter.log.info(`extBreak: ${_extBreak.name}, ${_extBreak.val ? 'on' : 'off'}`);
                                 if (_extBreak?.val === false) {
                                     /* Zustand des Ventils im Thread < 0 > off, < 1 > wait, < 2 > on, < 3 > break, < 4 > Boost(on), < 5 > off(Boost), < 6 > Cistern empty, <<< 7 >>> extBreak */
                                     adapter.setState(`sprinkle.${_found.objectName}.sprinklerState`, {
@@ -1089,6 +1089,32 @@ function startTimeSprinkle() {
     });
 }
 
+/**
+ * Start of irrigation
+ * - selectStartTime: firstStartTime | autoStart
+ *     firstStartTime → Startvorgang durch StartTimeSprinkle
+ *     autoStart → Startvorgang durch addStartTimeSprinkle
+ * - Zisterne leer → Abbruch
+ * - Filter enabled → Prüfung der Filterkriterien für alle Sprenger, die aktiviert sind (autoOn == true) und zusätzliche Bewässerung aktiviert haben (addWateringTime > 0)
+ * - Test Bodenfeuchte → Prüfung der Bodenfeuchte für die Sprenger, die die automatische Bewässerung aktiviert haben (autoOn == true) und zusätzliche Bewässerung aktiviert haben (addWateringTime > 0)
+ *     - bistable: Bodenfeuchte-Sensor mit 2-Punkt-Regler true und false → Wenn true, dann Startvorgang
+ *     - analog: Bodenfeuchte-Sensor im Wertebereich von 0 bis 100% → Prozentuale Bodenfeuchte zu gering → Startvorgang
+ *     - fixDay: Start an festen Tagen ohne Sensoren → Bewässerungstag erreicht → Startvorgang
+ *     - calculation: Berechnung Bodenfeuchte auf Basis von ETpToday und dailyHighTemp → Prozentuale Bodenfeuchte zu gering → Startvorgang
+ *     - Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet.
+ * - Start der Bewässerung
+ *     - Berechnung der Bewässerungszeit
+ *     - Start der Bewässerung über valveControl.addList(memAddList)
+ *     - Message über startende Bewässerung mit Angabe der Bewässerungszeit
+ *     - Log über startende Bewässerung mit Angabe der Bewässerungszeit
+ *     - Wenn extBreak == true → Startvorgang abbrechen und extBreak || START => Message und Log
+ *     - Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet.
+ * - Wenn autoOnOff == false → keine auto Start
+ * - Wenn Zisterne leer → keine zusätzliche Bewässerung möglich
+ * - Wenn in der Config Regenvorhersage aktiviert: Startvorgang abbrechen, wenn der Regen den eingegebenen Schwellwert überschreitet.
+ * 
+ * @param {string} selectStartTime - firstStartTime | autoStart
+ */
 const startOfIrrigation = async (selectStartTime) => {
     let messageText = '';
 
@@ -1266,8 +1292,19 @@ function secondStartTimeSprinkle() {
         });
         return;
     }
+    const curTime = new Date();
+    let myWeekday = curTime.getDay();   // 0 = Sonntag, 1 = Montag, ..., 6 = Samstag
+    let secondStartTime = adapter.config.secondStartTime;
 
-    const secondStartTimeSplit = adapter.config.secondStartTime.split(':');
+    // Start am Wochenende, an Feiertagen oder Urlaub →, wenn Zeiten des Wochenendes verwendet werden soll
+    if((adapter.config.publicWeekend2 && ((myWeekday === 6) || (myWeekday === 0)))      // Start am Wochenende
+        || (adapter.config.publicHolidays2 && ((myWeekday === 6) || (myWeekday === 0))  // heute Feiertag
+        || (holidayStr === true))       // Urlaub
+    ){
+        secondStartTime = adapter.config.weekEndLiving;
+    }
+    
+    const secondStartTimeSplit = secondStartTime.split(':');
     // @ts-ignore
     const scheduleSecondStartTime = schedule.scheduleJob('sprinkleSecondStartTime', `${ secondStartTimeSplit[1] } ${ secondStartTimeSplit[0] } * * *`, function() {
         startOfIrrigation("secondStartTime");

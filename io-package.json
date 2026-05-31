@@ -193,8 +193,10 @@
     "startOfInterruption": "10:00",
     "endOfInterruption": "18:00",
     "publicWeekend": true,
+    "publicWeekend2": true,
     "weekEndLiving": "07:30",
     "publicHolidays": false,
+    "publicHolidays2": false,
     "publicHolInstance": "",
     "latitude": "",
     "longitude": "",
@@ -297,7 +299,7 @@
       "_id": "evaporation.ETpCurrent",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Calculation of the current pot. Evapotranspiration",
         "desc": {
           "en": "Calculation of the current pot. Evapotranspiration",
@@ -324,7 +326,7 @@
       "_id": "evaporation.ETpToday",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "today's pot. Evapotranspiration",
         "desc": {
           "en": "today's pot. Evapotranspiration",
@@ -351,7 +353,7 @@
       "_id": "evaporation.ETpYesterday",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "yesterday's pot. Evapotranspiration",
         "desc": {
           "en": "yesterday's pot. Evapotranspiration",
@@ -378,7 +380,7 @@
       "_id": "evaporation.dailyHighTemp",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Daily High Temperature",
         "desc": {
           "en": "Daily high temperature",
@@ -468,10 +470,6 @@
           "zh-cn": "自动或手动控制喷头"
         },
         "type": "boolean",
-        "states": {
-          "false": "off",
-          "true": "Auto"
-        },
         "read": true,
         "write": true,
         "def": true
@@ -508,7 +506,7 @@
       "_id": "control.parallelOfMax",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "parallel of max Sprinklers",
         "desc": {
           "en": "Number of sprinklers that are currently running in parallel",
@@ -534,7 +532,7 @@
       "_id": "control.restFlow",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "rest Flow of Pump",
         "desc": {
           "en": "Rest flow of the pump in l/h",
@@ -581,7 +579,7 @@
       "_id": "info.nextAutoStart",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Next automatic start of the sprinklers",
         "desc": {
           "en": "Next automatic start of the sprinklers",
@@ -607,7 +605,7 @@
       "_id": "info.rainToday",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Amount of rain today",
         "desc": {
           "en": "Amount of rain today",
@@ -634,7 +632,7 @@
       "_id": "info.rainTomorrow",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Amount of rain tomorrow",
         "desc": {
           "en": "Amount of rain tomorrow",
@@ -661,7 +659,7 @@
       "_id": "info.cisternState",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "State of the cistern",
         "desc": {
           "en": "State of the cistern",
