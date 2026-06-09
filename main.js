@@ -375,7 +375,7 @@ function startAdapter(options) {
                             currentPumpUse.controller.ackTrue(state);
                         }
                         // The state was deleted
-                        adapter.log.debug(`state ${id} deleted`);
+                        // adapter.log.debug(`state ${id} deleted`);
                     }
                 }
             } catch (e) {
@@ -573,7 +573,7 @@ async function checkStates() {
 
         /*   control.autoOnOff   */
         const _autoOnOff = await adapter.getStateAsync('control.autoOnOff');
-        if (_autoOnOff?.val && typeof _autoOnOff.val === 'boolean') {
+        if (typeof _autoOnOff.val === 'boolean') {
             autoOnOffStr = _autoOnOff.val;
         } else {
             autoOnOffStr = true;
@@ -1283,13 +1283,8 @@ const startOfIrrigation = async (selectStartTime) => {
 function secondStartTimeSprinkle() {
     schedule.cancelJob('sprinkleSecondStartTime');
 
-        // if (autoOnOff == false) => keine auto Start
+    // if (autoOnOff == false) => keine auto Start
     if (!autoOnOffStr) {
-        adapter.log.info(`Sprinkle: autoOnOff === Aus ( ${autoOnOffStr} )`);
-        adapter.setState('info.nextAutoStart', {
-            val: 'autoOnOff = off(0)',
-            ack: true
-        });
         return;
     }
     const curTime = new Date();
