@@ -799,7 +799,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     evaporation.setNewDay();
 
     // Startzeit Festlegen → verzögert wegen Daten von SunCalc
-    setTimeout(() => {
+    adapter.setTimeout(() => {
         startTimeSprinkle();
         secondStartTimeSprinkle();
         if (adapter.config.enableTimeBasedRestriction === true) {
@@ -959,7 +959,7 @@ function addStartTimeSprinkle() {
                 // @ts-ignore
                 adapter.log.debug(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
             }
-            setTimeout(()=>{
+            adapter.setTimeout(()=>{
                 schedule.cancelJob('sprinkleAddStartTime');
             }, 200);
         });
@@ -1080,8 +1080,8 @@ function startTimeSprinkle() {
      
     const scheduleStartTime = schedule.scheduleJob('sprinkleStartTime', `${ startTimeSplit[1] } ${ startTimeSplit[0] } * * *`, function() {
         startOfIrrigation("firstStartTime");
-        setTimeout (() => {
-            setTimeout(()=>{
+        adapter.setTimeout (() => {
+            adapter.setTimeout(()=>{
                 nextStartTime();
             }, 800);
             schedule.cancelJob('sprinkleStartTime');
@@ -1303,7 +1303,7 @@ function secondStartTimeSprinkle() {
     // @ts-ignore
     const scheduleSecondStartTime = schedule.scheduleJob('sprinkleSecondStartTime', `${ secondStartTimeSplit[1] } ${ secondStartTimeSplit[0] } * * *`, function() {
         startOfIrrigation("secondStartTime");
-        setTimeout(()=>{
+        adapter.setTimeout(()=>{
             schedule.cancelJob('sprinkleSecondStartTime');
         }, 200);
     });
@@ -2329,7 +2329,7 @@ async function main() {
 
     await checkActualStates().catch((e) => adapter.log.warn(`checkActualStates: ${e}`));
     // @ts-ignore
-    timer = setTimeout(() => {
+    timer = adapter.setTimeout(() => {
         startTimeSprinkle();
         secondStartTimeSprinkle();
         addStartTimeSprinkle();
