@@ -33,8 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 1.0.8 (2026-06-12)
  * (Dirk-Peter-md) Fixed error in "Command without response"
  * (Dirk-Peter-md) Water Pressure Control Revised
  * (Dirk-Peter-md) ioBroker-Bot [E6004], [W1127], [W1133], [W1134], [S6022] completed
@@ -53,9 +52,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ### 1.0.4 (2026-04-26)
 * (Dirk-Peter-md) GitHub error message #274
-
-### 1.0.3 (2026-04-25)
-* (Dirk-Peter-md) Pressure relief valve added after irrigation.
 
 ### CHANGELOG_OLD
 [CHANGELOG_OLD.md](CHANGELOG_OLD.md)
