@@ -33,7 +33,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+
  ### **WORK IN PROGRESS**
+ 
  * (Dirk-Peter-md) Fixed error in "Command without response"
  * (Dirk-Peter-md) Water Pressure Control Revised
  * (Dirk-Peter-md) ioBroker-Bot [E6004], [W1127], [W1133], [W1134], [S6022] completed
