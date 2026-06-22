@@ -53,7 +53,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ### 1.0.4 (2026-04-26)
 * (Dirk-Peter-md) GitHub error message #274
 
-### CHANGELOG_OLD
+### Older versions
 [CHANGELOG_OLD.md](CHANGELOG_OLD.md)
 
 *************************************************************************************************************************************
