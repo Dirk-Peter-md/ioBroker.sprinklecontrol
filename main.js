@@ -157,6 +157,29 @@ function startAdapter(options) {
                             adapter.log.warn(`sensorRainfall => Wrong value: ${state.val}, Type: ${typeof state.val}`);
                         }
                     }
+
+                    // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
+                    if (myConfig.config) {
+
+                        // @ts-ignore
+                        function filterByID(obj){
+                            return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
+                        }
+                        const filter = myConfig.config.filter(filterByID);
+                        if (filter) {
+                            for (const fil of filter) {
+                                if (id === myConfig.config[fil.sprinkleID].triggerSM){
+                                    // analog
+                                    if (fil.methodControlSM === 'analog') {
+                                        myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
+                                    } else if (fil.methodControlSM === 'bistable') {   // bistable
+                                        myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     // Feiertagskalender
                     if (adapter.config.publicHolidays === true) {
                         if (id === `${adapter.config.publicHolInstance}.heute.boolean`) {
@@ -262,28 +285,6 @@ function startAdapter(options) {
                                 }
                             }
                         }
-                        // wenn in der config unter methodControlSM!== 'analog' oder 'bistable' eingegeben wurde, dann Bodenfeuchte-Sensor auslesen
-                        if (myConfig.config) {
-
-                            // @ts-ignore
-                            function filterByID(obj){
-                                return (((obj.methodControlSM === 'analog') || (obj.methodControlSM === 'bistable')) && (obj.triggerSM === id));
-                            }
-                            const filter = myConfig.config.filter(filterByID);
-                            if (filter) {
-                                for (const fil of filter) {
-                                    if (id === myConfig.config[fil.sprinkleID].triggerSM){
-                                        // analog
-                                        if (fil.methodControlSM === 'analog') {
-                                            myConfig.setSoilMoistPct(fil.sprinkleID, state.val);
-                                        } else if (fil.methodControlSM === 'bistable') {   // bistable
-                                            myConfig.setSoilMoistBool(fil.sprinkleID, state.val);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                         const idSplit = id.split('.', 5);
                         const _found = myConfig.config.find((d) => d.objectName === idSplit[3]);
                         if (_found) {
