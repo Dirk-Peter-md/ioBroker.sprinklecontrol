@@ -1,4 +1,7 @@
 # Older changes
+## 1.0.4 (2026-04-26)
+* (Dirk-Peter-md) GitHub error message #274
+
 ## 1.0.3 (2026-04-25)
 * (Dirk-Peter-md) Pressure relief valve added after irrigation.
 

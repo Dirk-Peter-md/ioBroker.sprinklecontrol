@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.9": {
+        "en": "Fixed error reading the soil moisture sensor",
+        "de": "Fehler beim Auslesen des Bodenfeuchtigkeitssensors behoben",
+        "ru": "Исправлена ошибка считывания показаний датчика влажности почвы.",
+        "pt": "Erro corrigido na leitura do sensor de umidade do solo",
+        "nl": "Fout bij het uitlezen van de bodemvochtigheidssensor gecorrigeerd.",
+        "fr": "Correction d'une erreur de lecture du capteur d'humidité du sol",
+        "it": "Risolto l'errore di lettura del sensore di umidità del suolo",
+        "es": "Se corrigió un error en la lectura del sensor de humedad del suelo.",
+        "pl": "Naprawiono błąd odczytu czujnika wilgotności gleby",
+        "uk": "Виправлена помилка зчитування даних датчика вологості ґрунту",
+        "zh-cn": "修复了读取土壤湿度传感器的错误"
+      },
       "1.0.8": {
         "en": "Fixed error in \"Command without response\"\nWater Pressure Control Revised\nioBroker-Bot [E6004], [W1127], [W1133], [W1134], [S6022] completed",
         "de": "Fehler behoben in \"Befehl ohne Antwort\"\nWasserdruckregelung überarbeitet\nioBroker-Bot [E6004], [W1127], [W1133], [W1134], [S6022] abgeschlossen",
@@ -96,19 +109,6 @@
         "pl": "Ciśnienie zaworu nadmiarowego dodane po nawadnianiu.",
         "uk": "Клапан для зняття тиску додається після поливу.",
         "zh-cn": "灌溉后增加了减压阀."
-      },
-      "1.0.2": {
-        "en": "Added times for the irrigation ban",
-        "de": "Zusätzliche Zeiten für das Bewässerungsverbot",
-        "ru": "Добавлено время для запрета ирригации",
-        "pt": "Tempos adicionais para a proibição da irrigação",
-        "nl": "Toegevoegde tijden voor het irrigatieverbod",
-        "fr": "Ajout de temps pour l'interdiction d'irrigation",
-        "it": "Aggiunti i tempi per il divieto di irrigazione",
-        "es": "Tiempos adicionales para la prohibición de riego",
-        "pl": "Dodano czasy zakazu nawadniania",
-        "uk": "Додані часи для поливу заборони",
-        "zh-cn": "灌溉禁令增加的时间"
       }
     },
     "desc": {

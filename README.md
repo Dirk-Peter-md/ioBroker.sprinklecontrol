@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.9 (2026-07-01)
  * (Dirk-Peter-md) Fixed error reading the soil moisture sensor
 
 ### 1.0.8 (2026-06-12)
@@ -52,9 +52,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 * (Copilot) Adapter benötigt jetzt node.js >= 22
 * (Dirk-Peter-md) Second start time added
 * (Dirk-Peter-md) bug fixed in sprinklerState
-
-### 1.0.4 (2026-04-26)
-* (Dirk-Peter-md) GitHub error message #274
 
 ### Older versions
 [CHANGELOG_OLD.md](CHANGELOG_OLD.md)
