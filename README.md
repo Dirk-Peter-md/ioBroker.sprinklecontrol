@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.10 (2026-07-25)
  * (Dirk-Peter-md) Fixed error sendMessage noNotivikation
  * (Dirk-Peter-md) Fixed error history.curCalWeekConsumed
 
@@ -51,11 +51,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 ### 1.0.6 (2026-05-10)
 * (Dirk-Peter-md) Cistern Control Optimized
 * (Dirk-Peter-md) Translation revised
-
-### 1.0.5 (2026-05-03)
-* (Copilot) Adapter benötigt jetzt node.js >= 22
-* (Dirk-Peter-md) Second start time added
-* (Dirk-Peter-md) bug fixed in sprinklerState
 
 ### Older versions
 [CHANGELOG_OLD.md](CHANGELOG_OLD.md)

@@ -1,4 +1,9 @@
 # Older changes
+## 1.0.5 (2026-05-03)
+* (Copilot) Adapter benötigt jetzt node.js >= 22
+* (Dirk-Peter-md) Second start time added
+* (Dirk-Peter-md) bug fixed in sprinklerState
+
 ## 1.0.4 (2026-04-26)
 * (Dirk-Peter-md) GitHub error message #274
 

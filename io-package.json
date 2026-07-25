@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.10": {
+        "en": "Fixed error sendMessage noNotivikation\nFixed error history.curCalWeekConsumed",
+        "de": "Fehler behoben sendMessage noNotivikation\nFehler behoben history.curCalWeekConsumed",
+        "ru": "Исправленная ошибка sendMessage noNotivikation\nИсправленная история ошибок.curCalWeekConsumed",
+        "pt": "Erro corrigido sendMessage noNotivikation\nHistórico de erros corrigido.curCalWeekConsumido",
+        "nl": "Vaste fout sendMessage noNotivikation\nVaste foutgeschiedenis.curCalWeekVerondersteld",
+        "fr": "Erreur fixe sendMessage noNotivikation\nHistorique d'erreur corrigé.curCalWeekConsommé",
+        "it": "Errore fisso sendMessage noNotivikation\nCorretto cronologia degli errori.curCalWeekConsumed",
+        "es": "Error fijo envíaMessage noNotivikation\nHistorial de error fijo.curCalWeekConsumed",
+        "pl": "Naprawiono błąd sendMessage noNotivikation\nNaprawiono historię błędów",
+        "uk": "Виправлено помилку надсиланняНевідомлення\nФіксована історія помилок.curCalWeekConsumed",
+        "zh-cn": "固定错误发送\n固定错误历史. curCalWeek Concumed"
+      },
       "1.0.9": {
         "en": "Fixed error reading the soil moisture sensor",
         "de": "Fehler beim Auslesen des Bodenfeuchtigkeitssensors behoben",
@@ -96,19 +109,6 @@
         "pl": "Komunikat błędu GitHub # 274",
         "uk": "Повідомлення про помилку GitHub #274",
         "zh-cn": "GitHub 错误消息 # 274"
-      },
-      "1.0.3": {
-        "en": "Pressure relief valve added after irrigation.",
-        "de": "Druckentlastungsventil nach Bewässerung hinzugefügt.",
-        "ru": "Клапан сброса давления добавляют после орошения.",
-        "pt": "Válvula de alívio de pressão adicionada após irrigação.",
-        "nl": "Overdrukklep toegevoegd na irrigatie.",
-        "fr": "Vanne de décompression ajoutée après irrigation.",
-        "it": "Valvola di pressione aggiunta dopo l'irrigazione.",
-        "es": "Válvula de alivio de presión añadido después del riego.",
-        "pl": "Ciśnienie zaworu nadmiarowego dodane po nawadnianiu.",
-        "uk": "Клапан для зняття тиску додається після поливу.",
-        "zh-cn": "灌溉后增加了减压阀."
       }
     },
     "desc": {
