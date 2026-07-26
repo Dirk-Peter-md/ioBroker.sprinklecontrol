@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.10",
+    "version": "1.0.9",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,19 +19,6 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
-      "1.0.10": {
-        "en": "Fixed error sendMessage noNotivikation\nFixed error history.curCalWeekConsumed",
-        "de": "Fehler behoben sendMessage noNotivikation\nFehler behoben history.curCalWeekConsumed",
-        "ru": "Исправленная ошибка sendMessage noNotivikation\nИсправленная история ошибок.curCalWeekConsumed",
-        "pt": "Erro corrigido sendMessage noNotivikation\nHistórico de erros corrigido.curCalWeekConsumido",
-        "nl": "Vaste fout sendMessage noNotivikation\nVaste foutgeschiedenis.curCalWeekVerondersteld",
-        "fr": "Erreur fixe sendMessage noNotivikation\nHistorique d'erreur corrigé.curCalWeekConsommé",
-        "it": "Errore fisso sendMessage noNotivikation\nCorretto cronologia degli errori.curCalWeekConsumed",
-        "es": "Error fijo envíaMessage noNotivikation\nHistorial de error fijo.curCalWeekConsumed",
-        "pl": "Naprawiono błąd sendMessage noNotivikation\nNaprawiono historię błędów",
-        "uk": "Виправлено помилку надсиланняНевідомлення\nФіксована історія помилок.curCalWeekConsumed",
-        "zh-cn": "固定错误发送\n固定错误历史. curCalWeek Concumed"
-      },
       "1.0.9": {
         "en": "Fixed error reading the soil moisture sensor",
         "de": "Fehler beim Auslesen des Bodenfeuchtigkeitssensors behoben",
