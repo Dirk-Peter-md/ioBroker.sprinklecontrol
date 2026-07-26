@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '24.x'
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-          # install-command: 'npm install'
+          install-command: 'npm install'    # Uncomment this line
           lint: true
 
   # Runs adapter tests on all supported node versions and OSes
@@ -50,7 +50,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           os: ${{ matrix.os }}
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-          # install-command: 'npm install'
+          install-command: 'npm install'    # Uncomment this line
 
   # Deploys the final package to NPM
   deploy:
@@ -74,7 +74,7 @@ jobs:
         with:
           node-version: '24.x'
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-          # install-command: 'npm install'
+          install-command: 'npm install'    # Uncomment this line
           # npm-token: ${{ secrets.NPM_TOKEN }}  # Commented out for migration to Trusted Publishing
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
