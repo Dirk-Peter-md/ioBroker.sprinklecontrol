@@ -803,7 +803,7 @@ const calcPos = schedule.scheduleJob('calcPosTimer', '5 0 * * *', function() {
     adapter.setTimeout(() => {
         startTimeSprinkle();
         secondStartTimeSprinkle();
-        if (adapter.config.enableTimeBasedRestriction === true) {
+        if (adapter.config.enableTimeBasedRestriction === true) {   // Zeitbasierte Bewässerungseinschränkung / -verbot aktivieren
             irrigationRestrictionOn();
             irrigationRestrictionOff();
         }
@@ -981,6 +981,16 @@ function startTimeSprinkle() {
             val: 'autoOnOff = off(0)',
             ack: true
         });
+        return;
+    }
+
+    // if (firstStartTime == false) => keine auto Start
+    if (myConfig.config.some((d) => d.startTimeSelection === "firstStartTime") === false) {
+        adapter.setState('info.nextAutoStart', {
+            val: '---',
+            ack: true
+        });
+        adapter.log.info('Sprinkle: no firstStartTime configured');
         return;
     }
 
@@ -1284,27 +1294,101 @@ const startOfIrrigation = async (selectStartTime) => {
 function secondStartTimeSprinkle() {
     schedule.cancelJob('sprinkleSecondStartTime');
 
-    // if (autoOnOff == false) => keine auto Start
+    //  if (autoOnOff == false) => keine auto Start
     if (!autoOnOffStr) {
+        adapter.setState('info.nextAutoSecondStart', {
+            val: 'autoOnOff = off(0)',
+            ack: true
+        });
         return;
     }
-    const curTime = new Date();
-    let myWeekday = curTime.getDay();   // 0 = Sonntag, 1 = Montag, ..., 6 = Samstag
-    let secondStartTime = adapter.config.secondStartTime;
 
-    // Start am Wochenende, an Feiertagen oder Urlaub →, wenn Zeiten des Wochenendes verwendet werden soll
-    if((adapter.config.publicWeekend2 && ((myWeekday === 6) || (myWeekday === 0)))      // Start am Wochenende
-        || (adapter.config.publicHolidays2 && ((myWeekday === 6) || (myWeekday === 0))  // heute Feiertag
-        || (holidayStr === true))       // Urlaub
-    ){
-        secondStartTime = adapter.config.weekEndLiving;
+    // 2. BewässerungsZeit nicht ausgewählt => keine auto Start
+    if (myConfig.config.some((d) => d.startTimeSelection === "secondStartTime") === false) {
+        adapter.setState('info.nextAutoSecondStart', {
+            val: '---',
+            ack: true
+        });        
+        return;
     }
-    
+
+    function nextStartTime () {
+        let newStartTime = adapter.config.secondStartTime;
+        let infoMessage = '2. Start zur festen Zeit ';
+
+        let run = 0;
+        const curTime = new Date();
+        const myHours = checkTime(curTime.getHours());
+        const myMinutes = checkTime(curTime.getMinutes());
+        let myWeekday = curTime.getDay();   // 0 = Sonntag, 1 = Montag, ..., 6 = Samstag
+        const myWeekdayStr = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+        const myTime = `${myHours}:${myMinutes}`;
+
+        /**
+         * aus 0...9 wird String 00...09
+         *
+         * @param {string|number} i
+         * @returns {string}
+         */
+        function checkTime(i) {
+            return (+i < 10) ? `0${  i}` : i.toString();
+        }
+
+        do {
+            myWeekday += run;
+            run++;
+            if (myWeekday>6){
+                myWeekday=0;
+            }
+            
+            newStartTime = adapter.config.secondStartTime;
+            infoMessage = '2. Start zur festen Zeit ';
+
+            // Start am Wochenende →, wenn andere Zeiten verwendet werden soll
+            if((adapter.config.publicWeekend2) && ((myWeekday === 6) || (myWeekday === 0))){    // Start am Wochenende
+                infoMessage = '2. Start am Wochenende ';
+                newStartTime = adapter.config.weekEndLiving;
+            }
+            // Start an Feiertagen →, wenn Zeiten des Wochenendes verwendet werden soll
+            if((adapter.config.publicHolidays2) && (adapter.config.publicWeekend2)
+                && (((publicHolidayStr === true) && (run === 1))            // heute Feiertag && erster Durchlauf
+                || ((publicHolidayTomorrowStr === true) && (run === 2))     // morgen Feiertag && zweiter Durchlauf
+                || (holidayStr === true))) {                                // Urlaub
+                infoMessage = '2. Start am Feiertag ';
+                newStartTime = adapter.config.weekEndLiving;
+            }
+        } while ((newStartTime <= myTime) && (run === 1));
+        
+        const newStartTimeLong = `${ myWeekdayStr[myWeekday] } ${ newStartTime }`;
+        /*     next Auto-Start     */
+        // @ts-ignore
+        adapter.getState('info.nextAutoSecondStart', (err, state) =>{
+            if (state) {
+                if (state.val !== newStartTimeLong) {
+                    adapter.setState('info.nextAutoSecondStart', {
+                        val: newStartTimeLong,
+                        ack: true
+                    });
+                    // next Start Message
+                    if(!sendMessageText.onlySendError){
+                        sendMessageText.sendMessage(`${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
+                    }
+                    adapter.log.info(`${ infoMessage } (${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
+                }
+            }
+        });
+        return newStartTime;
+    }
+
+    let secondStartTime = nextStartTime();
     const secondStartTimeSplit = secondStartTime.split(':');
     // @ts-ignore
     const scheduleSecondStartTime = schedule.scheduleJob('sprinkleSecondStartTime', `${ secondStartTimeSplit[1] } ${ secondStartTimeSplit[0] } * * *`, function() {
         startOfIrrigation("secondStartTime");
         adapter.setTimeout(()=>{
+            adapter.setTimeout(()=>{
+                nextStartTime();
+            }, 800);
             schedule.cancelJob('sprinkleSecondStartTime');
         }, 200);
     });

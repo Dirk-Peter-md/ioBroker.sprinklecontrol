@@ -600,6 +600,31 @@
         "def": "-"
       },
       "native": {}
+    },    {
+      "_id": "info.nextAutoSecondStart",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "Next automatic second start of the sprinklers",
+        "desc": {
+          "en": "Next automatic second start of the sprinklers",
+          "de": "Nächster automatischer zweiter Start der Sprinkleranlage",
+          "ru": "Следующий автоматический второй запуск спринклеров",
+          "pt": "Em seguida, haverá um segundo acionamento automático dos aspersores.",
+          "nl": "Volgende automatische tweede start van de sprinklers",
+          "fr": "Prochaine deuxième mise en marche automatique des arroseurs",
+          "it": "Successivamente, il secondo avvio automatico degli irrigatori",
+          "es": "Siguiente segundo arranque automático de los aspersores",
+          "pl": "Kolejny automatyczny drugi start zraszaczy",
+          "uk": "Наступний автоматичний другий запуск спринклерів",
+          "zh-cn": "接下来，洒水器将自动第二次启动。"
+        },
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": "-"
+      },
+      "native": {}
     },
     {
       "_id": "info.rainToday",

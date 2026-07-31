@@ -33,6 +33,9 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (Dirk-Peter-md) sendMessage => Cancel if the message is empty
+
 ### 1.0.10 (2026-07-26)
  * (Dirk-Peter-md) Fixed error sendMessage noNotivikation
  * (Dirk-Peter-md) Fixed error history.curCalWeekConsumed
