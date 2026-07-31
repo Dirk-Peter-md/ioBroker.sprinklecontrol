@@ -1,4 +1,8 @@
 # Older changes
+## 1.0.6 (2026-05-10)
+* (Dirk-Peter-md) Cistern Control Optimized
+* (Dirk-Peter-md) Translation revised
+
 ## 1.0.5 (2026-05-03)
 * (Copilot) Adapter benötigt jetzt node.js >= 22
 * (Dirk-Peter-md) Second start time added

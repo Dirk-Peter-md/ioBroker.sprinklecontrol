@@ -33,7 +33,7 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
   Placeholder for the next version (at the beginning of the line):
   ### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 1.0.11 (2026-07-31)
 * (Dirk-Peter-md) sendMessage => Cancel if the message is empty
 
 ### 1.0.10 (2026-07-26)
@@ -50,10 +50,6 @@ Wetterabhängige automatische Steuerung der Gartenbewässerung
 
 ### 1.0.7 (2026-05-24)
 * (Dirk-Peter-md) Added pressure monitoring.
-
-### 1.0.6 (2026-05-10)
-* (Dirk-Peter-md) Cistern Control Optimized
-* (Dirk-Peter-md) Translation revised
 
 ### Older versions
 [CHANGELOG_OLD.md](CHANGELOG_OLD.md)

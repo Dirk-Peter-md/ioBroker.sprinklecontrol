@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "sprinklecontrol",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "titleLang": {
       "en": "Sprinkler Control",
       "de": "Sprinklersteuerung",
@@ -19,6 +19,19 @@
       "Dirk Peter <dirk.peter@freenet.de>"
     ],
     "news": {
+      "1.0.11": {
+        "en": "sendMessage => Cancel if the message is empty",
+        "de": "sendMessage => Abbrechen, wenn die Nachricht leer ist",
+        "ru": "отправить сообщение => Отменить, если сообщение пустое",
+        "pt": "sendMessage => Cancelar se a mensagem estiver vazia",
+        "nl": "sendMessage => Annuleren als het bericht leeg is",
+        "fr": "sendMessage => Annuler si le message est vide",
+        "it": "missage = > Annullare se il messaggio è vuoto",
+        "es": "sendMessage = confianza Cancelar si el mensaje está vacío",
+        "pl": "sendMessage = > Anuluj, jeśli wiadomość jest pusta",
+        "uk": "javaScript licenses API Веб-сайт Скасувати відповідь",
+        "zh-cn": "发送信息QQ 如果信件为空, 取消"
+      },
       "1.0.10": {
         "en": "Fixed error sendMessage noNotivikation\nFixed error history.curCalWeekConsumed",
         "de": "Fehler behoben sendMessage noNotivikation\nFehler behoben history.curCalWeekConsumed",
@@ -96,19 +109,6 @@
         "pl": "Adapter benötigt jetzt node.js > = 22\nDodano drugi czas rozpoczęcia\nbłąd zainstalowany w zraszaczu Stan",
         "uk": "Адаптер benötigt jetzt node.js >= 22\nДругий час запуску\nвиправлено помилку в sprinklerState",
         "zh-cn": "Benötigt喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷气式喷雾器\n第二次开始时间添加\n在喷洒状态中修正错误"
-      },
-      "1.0.4": {
-        "en": "GitHub error message #274",
-        "de": "GitHub Fehlermeldung #274",
-        "ru": "Сообщение об ошибке GitHub #274",
-        "pt": "Mensagem de erro do GitHub # 274",
-        "nl": "GitHub foutmelding #274",
-        "fr": "Message d'erreur GitHub #274",
-        "it": "Messaggio di errore GitHub #274",
-        "es": "Mensaje de error GitHub #274",
-        "pl": "Komunikat błędu GitHub # 274",
-        "uk": "Повідомлення про помилку GitHub #274",
-        "zh-cn": "GitHub 错误消息 # 274"
       }
     },
     "desc": {
@@ -600,7 +600,8 @@
         "def": "-"
       },
       "native": {}
-    },    {
+    },
+    {
       "_id": "info.nextAutoSecondStart",
       "type": "state",
       "common": {
