@@ -870,14 +870,14 @@ function addStartTimeSprinkle() {
         const scheduleAddStartTime = schedule.scheduleJob('sprinkleAddStartTime', `${ addStartTimeSplit[1] } ${ addStartTimeSplit[0] } * * *`, function() {
             // if (autoOnOff == false) => keine auto Start
             if (!autoOnOffStr) {
-                sendMessageText.sendMessage('Irrigation not possible!\n (autoOnOff == false)');
+                sendMessageText.sendMessage(`info`, `Irrigation not possible!\n (autoOnOff == false)`);
                 schedule.cancelJob('sprinkleAddStartTime');
                 return;
             }
             // Zisterne leer → Abbruch
             if(valveControl.getIntBreakCisternPump()) {
                 adapter.log.warn('Additional irrigation is not possible! The cistern is empty.');
-                sendMessageText.sendMessage('Additional irrigation is not possible!\n The cistern is empty.');
+                sendMessageText.sendMessage(`error`, `Additional irrigation is not possible!\n The cistern is empty.`);
                 schedule.cancelJob('sprinkleAddStartTime');
                 return;
             }
@@ -953,9 +953,7 @@ function addStartTimeSprinkle() {
                     }
                     valveControl.addList(memAddList);
                 }
-                if(!sendMessageText.onlySendError() && messageText.length > 0){
-                    sendMessageText.sendMessage(messageText);
-                }
+                sendMessageText.sendMessage(`info`, `${messageText}`);
             } else {
                 // @ts-ignore
                 adapter.log.debug(`greaterETpCurrent: ${(adapter.config.selectAddStartTime === 'greaterETpCurrent')} & ${(adapter.config.triggerAddStartTimeETpCur < evaporation.getETpTodayNum())}, withExternalSignal; ${(adapter.config.selectAddStartTime === 'withExternalSignal')} & ${addStartTimeSwitch}`);
@@ -1074,9 +1072,7 @@ function startTimeSprinkle() {
                         ack: true
                     });
                     // next Start Message
-                    if(!sendMessageText.onlySendError){
-                        sendMessageText.sendMessage(`${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
-                    }
+                    sendMessageText.sendMessage(`info`, `${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
                     adapter.log.info(`${infoMessage} (${myWeekdayStr[myWeekday]}) um ${newStartTime}`);
                 }
             }
@@ -1133,7 +1129,7 @@ const startOfIrrigation = async (selectStartTime) => {
         // Zisterne leer → Abbruch
         if(valveControl.getIntBreakCisternPump()) {
             adapter.log.warn('Additional irrigation is not possible! The cistern is empty.');
-            sendMessageText.sendMessage('Irrigation not possible!\n The cistern is empty.');
+            sendMessageText.sendMessage(`error`, `Additional irrigation is not possible!\n The cistern is empty.`);
             schedule.cancelJob('sprinkleAddStartTime');
         }
         // Filter enabled
@@ -1281,10 +1277,7 @@ const startOfIrrigation = async (selectStartTime) => {
             }
             valveControl.addList(memAddList);
         }
-        if(!sendMessageText.onlySendError()){
-            sendMessageText.sendMessage(messageText);
-        }
-
+        sendMessageText.sendMessage(`info`, `${messageText}`);
     } catch (error) {
         adapter.log.error(`startOfIrrigation ERROR: ${error}`);
     }
@@ -1370,9 +1363,7 @@ function secondStartTimeSprinkle() {
                         ack: true
                     });
                     // next Start Message
-                    if(!sendMessageText.onlySendError){
-                        sendMessageText.sendMessage(`${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
-                    }
+                    sendMessageText.sendMessage(`info`, `${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
                     adapter.log.info(`${ infoMessage } (${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
                 }
             }
