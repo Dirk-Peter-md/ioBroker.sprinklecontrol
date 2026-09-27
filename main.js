@@ -1072,7 +1072,7 @@ function startTimeSprinkle() {
                         ack: true
                     });
                     // next Start Message
-                    sendMessageText.sendMessage(`info`, `${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
+                    // sendMessageText.sendMessage(`info`, `${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
                     adapter.log.info(`${infoMessage} (${myWeekdayStr[myWeekday]}) um ${newStartTime}`);
                 }
             }
@@ -1363,7 +1363,7 @@ function secondStartTimeSprinkle() {
                         ack: true
                     });
                     // next Start Message
-                    sendMessageText.sendMessage(`info`, `${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
+                    // sendMessageText.sendMessage(`info`, `${ infoMessage }(${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
                     adapter.log.info(`${ infoMessage } (${ myWeekdayStr[myWeekday] }) um ${ newStartTime }`);
                 }
             }
