@@ -32,6 +32,9 @@
     "@iobroker/adapter-core": "^3.4.3",
     "node-schedule": "^2.1.2",
     "suncalc": "^2.1.2"
+=======
+    "suncalc": "^2.1.1"
+>>>>>>> ac5efa4237dce32112c133c0c2bfcdfcf57411cb
   },
   "devDependencies": {
     "@alcalzone/release-script": "^5.2.1",
